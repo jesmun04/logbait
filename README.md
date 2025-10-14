@@ -1,6 +1,6 @@
-# 🎰 Plataforma de Apuestas Online
+# 🎰 LogBait, Plataforma de Apuestas Online
 
-**(añadir nombre)** es una plataforma web de apuestas desarrollada como proyecto académico.  
+**LogBait** es una plataforma web de apuestas desarrollada como proyecto académico.  
 Su objetivo es ofrecer una experiencia sencilla, segura y responsable para los usuarios interesados en realizar apuestas en línea de manera simulada.
 
 > ⚠️ Advertencia: Este proyecto no gestiona dinero real. Todas las operaciones y apuestas son ficticias y tienen únicamente fines educativos.
@@ -9,7 +9,7 @@ Su objetivo es ofrecer una experiencia sencilla, segura y responsable para los u
 
 ## 🧩 Descripción general
 
-(añadir nombre) permite a los usuarios registrarse, gestionar su saldo virtual, realizar apuestas en distintos juegos y consultar los resultados obtenidos.  
+LogBait permite a los usuarios registrarse, gestionar su saldo virtual, realizar apuestas en distintos juegos y consultar los resultados obtenidos.  
 El proyecto se ha desarrollado aplicando **metodologías ágiles**, con iteraciones cortas y una planificación basada en **historias de usuario**.
 
 Actualmente se encuentra en su primera fase **MVP (Producto Mínimo Viable)**, cuyo propósito es ofrecer una versión funcional que cubra las características esenciales de una casa de apuestas online.
