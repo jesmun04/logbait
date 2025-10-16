@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section Futurista -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <!-- Logo Principal Animado -->
+            <div class="mb-5 hologram-float">
+                <div class="display-1 mb-4" style="font-size: 6rem;">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <h1 class="hero-title">
+                    CASINO<span style="color: var(--neon-cyan)"> EDUCATIVO</span>
+                </h1>
+                <p class="hero-subtitle">
+                    PLATAFORMA DE APRENDIZAJE INTERACTIVO
+                </p>
+            </div>
+
+            <!-- Cards de Acción Holográficas -->
+            <div class="row justify-content-center g-5">
+                <div class="col-lg-5 col-md-6">
+                    <div class="card game-card hologram-float">
+                        <div class="card-body d-flex flex-column p-4">
+                            <div class="display-3 text-gradient mb-4">
+                                <i class="fas fa-user-astronaut"></i>
+                            </div>
+                            <h3 class="card-title">INICIAR SESIÓN</h3>
+                            <p class="card-text flex-grow-1">
+                                Accede al sistema con tus credenciales de usuario y sumérgete en la experiencia educativa .
+                            </p>
+                            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg mt-3">
+                                <i class="fas fa-sign-in-alt me-2"></i>CONECTAR SISTEMA
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5 col-md-6">
+                    <div class="card game-card hologram-float" style="animation-delay: 0.5s">
+                        <div class="card-body d-flex flex-column p-4">
+                            <div class="display-3 text-gradient mb-4">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <h3 class="card-title">REGISTRO DE USUARIO</h3>
+                            <p class="card-text flex-grow-1">
+                                Crea tu identidad digital y recibe $1,000 de crédito inicial para explorar el ecosistema educativo.
+                            </p>
+                            <a href="{{ url_for('register') }}" class="btn btn-success btn-lg mt-3">
+                                <i class="fas fa-rocket me-2"></i>ACTIVAR CUENTA
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información del Sistema -->
+            <div class="row mt-6 pt-5">
+                <div class="col-12">
+                    <div class="card cyber-grid" style="border: 2px solid var(--neon-purple);">
+                        <div class="card-body text-center p-5">
+                            <h3 class="text-gradient mb-4" style="font-family: 'Orbitron', monospace;">
+                                <i class="fas fa-brain me-2"></i>SISTEMA EDUCATIVO 
+                            </h3>
+                            <div class="row align-items-center">
+                                <div class="col-lg-3 col-md-6 mb-4">
+                                    <i class="fas fa-shield-alt text-warning display-4 mb-3"></i>
+                                    <h5 class="text-white">ENTORNO SEGURO</h5>
+                                    <small class="text-muted">Tecnología blockchain educativa</small>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-4">
+                                    <i class="fas fa-chart-network text-success display-4 mb-3"></i>
+                                    <h5 class="text-white">ANÁLISIS EN TIEMPO REAL</h5>
+                                    <small class="text-muted">Estadísticas </small>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-4">
+                                    <i class="fas fa-vr-cardboard text-info display-4 mb-3"></i>
+                                    <h5 class="text-white">EXPERIENCIA INMERSIVA</h5>
+                                    <small class="text-muted">Interfaz holográfica 3D</small>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-4">
+                                    <i class="fas fa-robot text-danger display-4 mb-3"></i>
+                                    <h5 class="text-white">IA EDUCATIVA</h5>
+                                    <small class="text-muted">Algoritmos de aprendizaje</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Efectos de Partículas -->
+<div class="particles-container">
+    <div class="particle" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 60%; left: 80%; animation-delay: 1s;"></div>
+    <div class="particle" style="top: 40%; left: 50%; animation-delay: 2s;"></div>
+    <div class="particle" style="top: 80%; left: 30%; animation-delay: 3s;"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Efectos de entrada futuristas
+document.addEventListener('DOMContentLoaded', function() {
+    // Animación de tipo matrix para el título
+    const title = document.querySelector('.hero-title');
+    const originalText = title.textContent;
+    title.textContent = '';
+    
+    let i = 0;
+    const typeWriter = setInterval(() => {
+        if (i < originalText.length) {
+            title.textContent += originalText.charAt(i);
+            i++;
+        } else {
+            clearInterval(typeWriter);
+        }
+    }, 100);
+
+    // Efecto de partículas dinámicas
+    createParticles();
+});
+
+function createParticles() {
+    const container = document.querySelector('.particles-container');
+    const colors = ['var(--neon-cyan)', 'var(--neon-pink)', 'var(--neon-green)', 'var(--neon-orange)'];
+    
+    for (let i = 0; i < 15; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.cssText = `
+            position: fixed;
+            width: ${Math.random() * 6 + 2}px;
+            height: ${Math.random() * 6 + 2}px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius: 50%;
+            top: ${Math.random() * 100}%;
+            left: ${Math.random() * 100}%;
+            animation: floatParticles ${Math.random() * 20 + 10}s infinite linear;
+            box-shadow: 0 0 10px currentColor;
+            z-index: -1;
+        `;
+        container.appendChild(particle);
+    }
+}
+</script>
+
+<style>
+.particles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.hero-section {
+    background: 
+        radial-gradient(ellipse at 50% 50%, rgba(0, 243, 255, 0.1) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(255, 0, 255, 0.1) 0%, transparent 60%);
+}
+
+.mt-6 {
+    margin-top: 5rem !important;
+}
+
+.text-gradient {
+    background: var(--gradient-sunset);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+</style>
+{% endblock %}
