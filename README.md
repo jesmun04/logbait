@@ -15,6 +15,10 @@ El proyecto se ha desarrollado aplicando **metodologías ágiles**, con iteracio
 Actualmente se encuentra en su primera fase **MVP (Producto Mínimo Viable)**, cuyo propósito es ofrecer una versión funcional que cubra las características esenciales de una casa de apuestas online.
 Según vayamos avanzando en el proyecto, seguiremos implementando historias de usuario que aportarán versatilidad y comodidad al usuario. las funcionalidades concretas de estas historias se pueden observar en el apartado de **Próximos pasos**.
 
+Un logo provisional para la aplicación es el siguiente:
+
+<img width="1024" height="1024" alt="logocasino" src="https://github.com/user-attachments/assets/e9a87fa8-99a8-448c-b2a3-dc86ed6e4d6e" />
+
 ---
 
 ## 🎯 Objetivo del MVP
@@ -25,7 +29,7 @@ Incluye las funcionalidades mínimas necesarias para que un usuario pueda:
 1. Registrarse e iniciar sesión.  
 2. Gestionar su perfil y saldo virtual.  
 3. Establecer límites de depósito para fomentar el juego responsable.  
-4. Realizar apuestas simples y visualizar sus resultados.  
+4. Realizar apuestas simples y visualizar sus resultados.
 5. Consultar su saldo y su historial básico de movimientos.
 
 ---
@@ -33,8 +37,8 @@ Incluye las funcionalidades mínimas necesarias para que un usuario pueda:
 ## ⚙️ Funcionalidades del MVP
 
 ### 👤 Gestión de usuarios
-- Registro e inicio de sesión seguros.  
-- Perfil editable con información básica del usuario.  
+- Registro e inicio de sesión seguros.
+- Perfil editable con información básica del usuario.
 - Cierre de sesión.  
 
 ### 💰 Gestión de saldo
