@@ -27,8 +27,11 @@ register_blueprints(app)
 
 # Inicializar DB
 with app.app_context():
-    db.create_all()
-    print("✅ Base de datos inicializada")
+    try:
+        db.create_all()
+        print("✅ Base de datos inicializada")
+    except Exception as e:
+        print(f"❌ Error inicializando base de datos: {e}")
 
 if __name__ == '__main__':
     app.run(debug=True)
