@@ -1,46 +1,45 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="row justify-content-center">
-    <div class="col-xl-10">
-        <div class="card game-card cyber-grid">
-<div class="card-body">
-                
-<!-- ==== TOP BAR (CASINO STYLE) ==== -->
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Blackjack Logbait — Standalone</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --casino-green: #0b3d2e;
+  --casino-green:#0b3d2e;
   --casino-green-dark:#082b20;
-  --casino-gold: #d4af37;
+  --casino-gold:#d4af37;
   --casino-gold-soft:#b8942c;
-  --chip-red:#c0392b;
-  --chip-black:#111;
+  --neon-cyan:#00f3ff;
+  --neon-green:#2ecc71;
+  --neon-red:#ff5a5a;
+  --neon-pink:#ff5af1;
+  --neon-purple:#9b59b6;
+  --gradient-cyber: linear-gradient(135deg,#00f3ff,#ff5af1);
+  --border-radius-cyber: 12px;
 }
-/* Override general accents to casino palette */
-body{background-color:#12191b;}
-.card.game-card{background:linear-gradient(180deg,#0f1417 0%, #0b1113 100%);border:1px solid rgba(212,175,55,.18);box-shadow:0 0 0 1px rgba(212,175,55,.15), 0 8px 30px rgba(0,0,0,.4)}
+*{box-sizing:border-box}
+body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+.container{max-width:1100px;margin:30px auto;padding:0 16px}
+.card{background:linear-gradient(180deg,#0f1417 0%, #0b1113 100%);border:1px solid rgba(212,175,55,.18);box-shadow:0 0 0 1px rgba(212,175,55,.15), 0 8px 30px rgba(0,0,0,.4);border-radius:14px}
+.card .card-body{padding:16px}
 .text-cyan{color:var(--casino-gold)!important}
 .border-cyan{border-color:var(--casino-gold)!important}
-.btn-primary{background:var(--casino-green);border-color:var(--casino-green-dark)}
-.btn-success{background:var(--casino-green);border-color:var(--casino-green-dark)}
-.btn-success:hover{filter:brightness(1.1)}
 .text-gradient{background:linear-gradient(90deg,var(--casino-gold),#fff);-webkit-background-clip:text;background-clip:text;color:transparent}
 
-/* New top bar */
-.topbar{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 14px 4px 14px;border-bottom:1px dashed rgba(212,175,55,.25)}
+/* Topbar */
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 14px 6px;border-bottom:1px dashed rgba(212,175,55,.25);position:sticky;top:0;background:rgba(18,25,27,.8);backdrop-filter:blur(4px);z-index:10}
 .topbar-left small, .topbar-right small{opacity:.85;color:#c7c7c7}
 .topbar-left .money{font-weight:800;font-size:0.95rem}
-.topbar-left .money .value{margin-left:.25rem}
-.topbar-left .last{margin-top:2px;font-size:0.9rem}
-.topbar-center{position:absolute;left:50%;transform:translateX(-50%);text-align:center;top:10px}
-.topbar-center .estado{font-weight:900;letter-spacing:1px;font-size:1.05rem;color:#ff8c1a} /* naranja */
-.topbar-right{display:flex;gap:10px;align-items:center}
+.topbar-center{position:absolute;left:50%;transform:translateX(-50%);top:10px;text-align:center}
+.topbar-center .estado{font-weight:900;letter-spacing:1px;font-size:1.05rem;color:#ff8c1a}
 
-/* Help pill */
 .help-pill{cursor:pointer;border:1px solid var(--casino-gold);color:var(--casino-gold);padding:4px 10px;border-radius:999px;font-weight:700;transition:all .15s}
 .help-pill:hover{background:rgba(212,175,55,.08)}
 
-/* Simple modal */
+/* Modal simple */
 .help-modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:9999}
 .help-modal .panel{width:min(900px,92vw);max-height:85vh;overflow:auto;background:#0f1417;border:1px solid rgba(212,175,55,.35);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
 .help-modal .panel header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(212,175,55,.2)}
@@ -48,790 +47,590 @@ body{background-color:#12191b;}
 .help-modal .panel .content{padding:16px 18px;color:#e7e7e7;line-height:1.5}
 .help-close{cursor:pointer;font-weight:800;opacity:.85}
 
+/* Inputs y botones */
+.input-group{display:flex;align-items:stretch}
+.input-group-text{display:flex;align-items:center;justify-content:center;padding:0 10px;border:1px solid var(--casino-gold);border-right:none;background:#0b1113;color:var(--casino-gold)}
+.form-control{flex:1;padding:10px;border:1px solid var(--casino-gold);border-left:none;color:#fff;background:#0b1113;border-radius:0 8px 8px 0;outline:none}
+.form-label{display:block;margin-bottom:6px}
+.btn{display:inline-block;cursor:pointer;border:1px solid transparent;background:#3498db;color:#fff;border-radius:10px;padding:10px 14px;font-weight:800}
+.btn:disabled{opacity:.55;pointer-events:none}
+.btn-success{background:var(--casino-gold);border-color:var(--casino-gold-soft);color:#111}
+.btn-success:hover{filter:brightness(1.1);box-shadow:0 0 10px rgba(212,175,55,.6)}
 
-
-
-/* --- Gold button + input borders fix --- */
-.btn-success{
-  background: var(--casino-gold) !important;
-  border-color: var(--casino-gold-soft) !important;
-  color: #111 !important;
-  font-weight: 700;
-}
-.btn-success:hover{
-  filter: brightness(1.1);
-  box-shadow: 0 0 10px rgba(212,175,55,0.6);
-}
-.input-group-text{
-  border: 1px solid var(--casino-gold) !important;
-  border-right: none !important;
-}
-.form-control{
-  border: 1px solid var(--casino-gold) !important;
-  border-left: none !important;
-  color: #fff;
-  background-color: #0b1113;
-}
-
-/* Remove board/grid background completely, including pseudo-elements */
-.cyber-grid, .cyber-grid::before, .cyber-grid::after,
-#mesa-juego, #mesa-juego::before, #mesa-juego::after {
-  background: none !important;
-  box-shadow: none !important;
-}
-
-/* Keep top info visible and non-overlapping when scrolling */
-.topbar{ position: sticky; top: 54px; z-index: 1000; }
-@media (max-width: 992px){ .topbar{ top: 60px; }}
-
-/* Estado active color handled via JS; default style here */
-.topbar .estado{ color: #ff8c1a; } /* naranja por defecto */
-.sim-activa .topbar .estado{ color:#2ecc71; } /* si añadimos clase al body(optional) */
-
-/* Points smaller and gold; separate from names */
-.player-header{ display:flex; justify-content:center; align-items:center; gap:12px; }
-.puntos-display{ 
-  font-size: .78rem !important; 
-  border: 1px solid var(--casino-gold) !important; 
-  color: var(--casino-gold) !important; 
-  background: rgba(212,175,55,.08) !important;
-  padding: 4px 8px !important;
-}
-
-/* Controls bottom-right, smaller */
-#controles-juego{
-  position: fixed; 
-  right: 24px; 
-  bottom: 24px; 
-  z-index: 1100;
-}
-#controles-juego .btn{ padding: 8px 12px; font-size: .9rem; }
-
-/* Circular quick-bet buttons */
 .btn-outline-cyan{
-  border:1px solid var(--casino-gold) !important;
-  color: var(--casino-gold) !important;
-  background: transparent !important;
-  width: 38px; height: 38px; 
-  border-radius: 50% !important;
-  display:inline-flex; align-items:center; justify-content:center;
-  margin-left:8px;
-  font-weight:700;
+  border:1px solid var(--casino-gold);color:var(--casino-gold);background:transparent;width:32px;height:32px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;margin-left:10px;font-weight:700
 }
-.btn-outline-cyan:hover{ background: rgba(212,175,55,.15) !important; }
-</style>
-<style>
-/* === Overrides requested (fixed placement) === */
-.card.game-card{border:none !important; box-shadow:none !important; background:transparent !important;}
-.card.game-card .card-body{padding-top:8px;}
-#mesa-juego, .mesa-juego, .cyber-grid, .neon-divider, .table-center{background:none !important;}
-.mesa-juego * {background-image:none !important;}
-.neon-divider, .vs-badge{display:none !important;}
-.player-header i{display:none !important;}
-.player-header h4{font-size:1rem !important; letter-spacing:.5px; text-transform:uppercase; color:#e0e0e0;}
-.casa-section .player-header, .jugador-section .player-header{display:flex; justify-content:center; margin-bottom:6px;}
-.carta-holo{transform:scale(.8); transform-origin:center; margin:0 6px !important;}
-@media (min-width: 1200px){ .carta-holo{transform:scale(.75);} }
-.puntos-display{font-size:.85rem !important; padding:6px 10px !important;}
-.topbar{position:sticky; top:0; background:rgba(18,25,27,.8); backdrop-filter: blur(4px); border:none !important; margin-bottom:8px;}
-.topbar .estado{font-size:1rem; font-weight:900;}
-</style>
+.btn-outline-cyan:hover{background:rgba(212,175,55,.15)}
 
+.btn-action-green{background:#2ecc71;border-color:#27ae60;color:#0b1113}
+.btn-action-red{background:#e74c3c;border-color:#c0392b;color:#0b1113}
+.btn-global{background:#3498db;border-color:#2980b9;color:#fff}
+.btn-global.exit{background:#111;border-color:#fff}
+.btn.small{padding:8px 10px;font-size:.9rem}
 
-<div class="topbar position-relative">
-  <div class="topbar-left">
-    <small>SALDO</small>
-    <div class="money">€<span id="balance">{{ "%.2f"|format(current_user.balance) }}</span></div>
-    <small>ÚLTIMO RESULTADO</small>
-    <div class="last" id="ultimo-resultado">€0.00</div>
-  </div>
-
-  <div class="topbar-center">
-    <div class="estado" id="estado-sistema">EN ESPERA</div>
-  </div>
-
-  <div class="topbar-right">
-    <div class="deck-stack" aria-label="Baraja" title="Baraja">
-      <span class="deck-card"></span><span class="deck-card"></span><span class="deck-card"></span>
-    </div>
-    <div class="help-pill" id="open-help">AYUDA</div>
-  </div>
-</div>
-
-<!-- Deck visual -->
-<style>
-.deck-stack{position:relative;width:32px;height:24px}
-.deck-card{position:absolute;width:26px;height:18px;border:2px solid var(--casino-gold);border-radius:3px;background:linear-gradient(135deg,#0b3d2e 0%, #082b20 100%);box-shadow:0 0 10px rgba(212,175,55,.25)}
-.deck-card:nth-child(1){top:0;left:4px;transform:rotate(-4deg)}
-.deck-card:nth-child(2){top:3px;left:8px;transform:rotate(2deg)}
-.deck-card:nth-child(3){top:6px;left:12px;transform:rotate(-1deg)}
-</style>
-
-<!-- Modal with extensive blackjack rules -->
-<div class="help-modal" id="help-modal">
-  <div class="panel">
-    <header><h5>Cómo se juega al Blackjack</h5><div class="help-close" id="close-help">✕</div></header>
-    <div class="content">
-      <p><strong>Objetivo:</strong> sumar una mano lo más cercana posible a 21 sin pasarse, y superar la mano del crupier.</p>
-      <p><strong>Valor de las cartas:</strong> del 2 al 10 valen su número. J, Q y K valen 10. El As (A) vale 11, pero si te pasas de 21 automáticamente puede valer 1.</p>
-      <p><strong>Inicio de la ronda:</strong> recibes dos cartas boca arriba. El crupier recibe una carta visible y una oculta.</p>
-      <p><strong>Opciones del jugador:</strong></p>
-      <ul>
-        <li><em>Solicitar carta (Hit)</em>: pides otra carta para acercarte a 21.</li>
-        <li><em>Plantarse (Stand)</em>: te quedas con tu total actual y termina tu turno.</li>
-        <li><em>Doblar (Double)</em>: si tu saldo lo permite, duplicas la apuesta, recibes una única carta adicional y terminas.</li>
-        <li><em>Separar (Split)</em>: si recibes dos cartas del mismo valor, puedes separarlas en dos manos independientes (si está habilitado).</li>
-        <li><em>Seguro (Insurance)</em>: si la carta visible del crupier es un As, puedes tomar “seguro” (una apuesta paralela contra el blackjack del crupier).</li>
-      </ul>
-      <p><strong>Turno del crupier:</strong> revela su carta oculta y debe pedir cartas hasta llegar al menos a 17. Con As “suave” (A+6=17) las reglas de mesa pueden obligarle a pedir o plantarse según la variante.</p>
-      <p><strong>Resultados:</strong></p>
-      <ul>
-        <li>Si te pasas de 21 → pierdes.</li>
-        <li>Si el crupier se pasa → ganas.</li>
-        <li>Si tu total es mayor que el del crupier sin pasarte → ganas.</li>
-        <li>Si empatan → <em>push</em> (se devuelve la apuesta).</li>
-        <li>Blackjack (A + 10/J/Q/K) en esta casa paga <strong>3:2</strong> sobre la apuesta original. Es la tasa oficial de Logbait.</li>
-      </ul>
-      <p><strong>Consejo:</strong> administra tu banca y respeta una estrategia básica. Evita doblar o separar si tu saldo no lo soporta.</p>
-    </div>
-  </div>
-</div>
-
-<script>
-  const $help = () => document.getElementById('help-modal');
-  document.addEventListener('click', (e)=>{
-    if (e.target && e.target.id === 'open-help') $help().style.display='flex';
-    if (e.target && (e.target.id === 'close-help' || e.target.id==='help-modal')) $help().style.display='none';
-  });
-</script>
-<!-- Controles de Apuesta -->
-                <div id="controles-apuesta" class="mb-4">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="cantidad" class="form-label">
-                                <i class="fas fa-money-bill-wave me-2"></i>APUESTA
-                            </label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-dark border-cyan text-cyan">
-                                    <i class="fas fa-euro-sign"></i>
-                                </span>
-                                <input type="number" class="form-control" id="cantidad" 
-                                       min="1" max="{{ current_user.balance }}" step="1" value="10">
-                                <button class="btn btn-outline-cyan" onclick="apuestaRapida(25)">25</button>
-                                <button class="btn btn-outline-cyan" onclick="apuestaRapida(50)">50</button>
-                                <button class="btn btn-outline-cyan" onclick="apuestaRapida(100)">100</button>
-                            </div>
-                        </div>
-                        <div class="col-md-6 d-flex align-items-end">
-                            <button class="btn btn-success btn-lg w-100" onclick="iniciarBlackjack()" id="btn-iniciar">
-                                <i class="fas fa-play me-2"></i>INICIAR SIMULACIÓN
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mesa de Juego Holográfica -->
-                <div id="mesa-juego" style="display: none;">
-                    <div class="holo-table">
-                        <!-- Casa -->
-                        <div class="player-section casa-section">
-                            <div class="player-header">
-                                <h4 class="text-gradient">CRUPIER</h4>
-                                <div class="puntos-display" id="puntos-casa">PUNTOS: 0</div>
-                            </div>
-                            <div id="mano-casa" class="cartas-container-holo"></div>
-                        </div>
-                        
-                        <!-- Separador -->
-                        <div class="table-center">
-                            <div class="neon-divider"></div>
-                            <div class="vs-badge">VS</div>
-                        </div>
-                        
-                        <!-- Jugador -->
-                        <div class="player-section jugador-section">
-                            <div class="player-header">
-                                <h4 class="text-gradient">TU MANO</h4>
-                                <div class="puntos-display" id="puntos-jugador">PUNTOS: 0</div>
-                            </div>
-                            <div id="mano-jugador" class="cartas-container-holo"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Controles de Juego -->
-                    <div id="controles-juego" class="text-center mt-4">
-                        <button class="btn btn-success me-2 btn-neon" onclick="pedirCarta()" id="btn-pedir">
-                            <i class="fas fa-plus-circle me-2"></i>SOLICITAR CARTA
-                        </button>
-                        <button class="btn btn-warning me-2 btn-neon" onclick="plantarse()" id="btn-plantar">
-                            <i class="fas fa-hand-paper me-2"></i>FINALIZAR RONDA
-                        </button>
-                        <button class="btn btn-danger btn-neon" onclick="reiniciarJuego()">
-                            <i class="fas fa-redo me-2"></i>NUEVA SIMULACIÓN
-                        </button>
-                    </div>
-                </div>
-                
-                <div id="resultado" class="mt-4"></div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-let juegoActivo = false;
-let manoJugador = [];
-let manoCasa = [];
-let apuestaActual = 0;
-
-const valoresCartas = {
-    '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
-    'J': 10, 'Q': 10, 'K': 10, 'A': 11
-};
-
-const palos = ['♠', '♥', '♦', '♣'];
-
-function apuestaRapida(cantidad) {
-    document.getElementById('cantidad').value = cantidad;
-}
-
-function iniciarBlackjack() {
-    const cantidad = parseFloat(document.getElementById('cantidad').value);
-    const balance = parseFloat('{{ current_user.balance }}');
-    
-    if (!cantidad || cantidad <= 0) {
-        mostrarNotificacion('INGRESA UNA CANTIDAD VÁLIDA', 'error');
-        return;
-    }
-    
-    if (cantidad > balance) {
-        mostrarNotificacion('FONDOS INSUFICIENTES', 'error');
-        return;
-    }
-
-    apuestaActual = cantidad;
-    juegoActivo = true;
-    
-    // Actualizar interfaz
-    document.getElementById('controles-apuesta').style.display = 'none';
-    document.getElementById('mesa-juego').style.display = 'block';
-    document.getElementById('estado-sistema').textContent = 'SIMULACIÓN ACTIVA';
-    document.getElementById('estado-sistema').style.color = '#2ecc71';
-    document.getElementById('estado-sistema').style.color = 'var(--neon-green)';
-    
-    // Reiniciar manos
-    manoJugador = [];
-    manoCasa = [];
-    document.getElementById('mano-jugador').innerHTML = '';
-    document.getElementById('mano-casa').innerHTML = '';
-    
-    // Repartir cartas iniciales con efectos
-    setTimeout(() => repartirCarta(manoJugador, 'jugador', true), 500);
-    setTimeout(() => repartirCarta(manoCasa, 'casa', true), 1000);
-    setTimeout(() => repartirCarta(manoJugador, 'jugador', true), 1500);
-    setTimeout(() => repartirCarta(manoCasa, 'casa', false), 2000);
-    
-    // Mostrar puntos después de repartir
-    setTimeout(() => {
-        actualizarPuntos();
-        if (calcularPuntos(manoJugador) === 21) {
-            setTimeout(() => finalizarJuego('blackjack'), 1000);
-        }
-    }, 2500);
-}
-
-function repartirCarta(mano, jugador, mostrar) {
-    const valor = Object.keys(valoresCartas)[Math.floor(Math.random() * 13)];
-    const palo = palos[Math.floor(Math.random() * 4)];
-    const carta = { valor, palo, mostrar };
-    mano.push(carta);
-    
-    const contenedor = jugador === 'jugador' ? 'mano-jugador' : 'mano-casa';
-    const cartaElement = document.createElement('div');
-    cartaElement.className = 'carta-holo';
-    
-    if (!mostrar) {
-        cartaElement.classList.add('carta-oculta');
-        cartaElement.innerHTML = `
-            <div class="carta-pattern"></div>
-            <div class="carta-contenido">
-                <div class="carta-secreta">
-                    <i class="fas fa-question"></i>
-                </div>
-            </div>
-        `;
-    } else {
-        cartaElement.innerHTML = `
-            <div class="carta-pattern"></div>
-            <div class="carta-contenido">
-                <div class="carta-valor">${valor}</div>
-                <div class="carta-palo ${palo === '♥' || palo === '♦' ? 'text-danger' : 'text-cyan'}">${palo}</div>
-                <div class="carta-corner">${valor}</div>
-            </div>
-            <div class="carta-borde-holo"></div>
-        `;
-    }
-    
-    document.getElementById(contenedor).appendChild(cartaElement);
-}
-
-function revelarCartaCasa() {
-    const cartaOculta = document.querySelector('#mano-casa .carta-oculta');
-    if (cartaOculta) {
-        const mano = manoCasa[1]; // La segunda carta está oculta
-        cartaOculta.classList.remove('carta-oculta');
-        cartaOculta.innerHTML = `
-            <div class="carta-pattern"></div>
-            <div class="carta-contenido">
-                <div class="carta-valor">${mano.valor}</div>
-                <div class="carta-palo ${mano.palo === '♥' || mano.palo === '♦' ? 'text-danger' : 'text-cyan'}">${mano.palo}</div>
-                <div class="carta-corner">${mano.valor}</div>
-            </div>
-            <div class="carta-borde-holo"></div>
-        `;
-    }
-}
-
-function calcularPuntos(mano) {
-    let puntos = 0;
-    let ases = 0;
-    
-    for (const carta of mano) {
-        puntos += valoresCartas[carta.valor];
-        if (carta.valor === 'A') ases++;
-    }
-    
-    // Ajustar valor de los ases si es necesario
-    while (puntos > 21 && ases > 0) {
-        puntos -= 10;
-        ases--;
-    }
-    
-    return puntos;
-}
-
-function actualizarPuntos() {
-    const puntosJugador = calcularPuntos(manoJugador);
-    const puntosCasa = calcularPuntos(manoCasa);
-    
-    document.getElementById('puntos-jugador').textContent = `PUNTOS: ${puntosJugador}`;
-    document.getElementById('puntos-jugador').className = `puntos-display ${puntosJugador > 21 ? 'text-danger' : 'text-success'}`;
-    
-    document.getElementById('puntos-casa').textContent = `PUNTOS: ${puntosCasa}`;
-    document.getElementById('puntos-casa').className = `puntos-display ${puntosCasa > 21 ? 'text-danger' : 'text-success'}`;
-    
-    return { puntosJugador, puntosCasa };
-}
-
-function pedirCarta() {
-    if (!juegoActivo) return;
-    
-    document.getElementById('btn-pedir').disabled = true;
-    setTimeout(() => {
-        repartirCarta(manoJugador, 'jugador', true);
-        const { puntosJugador } = actualizarPuntos();
-        
-        if (puntosJugador > 21) {
-            juegoActivo = false;
-            revelarCartaCasa();
-            setTimeout(() => finalizarJuego('perdida'), 1000);
-        } else {
-            document.getElementById('btn-pedir').disabled = false;
-        }
-    }, 500);
-}
-
-function plantarse() {
-    if (!juegoActivo) return;
-    
-    juegoActivo = false;
-    document.getElementById('btn-pedir').disabled = true;
-    document.getElementById('btn-plantar').disabled = true;
-    
-    revelarCartaCasa();
-    
-    let { puntosCasa } = actualizarPuntos();
-    
-    const jugarCasa = () => {
-        if (puntosCasa < 17) {
-            setTimeout(() => {
-                repartirCarta(manoCasa, 'casa', true);
-                const nuevosPuntos = actualizarPuntos();
-                puntosCasa = nuevosPuntos.puntosCasa;
-                
-                if (puntosCasa < 17) {
-                    jugarCasa();
-                } else {
-                    determinarGanador();
-                }
-            }, 1000);
-        } else {
-            determinarGanador();
-        }
-    };
-    
-    jugarCasa();
-}
-
-function determinarGanador() {
-    const { puntosJugador, puntosCasa } = actualizarPuntos();
-    
-    let resultado;
-    if (puntosJugador > 21) {
-        resultado = 'perdida';
-    } else if (puntosCasa > 21) {
-        resultado = 'ganada';
-    } else if (puntosJugador > puntosCasa) {
-        resultado = 'ganada';
-    } else if (puntosJugador < puntosCasa) {
-        resultado = 'perdida';
-    } else {
-        resultado = 'empate';
-    }
-    
-    finalizarJuego(resultado);
-}
-
-function finalizarJuego(resultado) {
-    let ganancia = 0;
-    let mensaje = '';
-    let icono = '';
-    let clase = '';
-    
-    switch(resultado) {
-        case 'blackjack':
-            ganancia = apuestaActual * 2.5;
-            mensaje = 'BLACKJACK LOGBAIT DETECTADO';
-            icono = '👑';
-            clase = 'alert-success';
-            break;
-        case 'ganada':
-            ganancia = apuestaActual * 2;
-            mensaje = 'ALGORITMO OPTIMIZADO - VICTORIA';
-            icono = '⚡';
-            clase = 'alert-success';
-            break;
-        case 'perdida':
-            ganancia = 0;
-            mensaje = 'SISTEMA SOBRECARGADO - DERROTA';
-            icono = '💥';
-            clase = 'alert-danger';
-            break;
-        case 'empate':
-            ganancia = apuestaActual;
-            mensaje = 'EMPATE NEURAL DETECTADO';
-            icono = '⚖️';
-            clase = 'alert-warning';
-            break;
-    }
-    
-    document.getElementById('ultimo-resultado').textContent = '€' + ganancia.toFixed(2);
-    document.getElementById('ultimo-resultado').style.color = ganancia > 0 ? 'var(--neon-green)' : 'var(--neon-red)';
-    
-    document.getElementById('resultado').innerHTML = `
-        <div class="alert ${clase} cyber-alert text-center">
-            <div class="display-4 mb-3">${icono}</div>
-            <h3 class="text-gradient">${mensaje}</h3>
-            ${ganancia > 0 ? `
-                <div class="mt-3">
-                    <div class="text-small text-uppercase">GANANCIA PROCESADA</div>
-                    <div class="h1 fw-bold text-success">$${ganancia.toFixed(2)}</div>
-                </div>
-            ` : `
-                <p class="mt-3">Reinicia el sistema para continuar</p>
-            `}
-        </div>
-    `;
-    
-    document.getElementById('estado-sistema').textContent = 'ANÁLISIS COMPLETADO';
-    document.getElementById('estado-sistema').style.color = '#ff8c1a';
-    
-    enviarResultado(resultado, ganancia);
-}
-
-function reiniciarJuego() {
-    document.getElementById('controles-apuesta').style.display = 'block';
-    document.getElementById('mesa-juego').style.display = 'none';
-    document.getElementById('mano-jugador').innerHTML = '';
-    document.getElementById('mano-casa').innerHTML = '';
-    document.getElementById('resultado').innerHTML = '';
-    document.getElementById('estado-sistema').textContent = 'EN ESPERA';
-    document.getElementById('estado-sistema').style.color = '#ff8c1a';
-    juegoActivo = false;
-    
-    // Reactivar botones
-    document.getElementById('btn-pedir').disabled = false;
-    document.getElementById('btn-plantar').disabled = false;
-}
-
-function enviarResultado(resultado, ganancia) {
-    fetch('/api/blackjack/apostar', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            cantidad: apuestaActual,
-            resultado: resultado === 'blackjack' ? 'ganada' : resultado,
-            ganancia: ganancia
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            mostrarNotificacion(data.error, 'error');
-            return;
-        }
-        document.getElementById('balance').textContent = data.nuevo_balance.toFixed(2);
-    });
-}
-
-function mostrarNotificacion(mensaje, tipo) {
-    // Implementación simple de notificación
-    alert(mensaje);
-}
-</script>
-
-<style>
+/* Mesa */
 .holo-table {
-    background: linear-gradient(135deg, rgba(0, 243, 255, 0.05), rgba(255, 0, 255, 0.05));
-    border: 2px solid var(--neon-cyan);
-    border-radius: var(--border-radius-cyber);
-    padding: 40px 20px;
-    position: relative;
-    overflow: hidden;
+  background: linear-gradient(135deg, rgba(0, 243, 255, 0.05), rgba(255, 0, 255, 0.05));
+  border: 2px solid var(--neon-cyan);
+  border-radius: var(--border-radius-cyber);
+  padding: 40px 20px 130px; /* extra bottom padding so controls never overlap cards */
+  position: relative; overflow:hidden;
 }
-
 .holo-table::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        linear-gradient(90deg, transparent 95%, rgba(0, 243, 255, 0.1) 100%),
-        linear-gradient(0deg, transparent 95%, rgba(0, 243, 255, 0.1) 100%);
-    background-size: 50px 50px;
-    pointer-events: none;
+  content:'';position:absolute;inset:0;background:
+  linear-gradient(90deg, transparent 95%, rgba(0, 243, 255, 0.1) 100%),
+  linear-gradient(0deg, transparent 95%, rgba(0, 243, 255, 0.1) 100%);
+  background-size:50px 50px;pointer-events:none;
 }
+.player-section{margin:30px 0}
+.player-header{display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:12px}
+.player-header h4{font-size:1rem;letter-spacing:.5px;text-transform:uppercase;color:#e0e0e0}
+.puntos-display{font-family:'Orbitron',monospace;font-size:.9rem;font-weight:700;padding:6px 10px;border:1px solid var(--casino-gold);color:var(--casino-gold);background:rgba(212,175,55,.08);border-radius:8px}
 
-.player-section {
-    margin: 30px 0;
-}
+.cartas-container-holo{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;min-height:170px;align-items:center}
+.carta-holo{width:120px;height:170px;position:relative;transition:all .3s ease;perspective:1000px}
+.carta-contenido{width:100%;height:100%;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;display:flex;flex-direction:column;justify-content:space-between;padding:15px;position:relative;z-index:2;box-shadow:0 0 20px rgba(0,243,255,.3);border:2px solid var(--neon-cyan)}
+.carta-borde-holo{position:absolute;inset:-4px;border:2px solid var(--neon-cyan);border-radius:16px;transition:all .3s ease;z-index:1}
+.carta-pattern{position:absolute;inset:0;background:
+  radial-gradient(circle at 30% 30%, rgba(0,243,255,.1) 0%, transparent 50%),
+  radial-gradient(circle at 70% 70%, rgba(255,0,255,.1) 0%, transparent 50%);border-radius:12px;z-index:1}
+.carta-valor{font-size:1.4em;font-weight:800;font-family:'Orbitron',monospace;color:var(--neon-cyan);text-shadow:0 0 10px currentColor}
+.carta-palo{font-size:2.5em;text-align:center;text-shadow:0 0 15px currentColor}
+.carta-corner{position:absolute;bottom:10px;right:10px;font-size:1em;font-weight:700;color:var(--neon-cyan)}
+.carta-oculta .carta-contenido{background:linear-gradient(135deg,#2a1a2e,#26213e);border-color:var(--neon-purple)}
+.carta-secreta{display:flex;align-items:center;justify-content:center;height:100%;font-size:2em;color:var(--neon-purple)}
+.carta-holo:hover{transform:translateY(-10px) scale(1.05)}
+.carta-holo:hover .carta-borde-holo{border-color:var(--neon-pink);box-shadow:0 0 30px var(--neon-pink)}
 
-.player-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding: 0 20px;
+/* Controles (BAJADOS) */
+#controles-juego{
+  position:absolute;
+  right:36px;
+  bottom:20px;     /* lowered from 66px to 20px */
+  z-index:2000;
+  display:flex;gap:10px;flex-wrap:wrap
 }
-
-.casa-section .player-header {
-    color: var(--neon-red);
-}
-
-.jugador-section .player-header {
-    color: var(--neon-green);
-}
-
-.puntos-display {
-    font-family: 'Orbitron', monospace;
-    font-size: 1.2em;
-    font-weight: 700;
-    padding: 10px 20px;
-    border: 2px solid;
-    border-radius: var(--border-radius-cyber);
-    background: rgba(0, 0, 0, 0.8);
-}
-
-.table-center {
-    position: relative;
-    margin: 40px 0;
-}
-
-.neon-divider {
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
-    margin: 0 50px;
-}
-
-.vs-badge {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--gradient-cyber);
-    color: black;
-    padding: 10px 20px;
-    border-radius: var(--border-radius-cyber);
-    font-family: 'Orbitron', monospace;
-    font-weight: 800;
-    font-size: 1.2em;
-}
-
-.cartas-container-holo {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    min-height: 180px;
-    align-items: center;
-}
-
-.carta-holo {
-    width: 120px;
-    height: 170px;
-    position: relative;
-    transition: all 0.3s ease;
-    perspective: 1000px;
-}
-
-.carta-contenido {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #1a1a2e, #16213e);
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 15px;
-    position: relative;
-    z-index: 2;
-    box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-    border: 2px solid var(--neon-cyan);
-}
-
-.carta-borde-holo {
-    position: absolute;
-    top: -4px;
-    left: -4px;
-    right: -4px;
-    bottom: -4px;
-    border: 2px solid var(--neon-cyan);
-    border-radius: 16px;
-    transition: all 0.3s ease;
-    z-index: 1;
-}
-
-.carta-pattern {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        radial-gradient(circle at 30% 30%, rgba(0, 243, 255, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 70% 70%, rgba(255, 0, 255, 0.1) 0%, transparent 50%);
-    border-radius: 12px;
-    z-index: 1;
-}
-
-.carta-valor {
-    font-size: 1.4em;
-    font-weight: 800;
-    font-family: 'Orbitron', monospace;
-    color: var(--neon-cyan);
-    text-shadow: 0 0 10px currentColor;
-}
-
-.carta-palo {
-    font-size: 2.5em;
-    text-align: center;
-    text-shadow: 0 0 15px currentColor;
-}
-
-.carta-corner {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    font-size: 1em;
-    font-weight: 700;
-    color: var(--neon-cyan);
-}
-
-.carta-oculta .carta-contenido {
-    background: linear-gradient(135deg, #2a1a2e, #26213e);
-    border-color: var(--neon-purple);
-}
-
-.carta-secreta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    font-size: 2em;
-    color: var(--neon-purple);
-}
-
-.carta-holo:hover {
-    transform: translateY(-10px) scale(1.05);
-}
-
-.carta-holo:hover .carta-borde-holo {
-    border-color: var(--neon-pink);
-    box-shadow: 0 0 30px var(--neon-pink);
-}
-
-.btn-neon {
-    font-family: 'Orbitron', monospace;
-    font-weight: 600;
-    border: 2px solid;
-    background: rgba(0, 0, 0, 0.8);
-    transition: all 0.3s ease;
-    padding: 15px 30px;
-    font-size: 1.1em;
-}
-
-.btn-neon:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 243, 255, 0.4);
-}
-
-.btn-neon:disabled {
-    opacity: 0.5;
-    transform: none;
-    box-shadow: none;
-}
-
-.cyber-alert {
-    background: rgba(0, 0, 0, 0.9);
-    border: 2px solid;
-    border-radius: var(--border-radius-cyber);
-    backdrop-filter: blur(10px);
-    padding: 2rem;
-}
+#acciones-globales{position:fixed;right:24px;bottom:24px;z-index:1300;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100vw - 48px)}
+.cyber-alert{background:rgba(0,0,0,.9);border:2px solid;border-radius:var(--border-radius-cyber);backdrop-filter:blur(10px);padding:2rem}
 
 /* Responsive */
-@media (max-width: 768px) {
-    .carta-holo {
-        width: 80px;
-        height: 120px;
-    }
-    
-    .carta-valor {
-        font-size: 1em;
-    }
-    
-    .carta-palo {
-        font-size: 1.8em;
-    }
-    
-    .player-header {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
-    }
-    
-    .btn-neon {
-        padding: 12px 20px;
-        font-size: 1em;
-        margin-bottom: 10px;
-        width: 100%;
-    }
+@media (max-width:768px){
+  .carta-holo{width:88px;height:128px}
+  #controles-juego{position:static;justify-content:center;margin-top:10px}
 }
 </style>
-{% endblock %}
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="card-body">
+        <!-- TOPBAR -->
+        <div class="topbar">
+          <div class="topbar-left">
+            <small>SALDO</small>
+            <div class="money">€<span id="balance">500.00</span></div>
+            <small>ÚLTIMO RESULTADO</small>
+            <div class="last" id="ultimo-resultado">€0.00</div>
+          </div>
+          <div class="topbar-center">
+            <div class="estado" id="estado-sistema">EN ESPERA</div>
+          </div>
+          <div class="topbar-right">
+            <div class="help-pill" id="open-help">AYUDA</div>
+          </div>
+        </div>
+
+        <!-- MODAL AYUDA -->
+        <div class="help-modal" id="help-modal">
+          <div class="panel">
+            <header><h5>Cómo se juega al Blackjack</h5><div class="help-close" id="close-help">✕</div></header>
+            <div class="content">
+              <p><strong>Objetivo:</strong> sumar una mano lo más cercana posible a 21 sin pasarse, y superar la mano del crupier.</p>
+              <p><strong>Valor:</strong> 2–10 valen su número; J, Q, K = 10; A = 11 o 1.</p>
+              <p><strong>Inicio:</strong> dos cartas para ti; crupier con una visible y una oculta.</p>
+              <ul>
+                <li><em>Hit</em>: pedir carta.</li>
+                <li><em>Stand</em>: plantarse.</li>
+                <li><em>Double</em>: duplicas apuesta, una carta y terminas.</li>
+                <li><em>Split</em>: si las dos cartas valen lo mismo, separas (una vez).</li>
+                <li><em>Insurance</em>: si el crupier muestra As, seguro opcional (2:1).</li>
+              </ul>
+              <p><strong>Crupier:</strong> roba hasta 17; se planta en 17 suave.</p>
+              <p><strong>Pagos:</strong> victoria 1:1; push (empate) se devuelve; blackjack 3:2.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- APUESTA -->
+        <div id="controles-apuesta" class="mb-4" style="margin-top:16px;">
+          <div class="row" style="display:flex;gap:16px;flex-wrap:wrap">
+            <div class="col" style="flex:1;min-width:260px">
+              <label for="cantidad" class="form-label">APUESTA</label>
+              <div class="input-group">
+                <span class="input-group-text">€</span>
+                <input type="number" class="form-control" id="cantidad" min="1" step="1" value="10">
+                <button class="btn btn-outline-cyan" onclick="apuestaRapida(25)">25</button>
+                <button class="btn btn-outline-cyan" onclick="apuestaRapida(50)">50</button>
+                <button class="btn btn-outline-cyan" onclick="apuestaRapida(100)">100</button>
+              </div>
+            </div>
+            <div class="col" style="flex:1;min-width:260px;display:flex;align-items:end">
+              <button class="btn btn-success w-100" style="width:100%" onclick="iniciarBlackjack()" id="btn-iniciar">INICIAR SIMULACIÓN</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MESA -->
+        <div id="mesa-juego" style="display:none">
+          <div class="holo-table">
+            <div class="player-section casa-section">
+              <div class="player-header">
+                <h4 class="text-gradient">CRUPIER</h4>
+                <div class="puntos-display" id="puntos-casa">PUNTOS: 0</div>
+              </div>
+              <div id="mano-casa" class="cartas-container-holo"></div>
+            </div>
+
+            <div class="player-section jugador-section">
+              <div class="player-header">
+                <h4 class="text-gradient">TU MANO</h4>
+                <div class="puntos-display" id="puntos-jugador">PUNTOS: 0</div>
+              </div>
+              <div id="manos-jugador" class="cartas-container-holo"></div>
+              <div id="indicador-mano" class="text-center text-gradient mt-2" style="font-weight:800;text-align:center;margin-top:8px"></div>
+            </div>
+
+            <!-- Controles de juego -->
+            <div id="controles-juego">
+              <button class="btn btn-action-green" id="btn-pedir">PEDIR</button>
+              <button class="btn btn-action-red" id="btn-plantar">PLANTARSE</button>
+              <button class="btn btn small" id="btn-doblar">DOBLAR</button>
+              <button class="btn btn small" id="btn-split">SEPARAR</button>
+              <button class="btn btn small" id="btn-insurance" style="display:none;">SEGURO</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="resultado" class="mt-4" style="margin-top:16px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acciones globales -->
+  <div id="acciones-globales">
+    <button class="btn btn-global small" id="btn-reiniciar-misma" onclick="reiniciarMismaApuesta()" disabled>REINICIAR (MISMA APUESTA)</button>
+    <button class="btn btn-global exit small" onclick="location.reload()">SALIR</button>
+  </div>
+
+<script>
+// ================== CONFIG ==================
+const DEALER_STAND_SOFT_17 = true;   // crupier se planta en 17 suave
+const ENABLE_SPLIT = true;           // permitir 1 separación
+const DECKS = 6;                     // mazos
+// ================== ESTADO ==================
+let balance = 500.00; // saldo local simulado
+let juegoActivo = false;
+let deck = [];
+let apuestaBase = 0;
+let seguroTomado = false;
+let costoSeguro = 0;
+
+let manosJugador = []; // [{cartas:[], apuesta, doblada:false, terminada:false, sePuedeDoblar:true}]
+let manoDealer = [];
+let indiceManoActual = 0;
+
+// ================== BARAJA ==================
+const valoresCartas = { '2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'J':10,'Q':10,'K':10,'A':11 };
+const palos = ['♠','♥','♦','♣'];
+
+function crearBaraja(n=1){
+  const d=[];
+  for(let k=0;k<n;k++){
+    for(const p of palos){
+      for(const v of Object.keys(valoresCartas)){
+        d.push({valor:v,palo:p});
+      }
+    }
+  }
+  return d;
+}
+function barajar(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function robar(){
+  if(deck.length===0){ deck = barajar(crearBaraja(DECKS)); }
+  return deck.pop();
+}
+
+// ================== UTIL ==================
+function valorMano(cartas){
+  let puntos=0, ases=0;
+  for(const c of cartas){ puntos+=valoresCartas[c.valor]; if(c.valor==='A') ases++; }
+  while(puntos>21 && ases>0){ puntos-=10; ases--; }
+  return {puntos, suave: ases>0};
+}
+function esBlackjackInicial(cartas){ return cartas.length===2 && valorMano(cartas).puntos===21; }
+function mismoValor(c1,c2){ return valoresCartas[c1.valor]===valoresCartas[c2.valor]; }
+function limpiarNodo(id){ const el=document.getElementById(id); if(el) el.innerHTML=''; }
+
+// ================== RENDER ==================
+function renderCarta(carta, oculta=false){
+  const card=document.createElement('div');
+  card.className='carta-holo';
+  if(oculta){
+    card.classList.add('carta-oculta');
+    card.innerHTML=`
+      <div class="carta-pattern"></div>
+      <div class="carta-contenido"><div class="carta-secreta">?</div></div>
+      <div class="carta-borde-holo"></div>`;
+  }else{
+    const colorClass=(carta.palo==='♥'||carta.palo==='♦')?'text-danger':'text-cyan';
+    card.innerHTML=`
+      <div class="carta-pattern"></div>
+      <div class="carta-contenido">
+        <div class="carta-valor">${carta.valor}</div>
+        <div class="carta-palo ${colorClass}">${carta.palo}</div>
+        <div class="carta-corner">${carta.valor}</div>
+      </div>
+      <div class="carta-borde-holo"></div>`;
+  }
+  return card;
+}
+function renderizarManos(){
+  // Jugador
+  const cont=document.getElementById('manos-jugador');
+  limpiarNodo('manos-jugador');
+  manosJugador.forEach((m, idx)=>{
+    const wrap=document.createElement('div');
+    wrap.style.display='flex';wrap.style.gap='12px';wrap.style.alignItems='center';
+    wrap.style.border= idx===indiceManoActual ? '2px solid var(--neon-cyan)' : '2px solid transparent';
+    wrap.style.borderRadius='12px';wrap.style.padding='6px';
+    m.cartas.forEach(c=>wrap.appendChild(renderCarta(c,false)));
+    if(m.doblada){
+      const tag=document.createElement('div');tag.className='puntos-display';tag.textContent='DOBLAR';wrap.appendChild(tag);
+    }
+    cont.appendChild(wrap);
+  });
+
+  // Dealer
+  const contD=document.getElementById('mano-casa');
+  limpiarNodo('mano-casa');
+  manoDealer.forEach(c=>contD.appendChild(renderCarta(c, !!c.oculta)));
+}
+
+function actualizarMarcadores(){
+  const manoAct=manosJugador[indiceManoActual] || {cartas:[]};
+  const pj=valorMano(manoAct.cartas).puntos;
+  document.getElementById('puntos-jugador').textContent=`PUNTOS: ${pj}`;
+  document.getElementById('puntos-jugador').className = `puntos-display ${pj>21?'text-danger':'text-success'}`;
+
+  const pd=valorMano(manoDealer).puntos;
+  document.getElementById('puntos-casa').textContent=`PUNTOS: ${pd}`;
+  document.getElementById('puntos-casa').className = `puntos-display ${pd>21?'text-danger':'text-success'}`;
+
+  const indi=document.getElementById('indicador-mano');
+  if(manosJugador.length>1){ indi.textContent=`Mano ${indiceManoActual+1} de ${manosJugador.length}`; }
+  else { indi.textContent=''; }
+
+  document.getElementById('balance').textContent = balance.toFixed(2);
+}
+
+function bloquearAcciones(bloq=true){
+  ['btn-pedir','btn-plantar','btn-doblar','btn-split','btn-insurance']
+    .forEach(id=>{ const b=document.getElementById(id); if(b) b.disabled=bloq; });
+}
+
+function debeOfrecerSeguro(){
+  return manoDealer.length>=1 && manoDealer[0].valor==='A'
+      && juegoActivo && manosJugador.length===1 && manosJugador[0].cartas.length===2 && !seguroTomado;
+}
+function saldoSuficiente(c){ return c>0 && c<=balance; }
+
+function configurarBotonesAccion(){
+  const bHit=document.getElementById('btn-pedir');
+  const bStand=document.getElementById('btn-plantar');
+  const bDouble=document.getElementById('btn-doblar');
+  const bSplit=document.getElementById('btn-split');
+  const bIns=document.getElementById('btn-insurance');
+
+  if(bHit)   bHit.onclick = onHit;
+  if(bStand) bStand.onclick = onStand;
+  if(bDouble)bDouble.onclick = onDouble;
+  if(bSplit) bSplit.onclick = onSplit;
+  if(bIns)   bIns.onclick   = onInsurance;
+
+  const mano=manosJugador[indiceManoActual];
+  const puedeAccionar = !!(juegoActivo && mano && !mano.terminada);
+
+  if(bHit)   bHit.disabled   = !puedeAccionar;
+  if(bStand) bStand.disabled = !puedeAccionar;
+
+  if(bDouble){
+    bDouble.disabled = !(puedeAccionar && mano.cartas.length===2 && mano.sePuedeDoblar && saldoSuficiente(mano.apuesta));
+  }
+  if(bSplit){
+    bSplit.disabled = !(puedeAccionar && ENABLE_SPLIT && manosJugador.length===1 && mano.cartas.length===2 && mismoValor(mano.cartas[0], mano.cartas[1]) && saldoSuficiente(mano.apuesta));
+  }
+  if(bIns){
+    bIns.style.display = debeOfrecerSeguro()? 'inline-block':'none';
+    bIns.disabled = bIns.style.display==='none' || seguroTomado || !saldoSuficiente(apuestaBase/2) || !puedeAccionar;
+  }
+}
+
+function setEstado(texto, color){ const el=document.getElementById('estado-sistema'); el.textContent=texto; if(color){el.style.color=color;} }
+function mostrarResultadoUI({tipo, delta, detalle}){
+  const clases = tipo==='ganada'||tipo==='blackjack'?'alert-success':(tipo==='empate'?'alert-warning':'alert-danger');
+  const icono = tipo==='ganada'||tipo==='blackjack'?'⚡':(tipo==='empate'?'⚖️':'💥');
+  const titulo = tipo==='blackjack'?'BLACKJACK LOGBAIT DETECTADO'
+                : tipo==='ganada' ? 'ALGORITMO OPTIMIZADO - VICTORIA'
+                : tipo==='empate' ? 'EMPATE NEURAL DETECTADO'
+                : 'SISTEMA SOBRECARGADO - DERROTA';
+  document.getElementById('ultimo-resultado').textContent = `€${delta.toFixed(2)}`;
+  document.getElementById('ultimo-resultado').style.color = delta>=0 ? 'var(--neon-green)' : 'var(--neon-red)';
+  document.getElementById('resultado').innerHTML = `
+    <div class="alert ${clases} cyber-alert text-center">
+      <div class="display-4 mb-3">${icono}</div>
+      <h3 class="text-gradient">${titulo}</h3>
+      ${detalle?`<p class="mt-2">${detalle}</p>`:''}
+      <div class="mt-3">
+        <div class="text-small text-uppercase">VARIACIÓN DE SALDO</div>
+        <div class="h1 fw-bold ${delta>=0?'text-success':'text-danger'}">€${delta.toFixed(2)}</div>
+      </div>
+    </div>`;
+  setEstado('ANÁLISIS COMPLETADO','#ff8c1a');
+  document.getElementById('btn-reiniciar-misma').disabled=false;
+  actualizarMarcadores();
+}
+
+// ================== FLUJO ==================
+function apuestaRapida(c){ document.getElementById('cantidad').value=c; }
+
+function iniciarBlackjack(){
+  const cantidad = parseFloat(document.getElementById('cantidad').value||'0');
+  if(!cantidad || cantidad<=0) return alert('INGRESA UNA CANTIDAD VÁLIDA');
+  if(cantidad>balance) return alert('FONDOS INSUFICIENTES');
+
+  // Reset de ronda
+  document.getElementById('resultado').innerHTML='';
+  document.getElementById('btn-reiniciar-misma').disabled=true;
+  seguroTomado=false; costoSeguro=0;
+  indiceManoActual=0; manosJugador=[]; manoDealer=[];
+  apuestaBase=cantidad; juegoActivo=true; setEstado('SIMULACIÓN ACTIVA','var(--neon-green)');
+
+  // Cobrar apuesta inicial (stake) del saldo
+  balance -= apuestaBase;
+
+  // Preparar UI
+  document.getElementById('controles-apuesta').style.display='none';
+  document.getElementById('mesa-juego').style.display='block';
+
+  if(deck.length<52) deck = barajar(crearBaraja(DECKS));
+
+  // Reparto inicial
+  limpiarNodo('manos-jugador'); limpiarNodo('mano-casa');
+  manosJugador.push({cartas:[],apuesta:apuestaBase,doblada:false,terminada:false,sePuedeDoblar:true});
+  const c1=robar(); manosJugador[0].cartas.push(c1);
+  const d1=robar(); manoDealer.push(d1);
+  const c2=robar(); manosJugador[0].cartas.push(c2);
+  const d2=robar(); manoDealer.push({...d2, oculta:true});
+
+  renderizarManos(); actualizarMarcadores();
+  configurarBotonesAccion();
+
+  const jugadorBJ = esBlackjackInicial(manosJugador[0].cartas);
+  const dealerBJ  = esBlackjackInicial([manoDealer[0], {...manoDealer[1], oculta:false}]);
+
+  if(jugadorBJ || dealerBJ){
+    revelarCartaOculta();
+    resolverFinDeRondaInicial(jugadorBJ, dealerBJ);
+    return;
+  }
+  configurarBotonesAccion(); // asegurar habilitado de inicio
+}
+
+function onInsurance(){
+  if(!debeOfrecerSeguro()) return;
+  const coste=apuestaBase/2;
+  if(!saldoSuficiente(coste)) return alert('Saldo insuficiente para el seguro.');
+  seguroTomado=true; costoSeguro=coste;
+  balance -= coste; // se paga el seguro en el momento
+  configurarBotonesAccion();
+  actualizarMarcadores();
+  alert('Seguro activado (coste 1/2 de la apuesta, paga 2:1 si el crupier tiene blackjack).');
+}
+
+function onHit(){
+  const mano=manosJugador[indiceManoActual];
+  if(!juegoActivo || !mano || mano.terminada) return;
+  mano.sePuedeDoblar=false;
+  mano.cartas.push(robar());
+  renderizarManos(); actualizarMarcadores(); configurarBotonesAccion();
+  if(valorMano(mano.cartas).puntos>21){ mano.terminada=true; avanzarOManoDealer(); }
+}
+
+function onStand(){
+  const mano=manosJugador[indiceManoActual];
+  if(!juegoActivo || !mano) return;
+  mano.terminada=true;
+  avanzarOManoDealer();
+}
+
+function onDouble(){
+  const mano=manosJugador[indiceManoActual];
+  if(!juegoActivo || !mano) return;
+  if(!(mano.cartas.length===2 && mano.sePuedeDoblar && saldoSuficiente(mano.apuesta))) return;
+  // Cobrar segunda apuesta (mismo importe que tiene la mano ahora)
+  balance -= mano.apuesta;
+  mano.apuesta *= 2;
+  mano.doblada=true; mano.sePuedeDoblar=false;
+  mano.cartas.push(robar());
+  renderizarManos(); actualizarMarcadores();
+  mano.terminada=true;
+  avanzarOManoDealer();
+}
+
+function onSplit(){
+  if(!juegoActivo || !ENABLE_SPLIT) return;
+  const m=manosJugador[0];
+  if(!(manosJugador.length===1 && m.cartas.length===2 && mismoValor(m.cartas[0],m.cartas[1]) && saldoSuficiente(m.apuesta))) return;
+
+  // Cobrar segunda apuesta (igual a la base)
+  balance -= m.apuesta;
+
+  const cA=m.cartas[0], cB=m.cartas[1];
+  manosJugador = [
+    {cartas:[cA, robar()], apuesta:apuestaBase, doblada:false, terminada:false, sePuedeDoblar:true},
+    {cartas:[cB, robar()], apuesta:apuestaBase, doblada:false, terminada:false, sePuedeDoblar:true},
+  ];
+  indiceManoActual=0;
+  renderizarManos(); actualizarMarcadores(); configurarBotonesAccion();
+}
+
+function avanzarOManoDealer(){
+  // Pasar a siguiente mano del jugador si existe
+  for(let i=0;i<manosJugador.length;i++){
+    if(!manosJugador[i].terminada){
+      indiceManoActual=i;
+      actualizarMarcadores(); configurarBotonesAccion();
+      return;
+    }
+  }
+  // Turno del dealer
+  turnoDealer();
+}
+
+function revelarCartaOculta(){
+  if(manoDealer[1] && manoDealer[1].oculta){
+    manoDealer[1] = {...manoDealer[1], oculta:false};
+    renderizarManos(); actualizarMarcadores();
+  }
+}
+
+function turnoDealer(){
+  revelarCartaOculta();
+  const debeRobar = ()=>{
+    const v=valorMano(manoDealer);
+    return v.puntos<17 || (!DEALER_STAND_SOFT_17 && v.puntos===17 && v.suave);
+  };
+  const loop=()=>{
+    if(debeRobar()){
+      setTimeout(()=>{ manoDealer.push(robar()); renderizarManos(); loop(); }, 600);
+    }else{
+      setTimeout(resolverResultadoGlobal, 650);
+    }
+  };
+  loop();
+}
+
+// ========== RESOLUCIONES Y PAGOS ==========
+function resolverFinDeRondaInicial(jugadorBJ, dealerBJ){
+  // Nota: ya descontamos la apuestaBase al iniciar
+  let delta = 0; // variación neta de saldo
+  let detalle = '';
+
+  if(dealerBJ && seguroTomado){
+    balance += costoSeguro*3;
+    delta   += costoSeguro*2;
+    detalle += 'Seguro cobrado (+2:1). ';
+  } else if(seguroTomado){
+    detalle += 'Seguro perdido (-1/2). ';
+  }
+
+  if(jugadorBJ && dealerBJ){
+    balance += apuestaBase; // push
+    detalle += 'Blackjack de ambos (push).';
+    finDeRonda('empate', delta, detalle);
+    return;
+  }
+  if(jugadorBJ){
+    balance += apuestaBase*2.5; // devuelve 2.5x
+    delta   += apuestaBase*1.5; // neto visible
+    detalle += 'Blackjack 3:2.';
+    finDeRonda('blackjack', delta, detalle);
+    return;
+  }
+  if(dealerBJ){
+    detalle += 'Crupier tiene blackjack.';
+    finDeRonda('perdida', delta, detalle);
+    return;
+  }
+}
+
+function resolverResultadoGlobal(){
+  const puntosDealer=valorMano(manoDealer).puntos;
+  let delta=0;
+  let wins=0, losses=0, pushes=0;
+
+  manosJugador.forEach(m=>{
+    const pj=valorMano(m.cartas).puntos;
+    if(pj>21){ losses++; return; }
+    if(puntosDealer>21){ wins++; balance += m.apuesta*2; delta += m.apuesta; return; }
+    if(pj>puntosDealer){ wins++; balance += m.apuesta*2; delta += m.apuesta; }
+    else if(pj<puntosDealer){ losses++; }
+    else { pushes++; balance += m.apuesta; }
+  });
+
+  const tipoSalida = wins>losses ? 'ganada' : (losses>wins ? 'perdida' : 'empate');
+  const detalle = `Resultados — G:${wins} / P:${losses} / E:${pushes}` + (seguroTomado?' • Seguro (si no hubo BJ del dealer) perdido':'');
+  finDeRonda(tipoSalida, delta, detalle);
+}
+
+function finDeRonda(tipo, delta, detalle){
+  juegoActivo=false;
+  bloquearAcciones(true);
+  mostrarResultadoUI({tipo, delta, detalle});
+}
+
+// ========== REINICIO ==========
+function reiniciarMismaApuesta(){
+  if(!apuestaBase || apuestaBase<=0){ location.reload(); return; }
+  document.getElementById('cantidad').value=apuestaBase;
+  iniciarBlackjack();
+}
+
+// ========== EVENTOS INICIALES ==========
+document.addEventListener('DOMContentLoaded', ()=>{
+  deck = barajar(crearBaraja(DECKS));
+  bloquearAcciones(true);
+  actualizarMarcadores();
+
+  // Botones y ayuda
+  document.getElementById('btn-pedir').onclick = onHit;
+  document.getElementById('btn-plantar').onclick = onStand;
+  document.getElementById('btn-doblar').onclick = onDouble;
+  document.getElementById('btn-split').onclick = onSplit;
+  document.getElementById('btn-insurance').onclick = onInsurance;
+
+  const help = document.getElementById('help-modal');
+  document.getElementById('open-help').onclick = ()=> help.style.display='flex';
+  document.getElementById('close-help').onclick = ()=> help.style.display='none';
+  help.addEventListener('click', (e)=>{ if(e.target===help) help.style.display='none'; });
+});
+</script>
+</body>
+</html>
