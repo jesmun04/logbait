@@ -9,7 +9,7 @@
                 <p class="text-muted">Resumen de tu actividad en el casino</p>
             </div>
             <div>
-                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary me-2">
+                <a href="{{ url_for('dashboard.home') }}" class="btn btn-outline-primary me-2">
                     ← Volver al Dashboard
                 </a>
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalFondos">
@@ -249,7 +249,7 @@
                 <div class="text-center py-4">
                     <h6 class="text-muted">No hay apuestas registradas</h6>
                     <p class="text-muted">¡Comienza a jugar para ver tu historial!</p>
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-2">Ir a Juegos</a>
+                    <a href="{{ url_for('dashboard.home') }}" class="btn btn-primary mt-2">Ir a Juegos</a>
                 </div>
                 {% endif %}
             </div>
