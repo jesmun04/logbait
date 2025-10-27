@@ -1,6 +1,7 @@
 from flask import request, jsonify, Blueprint
 from flask_login import login_required, current_user
-from models import db
+from models import db, Apuesta, Estadistica
+
 
 bp_api_poker = Blueprint('api_poker', __name__, url_prefix='/api/poker')
 

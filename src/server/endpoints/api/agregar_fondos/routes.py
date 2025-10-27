@@ -1,12 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Blueprint, render_template
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from models import db
+from models import db, Apuesta, Estadistica
+
 
 bp = Blueprint('agregar_fondos', __name__, url_prefix='/api')
 
 @bp.route('/agregar_fondos', methods=['POST'])
 @login_required
-def home():
+def agregar_fondos():
     data = request.get_json()
     cantidad = float(data['cantidad'])
     
@@ -21,9 +22,7 @@ def home():
         'mensaje': f'Se agregaron ${cantidad:.2f} a tu cuenta'
     })
 
-bp = Blueprint('balance', __name__, url_prefix='/api')
-
 @bp.route('/balance', methods=['GET'])
 @login_required
-def home():
+def obtener_balance():
     return jsonify({'balance': current_user.balance})
