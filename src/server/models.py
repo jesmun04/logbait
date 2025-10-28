@@ -47,16 +47,3 @@ class Estadistica(db.Model):
     ganancia_total = db.Column(db.Float, default=0.0, nullable=False) 
 
     apuesta_total = db.Column(db.Float, default=0.0, nullable=False)     
-class EstadisticaRuleta(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    spins = db.Column(db.Integer, default=0)
-    bet_cents = db.Column(db.Integer, default=0)
-    win_cents = db.Column(db.Integer, default=0)
-    returned_cents = db.Column(db.Integer, default=0)
-    net_cents = db.Column(db.Integer, default=0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<Estadistica {self.juego} {self.partidas_jugadas}>'
