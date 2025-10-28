@@ -114,38 +114,37 @@ Ninguno en el sentido de parámetros de función; la prueba simula clicks en los
 
 ---
 
-## PRUEBA 4: EJECUCIÓN COMPLETA DE CARRERA EXITOSA
+## PRUEBA 4: BOTÓN PEDIR AÑADE UNA CARTA Y ACTUALIZA PUNTOS VISIBLES, Y SI AL PEDIR LA MANO SUPERA 21, SE MUESTRA "BUSTED" Y SE DESHABILITAN ACCIONES PARA ESA MANO
 
 ### Identificación
-- **Nombre**: Carrera completa con apuesta ganadora
-- **Módulo**: Juego "Carrera de Caballos" completo
+- **Nombre**: BOTÓN PEDIR AÑADE UNA CARTA Y ACTUALIZA PUNTOS VISIBLES, y si al pedir la mano supera 21, se muestra mano “busted” y se deshabilitan acciones para esa mano.
+- **Módulo**: Juego "Blackjack" 
 
 ### Objetivo
-Verificar el flujo completo desde la apuesta hasta el resultado ganador.
+Verificar que al pulsar el botón PEDIR, el sistema entrega una nueva carta al jugador, actualiza los puntos mostrados en pantalla y refleja correctamente si el jugador se pasa de 21.
 
-### Datos de entrada
-
-saldoInicial = 100
-cantidadApuesta = 50
-caballoSeleccionado = 1 // Relámpago
-caballoGanador = 1 // Relámpago gana
+ ### Diseño de la prueba
+**Particiones de equivalencia:**
+- Parámetro: Botón de apuesta rápida pulsado
+  - Clases válidas: Cuando el juego está activo y mano no terminada.
+  - Clases inválidas: Cuando el juego no está activo o mano ya terminada.
 
 
 ### Pasos de ejecución
-1. Iniciar sesión con usuario válido
-2. Acceder a "Carrera de Caballos"
-3. Seleccionar Relámpago
-4. Apostar 50 créditos
-5. Ejecutar carrera
-6. Simular victoria de Relámpago
-7. Verificar resultados
+1. Iniciar el Blackjack
+2. En el campo “APUESTA”, introducir una cantidad válida (por ejemplo, 10 €) y pulsar “INICIAR SIMULACIÓN”.
+3. Esperar a que se repartan las cartas iniciales: El jugador ve dos cartas visibles en su zona y el crupier muestra una carta visible y otra oculta.
+4. Pulsar el botón “PEDIR”.
+5. Si los puntos del jugador no superan 21, el juego continúa normalmente y los botones siguen activos.
+6. Si los puntos del jugador superan 21, el marcador se muestra en color rojo y el jugador no puede seguir pidiendo cartas.
 
 ### Resultado esperado
-- Se descuenta apuesta del saldo: 100 - 50 = 50
-- Se calcula ganancia: 50 × 1.5 = 75
-- Nuevo saldo: 50 + 75 = 125
-- Se muestra mensaje: "¡GANASTE! 🎉"
-- Se actualiza balance en interfaz
+- Al pulsar “PEDIR”, aparece una carta nueva en la zona del jugador.
+- El marcador de puntos del jugador se actualiza inmediatamente mostrando el nuevo total.
+- Si el total de puntos supera 21, el número aparece en rojo y el jugador pierde automáticamente su turno.
+- Si el total no supera 21, los botones de acción (PEDIR, PLANTARSE) siguen disponibles.
+- En ningún caso el juego se bloquea ni muestra errores visibles.
+- El saldo del jugador permanece igual hasta que la ronda termina.
 
 ---
 
