@@ -65,10 +65,15 @@
                         <p class="text-muted">Ratio Victoria</p>
                     </div>
                     <div class="col-md-3">
-                        <h4 class="{% set ns = namespace(total_ganancia=0) %}{% for stat in stats %}{% set ns.total_ganancia = ns.total_ganancia + stat.ganancia_total %}{% endfor %}{% if ns.total_ganancia >= 0 %}text-success{% else %}text-danger{% endif %}" id="total-ganancia">
-                            ${{ "%.2f"|format(ns.total_ganancia) }}
+                        {# NETO GLOBAL = Σ (ganancia_total - apuesta_total) #}
+                        {% set ns = namespace(neto_global=0) %}
+                        {% for stat in stats %}
+                            {% set ns.neto_global = ns.neto_global + (stat.ganancia_total - stat.apuesta_total) %}
+                        {% endfor %}
+                        <h4 class="{% if ns.neto_global >= 0 %}text-success{% else %}text-danger{% endif %}" id="total-ganancia">
+                            ${{ "%.2f"|format(ns.neto_global) }}
                         </h4>
-                        <p class="text-muted">Ganancia Total</p>
+                        <p class="text-muted">Balance Neto</p>
                     </div>
                 </div>
             </div>
@@ -102,6 +107,7 @@
 <!-- Estadísticas por Juego -->
 <div class="row mt-4">
     {% for stat in stats %}
+    {% set neto_juego = (stat.ganancia_total - stat.apuesta_total) %}
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -109,13 +115,14 @@
                     {% if stat.juego == 'blackjack' %}🎲 
                     {% elif stat.juego == 'poker' %}🃏 
                     {% elif stat.juego == 'coinflip' %}🪙
-                    {% elif stat.juego == 'tragaperras' %}🎰
+                    {% elif stat.juego in ['tragaperras','slots'] %}🎰
                     {% elif stat.juego == 'caballos' %}🏇
+                    {% elif stat.juego == 'ruleta' %}🎯
                     {% endif %}
                     {{ stat.juego|title }}
                 </h5>
-                <span class="badge {% if stat.ganancia_total >= 0 %}bg-success{% else %}bg-danger{% endif %}">
-                    ${{ "%.2f"|format(stat.ganancia_total) }}
+                <span class="badge {% if neto_juego >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                    ${{ "%.2f"|format(neto_juego) }}
                 </span>
             </div>
             <div class="card-body">
@@ -151,8 +158,8 @@
                     </div>
                     <div class="d-flex justify-content-between small">
                         <span>Ganancia Neta:</span>
-                        <span class="{% if stat.ganancia_total >= 0 %}text-success{% else %}text-danger{% endif %} fw-bold">
-                            ${{ "%.2f"|format(stat.ganancia_total) }}
+                        <span class="{% if neto_juego >= 0 %}text-success{% else %}text-danger{% endif %} fw-bold">
+                            ${{ "%.2f"|format(neto_juego) }}
                         </span>
                     </div>
                 </div>
@@ -178,8 +185,9 @@
                                 {% if stat.juego == 'blackjack' %}🎲 
                                 {% elif stat.juego == 'poker' %}🃏 
                                 {% elif stat.juego == 'coinflip' %}🪙
-                                {% elif stat.juego == 'tragaperras' %}🎰
+                                {% elif stat.juego in ['tragaperras','slots'] %}🎰
                                 {% elif stat.juego == 'caballos' %}🏇
+                                {% elif stat.juego == 'ruleta' %}🎯
                                 {% endif %}
                             </div>
                             <h6>{{ stat.partidas_jugadas }}</h6>
@@ -208,37 +216,47 @@
                         <thead>
                             <tr>
                                 <th>Juego</th>
-                                <th>Cantidad</th>
+                                <th>Apostado</th>
                                 <th>Resultado</th>
-                                <th>Ganancia</th>
+                                <th>Neto</th>
                                 <th>Fecha</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for apuesta in apuestas %}
+                            {% for ap in apuestas %}
+                            {% set neto_row = (ap.ganancia - ap.cantidad) %}
                             <tr>
                                 <td>
                                     <span class="me-2">
-                                        {% if apuesta.juego == 'blackjack' %}🎲 
-                                        {% elif apuesta.juego == 'poker' %}🃏 
-                                        {% elif apuesta.juego == 'coinflip' %}🪙
-                                        {% elif apuesta.juego == 'tragaperras' %}🎰
-                                        {% elif apuesta.juego == 'caballos' %}🏇
+                                        {% if ap.juego == 'blackjack' %}🎲 
+                                        {% elif ap.juego == 'poker' %}🃏 
+                                        {% elif ap.juego == 'coinflip' %}🪙
+                                        {% elif ap.juego in ['tragaperras','slots'] %}🎰
+                                        {% elif ap.juego == 'caballos' %}🏇
+                                        {% elif ap.juego == 'ruleta' %}🎯
                                         {% endif %}
                                     </span>
-                                    {{ apuesta.juego|title }}
+                                    {{ ap.juego|title }}
                                 </td>
-                                <td class="fw-bold">${{ "%.2f"|format(apuesta.cantidad) }}</td>
+                                <td class="fw-bold">${{ "%.2f"|format(ap.cantidad) }}</td>
                                 <td>
-                                    <span class="badge {% if apuesta.resultado == 'ganada' %}bg-success{% elif apuesta.resultado == 'perdida' %}bg-danger{% else %}bg-warning{% endif %}">
-                                        {{ apuesta.resultado|title }}
-                                    </span>
+                                    {# Forzamos etiqueta a partir del neto real #}
+                                    {% set etiqueta = 'Empate' %}
+                                    {% set clase = 'bg-warning' %}
+                                    {% if neto_row > 0 %}
+                                        {% set etiqueta = 'Ganada' %}
+                                        {% set clase = 'bg-success' %}
+                                    {% elif neto_row < 0 %}
+                                        {% set etiqueta = 'Perdida' %}
+                                        {% set clase = 'bg-danger' %}
+                                    {% endif %}
+                                    <span class="badge {{ clase }}">{{ etiqueta }}</span>
                                 </td>
-                                <td class="{% if apuesta.ganancia > 0 %}text-success{% elif apuesta.ganancia == 0 %}text-muted{% else %}text-danger{% endif %} fw-bold">
-                                    ${{ "%.2f"|format(apuesta.ganancia) }}
+                                <td class="{% if neto_row > 0 %}text-success{% elif neto_row == 0 %}text-muted{% else %}text-danger{% endif %} fw-bold">
+                                    ${{ "%.2f"|format(neto_row) }}
                                 </td>
                                 <td>
-                                    <small class="text-muted">{{ apuesta.fecha.strftime('%d/%m/%Y %H:%M') }}</small>
+                                    <small class="text-muted">{{ ap.fecha.strftime('%d/%m/%Y %H:%M') }}</small>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -265,13 +283,15 @@
                 <h6>💰 Resumen Financiero</h6>
             </div>
             <div class="card-body">
+                {# Totales en base al NETO por juego #}
                 {% set ns = namespace(total_apostado=0, total_ganado=0, total_perdido=0) %}
                 {% for stat in stats %}
+                    {% set neto_juego = (stat.ganancia_total - stat.apuesta_total) %}
                     {% set ns.total_apostado = ns.total_apostado + stat.apuesta_total %}
-                    {% if stat.ganancia_total > 0 %}
-                        {% set ns.total_ganado = ns.total_ganado + stat.ganancia_total %}
+                    {% if neto_juego >= 0 %}
+                        {% set ns.total_ganado = ns.total_ganado + neto_juego %}
                     {% else %}
-                        {% set ns.total_perdido = ns.total_perdido + stat.ganancia_total %}
+                        {% set ns.total_perdido = ns.total_perdido + neto_juego %}
                     {% endif %}
                 {% endfor %}
                 
@@ -280,22 +300,22 @@
                     <strong>${{ "%.2f"|format(ns.total_apostado) }}</strong>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
-                    <span>Total Ganado:</span>
+                    <span>Total Ganado (Neto ≥ 0):</span>
                     <strong class="text-success">${{ "%.2f"|format(ns.total_ganado) }}</strong>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
-                    <span>Total Perdido:</span>
+                    <span>Total Perdido (Neto &lt; 0):</span>
                     <strong class="text-danger">${{ "%.2f"|format(ns.total_perdido|abs) }}</strong>
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between">
                     <span>Balance Neto:</span>
-                    {% set ns_total_ganancia = namespace(total=0) %}
+                    {% set ns_total_neto = namespace(total=0) %}
                     {% for stat in stats %}
-                        {% set ns_total_ganancia.total = ns_total_ganancia.total + stat.ganancia_total %}
+                        {% set ns_total_neto.total = ns_total_neto.total + (stat.ganancia_total - stat.apuesta_total) %}
                     {% endfor %}
-                    <strong class="{% if ns_total_ganancia.total >= 0 %}text-success{% else %}text-danger{% endif %}">
-                        ${{ "%.2f"|format(ns_total_ganancia.total) }}
+                    <strong class="{% if ns_total_neto.total >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        ${{ "%.2f"|format(ns_total_neto.total) }}
                     </strong>
                 </div>
             </div>
@@ -321,8 +341,9 @@
                         {% if ns_juego.mas_jugado.juego == 'blackjack' %}🎲 
                         {% elif ns_juego.mas_jugado.juego == 'poker' %}🃏 
                         {% elif ns_juego.mas_jugado.juego == 'coinflip' %}🪙
-                        {% elif ns_juego.mas_jugado.juego == 'tragaperras' %}🎰
+                        {% elif ns_juego.mas_jugado.juego in ['tragaperras','slots'] %}🎰
                         {% elif ns_juego.mas_jugado.juego == 'caballos' %}🏇
+                        {% elif ns_juego.mas_jugado.juego == 'ruleta' %}🎯
                         {% endif %}
                     </div>
                     <h5 class="mt-2">{{ ns_juego.mas_jugado.juego|title }}</h5>
@@ -351,28 +372,15 @@ function agregarFondosDesdeEstadisticas() {
     
     fetch('/api/agregar_fondos', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            cantidad: cantidad
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cantidad })
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
-        if (data.error) {
-            alert(data.error);
-            return;
-        }
-        
+        if (data.error) { alert(data.error); return; }
         document.getElementById('balance').textContent = data.nuevo_balance.toFixed(2);
-        
-        document.getElementById('resultado_fondos_estadisticas').innerHTML = `
-            <div class="alert alert-success">
-                ${data.mensaje}
-            </div>
-        `;
-        
+        document.getElementById('resultado_fondos_estadisticas').innerHTML =
+            `<div class="alert alert-success">${data.mensaje}</div>`;
         setTimeout(() => {
             const modal = bootstrap.Modal.getInstance(document.getElementById('modalFondos'));
             modal.hide();
@@ -380,44 +388,16 @@ function agregarFondosDesdeEstadisticas() {
             document.getElementById('resultado_fondos_estadisticas').innerHTML = '';
         }, 2000);
     })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error al agregar fondos');
-    });
+    .catch(() => alert('Error al agregar fondos'));
 }
 </script>
 
 <style>
-.card {
-    transition: transform 0.2s;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-}
-
-.progress {
-    background-color: #e9ecef;
-}
-
-.badge {
-    font-size: 0.7em;
-}
-
-.table th {
-    border-top: none;
-    font-weight: 600;
-}
-
-.text-muted {
-    color: #6c757d !important;
-}
-
-/* Colores personalizados para los juegos */
-.card-header:has(🎲) { background: linear-gradient(135deg, #28a745, #20c997); color: white; }
-.card-header:has(🃏) { background: linear-gradient(135deg, #dc3545, #fd7e14); color: white; }
-.card-header:has(🪙) { background: linear-gradient(135deg, #ffc107, #fd7e14); color: white; }
-.card-header:has(🎰) { background: linear-gradient(135deg, #6f42c1, #e83e8c); color: white; }
-.card-header:has(🏇) { background: linear-gradient(135deg, #17a2b8, #20c997); color: white; }
+.card { transition: transform 0.2s; }
+.card:hover { transform: translateY(-2px); }
+.progress { background-color: #e9ecef; }
+.badge { font-size: 0.7em; }
+.table th { border-top: none; font-weight: 600; }
+.text-muted { color: #6c757d !important; }
 </style>
 {% endblock %}
