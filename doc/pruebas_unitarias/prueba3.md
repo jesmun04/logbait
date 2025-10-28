@@ -1,4 +1,3 @@
-```
 ## PRUEBA UNITARIA 1: APUESTA EXITOSA EN RULETA
 
 ### 1️⃣ Identificación
@@ -89,4 +88,3 @@ La prueba se considera **superada** si el sistema acepta la apuesta válida, act
 
 * El saldo del usuario se debe actualizar de forma inmediata.  
 * Se puede verificar en la base de datos que la apuesta fue registrada con los valores correctos.
-```
