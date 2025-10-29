@@ -148,89 +148,70 @@ Verificar que al pulsar el botón PEDIR, el sistema entrega una nueva carta al j
 
 ---
 
-## PRUEBA 5: RESETEO DE CARRERA
+## PRUEBA 5: BOTÓN “PLANTARSE” FINALIZA LA MANO ACTUAL Y PASA AL SIGUIENTE PASO
 
 ### Identificación
-- **Nombre**: Reseteo correcto del estado del juego
-- **Módulo**: Funcionalidad de reinicio
+- **Nombre**: BOTÓN “PLANTARSE” FINALIZA LA MANO ACTUAL Y PASA AL SIGUIENTE PASO
+- **Módulo**: Juego "Blackjack"
 
 ### Objetivo
-Comprobar que la función `reiniciarCarrera()` restablece correctamente el estado del juego.
+Comprobar que al pulsar PLANTARSE el jugador finaliza su turno para la mano activa y el flujo avanza correctamente: bien al turno del crupier o a la siguiente mano del jugador.
 
 ### Pasos de ejecución
-1. Configurar estado con caballo seleccionado y carrera en curso
-2. Ejecutar `reiniciarCarrera()`
-3. Verificar estado resultante
+1. Pulsar el botón PLANTARSE.
 
 ### Resultado esperado
-- `caballoSeleccionado = null`
-- `carreraEnCurso = false`
-- Todos los caballos en posición inicial (left: 0px)
-- Botones de selección en estado "outline"
-- Información de apuesta limpiada
-- Botón "Iniciar Carrera" habilitado
+- El jugador no puede pedir más cartas para esa mano.
+- La carta oculta del crupier se revela y el crupier inicia su turno (se ven las animaciones/robos del crupier).
+- Los botones de acción del jugador quedan deshabilitados hasta que la ronda termine.
 
 ---
 
-## PRUEBA 6: COMUNICACIÓN CON BACKEND
+## PRUEBA 6: AL DOBLAR, LA APUESTA SE DUPLICA, SE ROBA UNA CARTA Y LA ACCIÓN SE ACABA.
 
 ### Identificación
-- **Nombre**: Envío correcto de resultados al servidor
-- **Módulo**: API Integration
+- **Nombre**: DOBLAR, LA APUESTA SE DUPLICA, SE ROBA UNA CARTA Y LA ACCIÓN SE ACABA.
+- **Módulo**: Juego "Blackjack"
 
 ### Objetivo
-Verificar que los datos se envían correctamente al endpoint del servidor.
-
-### Datos de entrada
-resultado = "ganada"
-cantidad = 50
-ganancia = 75
-caballoApostado = 1
-caballoGanador = 1
+Comprobar, desde la perspectiva del usuario, que al usar la función DOBLAR:
+-La apuesta de la mano se duplica descontando el importe adicional del saldo visible,
+-El sistema reparte exactamente una carta adicional al jugador,
+-La acción termina inmediatamente la mano (no se puede pedir más cartas para esa mano),
+-La opción DOBLAR solo está disponible cuando la mano tiene exactamente dos cartas y hay saldo suficiente para igualar la apuesta original,
 
 ### Pasos de ejecución
-1. Ejecutar `enviarResultadoCaballos()` con datos de prueba
-2. Verificar estructura de la petición HTTP
-3. Comprobar manejo de respuesta exitosa
+1. Pulsar el botón DOBLAR.
 
 ### Resultado esperado
-- Petición POST a '/api/caballos/apostar'
-- Headers incluyen 'Content-Type' y CSRF Token
-- Body contiene todos los datos necesarios
-- En respuesta exitosa, actualiza balance en interfaz
+- El saldo visible se reduce inmediatamente por el importe adicional requerido para igualar la apuesta
+- La apuesta de la mano queda duplicada o la UI muestra claramente que la mano está doblada.
+- Se añade una única carta al conjunto de cartas del jugador (visible inmediatamente).
+- El jugador no puede pedir más cartas para esa mano
 
 ---
 
-## PRUEBA 7: VALIDACIÓN DE ENTRADA DE MONTO
+## PRUEBA 7: BOTÓN “SEPARAR (SPLIT)” DIVIDE LA MANO EN DOS, COBRA LA SEGUNDA APUESTA Y REPARTE CARTAS A CADA MANO
 
 ### Identificación
-- **Nombre**: Validación de entrada de cantidad
-- **Módulo**: Control de formularios
+- **Nombre**: BOTÓN “SEPARAR (SPLIT)” DIVIDE LA MANO EN DOS, COBRA LA SEGUNDA APUESTA Y REPARTE CARTAS A CADA MANO
+- **Módulo**: Juego "Blackjack"
 
 ### Objetivo
-Comprobar que el input de cantidad valida correctamente los valores.
+Verificar que:
+-La acción solo está disponible cuando las dos cartas iniciales del jugador tienen el mismo valor.
+-El sistema cobra la segunda apuesta (igual a la apuesta inicial) descontándola del saldo visible.
+-La mano del jugador se divide en dos manos visibles, cada una con una carta original y una carta adicional repartida automáticamente.
+-Las acciones disponibles y el flujo permiten jugar cada mano por separado o quedan deshabilitadas cuando corresponda.
 
-### Casos de prueba:
-1. **Cantidad mayor al saldo**: Debe ajustarse al saldo máximo
-2. **Cantidad negativa**: No permitida (min="1")
-3. **Valor decimal**: Permitido (step="1" pero parseFloat lo maneja)
-4. **Campo vacío**: Alert "Ingresa una cantidad válida"
+### Pasos de ejecución:
+1. Observar las dos cartas iniciales del jugador; comprobar visualmente que tienen el mismo valor.
+2. Pulsar el boton SEPARAR.
 
----
-
-## PRUEBA 8: ANIMACIÓN Y ESTADOS VISUALES
-
-### Identificación
-- **Nombre**: Estados visuales durante la carrera
-- **Módulo**: Interfaz de usuario
-
-### Objetivo
-Verificar los cambios visuales durante la ejecución de la carrera.
-
-### Verificaciones:
-- Botón "Iniciar Carrera" se deshabilita durante carrera
-- Caballos se mueven progresivamente hacia la meta
-- Caballo ganador tiene animación "pulse"
-- Posiciones se reinician correctamente
+### Resultado esperado
+- El saldo visible disminuye en la cantidad igual a la apuesta inicial.
+- La zona del jugador muestra dos manos separadas, cada una con 2 cartas (una original + una nueva repartida).
+- Al terminar la primera mano, la UI pasa a la segunda mano y habilita las acciones correspondientes.
+- La apuesta total en juego equivale a la suma de las apuestas por mano.
 
 ---
