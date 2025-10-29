@@ -105,35 +105,51 @@ function apuestaRapida(cantidad) {
 
 function seleccionarLado(lado) {
   if (enLanzamiento) return;
+
+  const btnCara = document.getElementById('btn-cara');
+  const btnCruz = document.getElementById('btn-cruz');
+
+  // Si se pulsa dos veces el mismo botón, deseleccionar
+  if (ladoSeleccionado === lado) {
+    ladoSeleccionado = null;
+    btnCara.classList.replace('btn-danger', 'btn-outline-danger');
+    btnCruz.classList.replace('btn-success', 'btn-outline-success');
+    document.getElementById('estado-moneda').textContent = 'Selecciona cara o cruz';
+    return;
+  }
+
   ladoSeleccionado = lado;
-
-  document.getElementById('btn-cara').classList.toggle('btn-danger', lado === 'cara');
-  document.getElementById('btn-cara').classList.toggle('btn-outline-danger', lado !== 'cara');
-  document.getElementById('btn-cruz').classList.toggle('btn-success', lado === 'cruz');
-  document.getElementById('btn-cruz').classList.toggle('btn-outline-success', lado !== 'cruz');
-
+  btnCara.classList.toggle('btn-danger', lado === 'cara');
+  btnCara.classList.toggle('btn-outline-danger', lado !== 'cara');
+  btnCruz.classList.toggle('btn-success', lado === 'cruz');
+  btnCruz.classList.toggle('btn-outline-success', lado !== 'cruz');
   document.getElementById('estado-moneda').textContent = `Has elegido ${lado.toUpperCase()}`;
 }
 
 function lanzarMoneda() {
   const cantidad = parseFloat(document.getElementById('cantidad').value);
-  const balance = parseFloat('{{ current_user.balance }}');
   const moneda = document.getElementById('moneda');
+  const balanceActual = parseFloat(document.getElementById('balance').textContent);
 
   if (!ladoSeleccionado) return alert("Selecciona cara o cruz antes de lanzar.");
   if (cantidad <= 0 || isNaN(cantidad)) return alert("Introduce una apuesta válida.");
-  if (cantidad > balance) return alert("Saldo insuficiente.");
+  if (cantidad > balanceActual) return alert("Saldo insuficiente.");
   if (enLanzamiento) return;
 
   enLanzamiento = true;
   document.getElementById('btn-lanzar').disabled = true;
   document.getElementById('estado-sistema').textContent = 'Lanzando...';
   document.getElementById('estado-moneda').textContent = 'La moneda está girando...';
-  moneda.classList.remove('flip-cara', 'flip-cruz');
 
-  // Simulación de lanzamiento
+  // 🔄 Reiniciar animación (forzar reflow)
+  moneda.classList.remove('flip-cara', 'flip-cruz');
+  void moneda.offsetWidth; // <- truco para reiniciar animación
+
+  // 🔢 Generar resultado aleatorio
   const resultado = Math.random() < 0.5 ? 'cara' : 'cruz';
-  const vueltas = 6; // vueltas antes de mostrar resultado
+
+  // Rotación aleatoria real (no fija)
+  const vueltas = Math.floor(Math.random() * 4) + 5; // entre 5 y 8 vueltas
   moneda.style.setProperty('--vueltas', vueltas);
   moneda.classList.add(resultado === 'cara' ? 'flip-cara' : 'flip-cruz');
 
@@ -142,6 +158,7 @@ function lanzarMoneda() {
 
 function ejecutarResultado(resultado, cantidad) {
   const gano = resultado === ladoSeleccionado;
+
   fetch('/api/coinflip/apostar', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -153,10 +170,26 @@ function ejecutarResultado(resultado, cantidad) {
   })
   .then(res => res.json())
   .then(data => {
-    const { nuevo_balance, ganancia, resultado: estado } = data;
-    document.getElementById('balance').textContent = nuevo_balance.toFixed(2);
+    if (data.error) {
+      alert(data.error);
+      return;
+    }
+
+    const { nuevo_balance, ganancia } = data;
+
+    // ✅ Actualizar saldo dinámicamente
+    const balanceSpan = document.getElementById('balance');
+    const balanceAntiguo = parseFloat(balanceSpan.textContent);
+    balanceSpan.textContent = nuevo_balance.toFixed(2);
+
+    // Pequeña animación de feedback
+    balanceSpan.style.transition = 'color 0.5s';
+    balanceSpan.style.color = nuevo_balance > balanceAntiguo ? 'limegreen' : 'red';
+    setTimeout(() => (balanceSpan.style.color = ''), 800);
+
     document.getElementById('ultimo-resultado').textContent = `$${ganancia.toFixed(2)}`;
     document.getElementById('ultimo-resultado').style.color = gano ? 'green' : 'red';
+
     mostrarResultado(gano, resultado, cantidad, ganancia);
   })
   .finally(() => {
@@ -167,32 +200,31 @@ function ejecutarResultado(resultado, cantidad) {
 
 function mostrarResultado(gano, resultado, cantidad, ganancia) {
   const div = document.getElementById('resultado');
-  if (gano) {
-    div.innerHTML = `
-      <div class="alert alert-success text-center">
-        🎉 ¡Has ganado! Salió ${resultado.toUpperCase()} <br>
-        <strong>Ganancia: $${ganancia.toFixed(2)}</strong>
-      </div>
-    `;
-  } else {
-    div.innerHTML = `
-      <div class="alert alert-danger text-center">
-        😢 Has perdido. Salió ${resultado.toUpperCase()} <br>
-        <strong>Perdiste: $${cantidad.toFixed(2)}</strong>
-      </div>
-    `;
-  }
+  div.innerHTML = gano
+    ? `<div class="alert alert-success text-center">
+         🎉 ¡Has ganado! Salió ${resultado.toUpperCase()} <br>
+         <strong>Ganancia: $${ganancia.toFixed(2)}</strong>
+       </div>`
+    : `<div class="alert alert-danger text-center">
+         😢 Has perdido. Salió ${resultado.toUpperCase()} <br>
+         <strong>Perdiste: $${cantidad.toFixed(2)}</strong>
+       </div>`;
 
   historial.unshift(`${resultado.toUpperCase()} - ${gano ? 'Ganado' : 'Perdido'}`);
   if (historial.length > 5) historial.pop();
-  const lista = document.getElementById('historial');
-  lista.innerHTML = historial.map(h => `<li class="list-group-item">${h}</li>`).join('');
+  document.getElementById('historial').innerHTML =
+    historial.map(h => `<li class="list-group-item">${h}</li>`).join('');
 
+  // 🔄 Reset visual de botones
+  const btnCara = document.getElementById('btn-cara');
+  const btnCruz = document.getElementById('btn-cruz');
+  btnCara.classList.replace('btn-danger', 'btn-outline-danger');
+  btnCruz.classList.replace('btn-success', 'btn-outline-success');
+
+  ladoSeleccionado = null;
   document.getElementById('estado-sistema').textContent = 'En espera';
   document.getElementById('estado-moneda').textContent = 'Selecciona cara o cruz';
-  ladoSeleccionado = null;
 }
-
 </script>
 
 <style>
