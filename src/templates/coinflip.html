@@ -57,21 +57,33 @@
           </div>
         </div>
 
-        <!-- Moneda -->
+        <!-- Moneda - un único nodo que será movido al overlay -->
         <div class="text-center my-5">
-          <div class="coin-container" onclick="lanzarMoneda()">
-            <div id="moneda" class="coin">
-              <div class="cara">
-                <span>🪙</span>
-                <small>CARA</small>
+          <div id="moneda-wrapper" class="coin-wrapper">
+            <div id="moneda" class="coin" onclick="lanzarMoneda()">
+              <!-- FRONT FACE -->
+              <div class="face front">
+                <div class="face-inner">
+                  <div class="emoji">🪙</div>
+                  <div class="label">CARA</div>
+                </div>
               </div>
-              <div class="cruz">
-                <span>🌿</span>
-                <small>CRUZ</small>
+              <!-- BACK FACE -->
+              <div class="face back">
+                <div class="face-inner">
+                  <div class="emoji">🌿</div>
+                  <div class="label">CRUZ</div>
+                </div>
               </div>
             </div>
           </div>
           <div id="estado-moneda" class="mt-3 text-muted">Selecciona cara o cruz</div>
+        </div>
+
+        <!-- Overlay vacío inicialmente; la moneda se moverá dentro -->
+        <div id="coin-overlay" class="coin-overlay d-none" aria-hidden="true">
+          <div class="overlay-center" id="overlay-center"></div>
+          <div id="overlay-status-container" class="overlay-status-container"></div>
         </div>
 
         <div class="text-center">
@@ -90,26 +102,33 @@
     </div>
   </div>
 </div>
-
 {% endblock %}
+
 
 {% block scripts %}
 <script>
+/* ---------- Juego: variables ---------- */
 let ladoSeleccionado = null;
 let enLanzamiento = false;
 const historial = [];
 
+/* Accesos DOM */
+const moneda = () => document.getElementById('moneda');
+const monedaWrapper = () => document.getElementById('moneda-wrapper');
+const overlay = () => document.getElementById('coin-overlay');
+
+/* ---------- Utilidades ---------- */
 function apuestaRapida(cantidad) {
   document.getElementById('cantidad').value = cantidad;
 }
 
+/* Selección de lado (sin tocar la lógica del juego) */
 function seleccionarLado(lado) {
   if (enLanzamiento) return;
 
   const btnCara = document.getElementById('btn-cara');
   const btnCruz = document.getElementById('btn-cruz');
 
-  // Si se pulsa dos veces el mismo botón, deseleccionar
   if (ladoSeleccionado === lado) {
     ladoSeleccionado = null;
     btnCara.classList.replace('btn-danger', 'btn-outline-danger');
@@ -126,9 +145,9 @@ function seleccionarLado(lado) {
   document.getElementById('estado-moneda').textContent = `Has elegido ${lado.toUpperCase()}`;
 }
 
+/* ---------- Animación / flujo de lanzamiento (no altera la lógica) ---------- */
 function lanzarMoneda() {
   const cantidad = parseFloat(document.getElementById('cantidad').value);
-  const moneda = document.getElementById('moneda');
   const balanceActual = parseFloat(document.getElementById('balance').textContent);
 
   if (!ladoSeleccionado) return alert("Selecciona cara o cruz antes de lanzar.");
@@ -141,21 +160,103 @@ function lanzarMoneda() {
   document.getElementById('estado-sistema').textContent = 'Lanzando...';
   document.getElementById('estado-moneda').textContent = 'La moneda está girando...';
 
-  // 🔄 Reiniciar animación (forzar reflow)
-  moneda.classList.remove('flip-cara', 'flip-cruz');
-  void moneda.offsetWidth; // <- truco para reiniciar animación
+  // Preparar overlay y mover la moneda dentro
+  const o = overlay();
+  const m = moneda();
+  const originalParent = monedaWrapper();
 
-  // 🔢 Generar resultado aleatorio
+  // Ocultar visualmente el "lugar" original para evitar doble visual
+  originalParent.style.visibility = 'hidden';
+
+  // Mostrar overlay con fade-in
+  o.classList.remove('d-none');
+  o.style.opacity = '0';
+  o.style.transition = 'opacity 0.45s ease';
+  // Añadimos un contenedor dentro del overlay para centrar
+  o.innerHTML = `
+    <div class="overlay-center" id="overlay-center"></div>
+    <div id="overlay-status-container" class="overlay-status-container"></div>
+  `;
+  requestAnimationFrame(() => {
+    o.style.opacity = '1';
+    o.setAttribute('aria-hidden', 'false');
+  });
+
+  // Mover el elemento de estado al overlay
+  const estadoSistema = document.getElementById('estado-sistema');
+  const overlayStatusContainer = o.querySelector('#overlay-status-container');
+  overlayStatusContainer.appendChild(estadoSistema);
+
+  // Mover el nodo de la moneda al overlay-center
+  const overlayCenter = document.getElementById('overlay-center');
+  overlayCenter.appendChild(m); // mueve el nodo DOM
+  // Forzar reflow antes de arrancar animación
+  void m.offsetWidth;
+
+  // Configurar variables de animación y clases
   const resultado = Math.random() < 0.5 ? 'cara' : 'cruz';
+  const vueltas = Math.floor(Math.random() * 4) + 5; // 5-8 vueltas
+  m.style.setProperty('--vueltas', vueltas);
+  // limpiar cualquier estado
+  m.classList.remove('animating', 'show-cara', 'show-cruz', 'in-overlay');
+  void m.offsetWidth;
 
-  // Rotación aleatoria real (no fija)
-  const vueltas = Math.floor(Math.random() * 4) + 5; // entre 5 y 8 vueltas
-  moneda.style.setProperty('--vueltas', vueltas);
-  moneda.classList.add(resultado === 'cara' ? 'flip-cara' : 'flip-cruz');
+  // Activar modo overlay (escala + glow) y lanzar animación
+  m.classList.add('in-overlay');
+  // Forzar reflow y luego arrancar la animación de giro concreta
+  void m.offsetWidth;
+  m.classList.add(resultado === 'cara' ? 'flip-cara' : 'flip-cruz');
+  m.classList.add('animating');
 
-  setTimeout(() => ejecutarResultado(resultado, cantidad), 3000);
+  // Tiempo total de animación (coincide con CSS)
+  const ANIM_DURATION = 3800; // ms (debe coincidir con keyframes y tus timeouts)
+
+  setTimeout(() => {
+    // Forzar orientación final ANTES de quitar clases de animación
+    if (resultado === 'cara') {
+      m.classList.add('show-cara');
+      m.classList.remove('show-cruz');
+      m.style.transform = 'rotateY(0deg)';        // <--- Añadido
+    } else {
+      m.classList.add('show-cruz');
+      m.classList.remove('show-cara');
+      m.style.transform = 'rotateY(180deg)';      // <--- Añadido
+    }
+
+    // Ahora sí, eliminar las clases de animación
+    m.classList.remove('flip-cara', 'flip-cruz', 'animating');
+
+    // Iniciar el fade-out del overlay
+    o.style.transition = 'opacity 0.45s ease';
+    o.style.opacity = '0';
+    o.setAttribute('aria-hidden', 'true');
+
+    // Devolver moneda tras el fade-out
+    setTimeout(() => {
+      originalParent.appendChild(m);
+
+      // Devolver el estado al cuerpo principal
+      const infoRow = document.querySelector('.row.mb-4'); // donde está el panel de info
+      const colEstado = infoRow.querySelector('.text-center:nth-child(2)');
+      colEstado.appendChild(estadoSistema);
+
+      originalParent.style.visibility = 'visible';
+      o.classList.add('d-none');
+      o.innerHTML = '';
+      m.classList.remove('in-overlay');
+      // Aseguramos que la moneda conserva la orientación correcta
+      if (resultado === 'cara') {
+        m.style.transform = 'rotateY(0deg)';
+      } else {
+        m.style.transform = 'rotateY(180deg)';
+      }
+
+      ejecutarResultado(resultado, cantidad);
+    }, 480);
+  }, ANIM_DURATION);
 }
 
+/* ---------- Lógica del backend (idéntica a antes) ---------- */
 function ejecutarResultado(resultado, cantidad) {
   const gano = resultado === ladoSeleccionado;
 
@@ -176,13 +277,10 @@ function ejecutarResultado(resultado, cantidad) {
     }
 
     const { nuevo_balance, ganancia } = data;
-
-    // ✅ Actualizar saldo dinámicamente
     const balanceSpan = document.getElementById('balance');
     const balanceAntiguo = parseFloat(balanceSpan.textContent);
     balanceSpan.textContent = nuevo_balance.toFixed(2);
 
-    // Pequeña animación de feedback
     balanceSpan.style.transition = 'color 0.5s';
     balanceSpan.style.color = nuevo_balance > balanceAntiguo ? 'limegreen' : 'red';
     setTimeout(() => (balanceSpan.style.color = ''), 800);
@@ -215,7 +313,6 @@ function mostrarResultado(gano, resultado, cantidad, ganancia) {
   document.getElementById('historial').innerHTML =
     historial.map(h => `<li class="list-group-item">${h}</li>`).join('');
 
-  // 🔄 Reset visual de botones
   const btnCara = document.getElementById('btn-cara');
   const btnCruz = document.getElementById('btn-cruz');
   btnCara.classList.replace('btn-danger', 'btn-outline-danger');
@@ -228,10 +325,12 @@ function mostrarResultado(gano, resultado, cantidad, ganancia) {
 </script>
 
 <style>
-.coin-container {
-  perspective: 1000px;
+/* ----------------- Moneda: base (única) ----------------- */
+.coin-wrapper {
+  display: inline-block;
   width: 160px;
   height: 160px;
+  perspective: 1200px;
   margin: 0 auto;
 }
 
@@ -240,47 +339,156 @@ function mostrarResultado(gano, resultado, cantidad, ganancia) {
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 1s;
+  cursor: pointer;
+  transition: transform 0.6s ease;
+  /* si se fija con show-cara/show-cruz, se aplica transform fijo */
 }
 
-.coin .cara, .coin .cruz {
+/* Cada "face" es una cara completa, con contenido orientado normalmente.
+   La cara trasera se coloca con rotateY(180deg) para que su contenido
+   aparezca en orientación normal cuando el wrapper rote. */
+.face {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle, gold 0%, orange 80%);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-family: 'Orbitron', sans-serif;
-  color: #333;
-  border: 3px solid #b8860b;
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25), inset 0 6px 14px rgba(255,255,255,0.03);
+  overflow: hidden;
+  border: 3px solid rgba(0,0,0,0.08);
 }
 
-.coin .cruz {
+/* Contenido interior para poder controlar orientación y padding */
+.face-inner {
+  text-align: center;
+  transform: rotateY(0deg); /* fijo: el contenido no se voltea */
+}
+
+/* FRONT - CARA dorada */
+.face.front {
+  background: radial-gradient(circle at 30% 30%, #fff59d 0%, #ffd54f 40%, #d4af37 100%);
+  color: #2b2b2b;
+  border-color: #d4af37;
+  transform: rotateY(0deg);
+}
+
+/* BACK - CRUZ plateada - NB: el contenido está orientado correctamente porque
+   la cara en sí está rotada 180deg, pero el .face-inner no está volteado */
+.face.back {
+  background: radial-gradient(circle at 30% 30%, #f3f4f6 0%, #c0c0c0 45%, #9d9d9d 100%);
+  color: #1f1f1f;
+  border-color: #a9a9a9;
   transform: rotateY(180deg);
-  background: radial-gradient(circle, silver 0%, #999 80%);
 }
 
+/* Emoji y label */
+.face .emoji {
+  font-size: 3.2rem;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.face .label {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 0.9rem;
+}
+
+/* ----------------- States: show fixed face ----------------- */
+.coin.show-cara {
+  transform: rotateY(0deg);
+}
+.coin.show-cruz {
+  transform: rotateY(180deg);
+}
+
+/* ----------------- In-overlay state: make coin large, centered ---------- */
+/* When the coin is moved into the overlay we add .in-overlay to scale it */
+.coin.in-overlay {
+  width: clamp(220px, 34vw, 360px);
+  height: clamp(220px, 34vw, 360px);
+  transition: transform 0.25s ease, width 0.25s ease, height 0.25s ease;
+}
+
+/* Glow pulsante (overlay) */
+.coin.in-overlay .face.front {
+  box-shadow: 0 10px 70px rgba(255, 196, 0, 0.8);
+}
+.coin.in-overlay .face.back {
+  box-shadow: 0 10px 70px rgba(158, 205, 255, 0.8);
+}
+
+/* --------------- Animaciones de giro (definitivas, un solo giro limpio) --------------- */
 .flip-cara {
-  animation: flipCara 3s cubic-bezier(0.23, 1, 0.32, 1);
+  animation: flipCaraAnim 3s ease-out forwards;
 }
-
 .flip-cruz {
-  animation: flipCruz 3s cubic-bezier(0.23, 1, 0.32, 1);
+  animation: flipCruzAnim 3s ease-out forwards;
 }
 
-@keyframes flipCara {
-  0% { transform: rotateY(0deg); }
-  100% { transform: rotateY(calc(360deg * var(--vueltas))); }
+/* Un único giro suave: rota las vueltas indicadas y se detiene */
+@keyframes flipCaraAnim {
+  0% {
+    transform: rotateY(0deg) translateY(0) scale(1);
+  }
+  100% {
+    transform: rotateY(calc(360deg * var(--vueltas))) translateY(0) scale(1);
+  }
 }
 
-@keyframes flipCruz {
-  0% { transform: rotateY(0deg); }
-  100% { transform: rotateY(calc(180deg + 360deg * var(--vueltas))); }
+@keyframes flipCruzAnim {
+  0% {
+    transform: rotateY(0deg) translateY(0) scale(1);
+  }
+  100% {
+    transform: rotateY(calc(180deg + 360deg * var(--vueltas))) translateY(0) scale(1);
+  }
+}
+
+/* ----------------- Overlay styles ----------------- */
+.coin-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bs-body-bg);
+  z-index: 3000;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+/* Center wrapper inside overlay to host the coin DOM node */
+.overlay-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* -------- Estado dentro del overlay -------- */
+.overlay-status-container {
+  position: absolute;
+  top: 12%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: #0dcaf0; /* igual que .text-info */
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(13,202,240,0.4);
+  pointer-events: none; /* no interfiere con clics */
+}
+
+/* Small responsive adjustments */
+@media (max-width: 768px) {
+  .coin-wrapper { width: 120px; height: 120px; }
+  .coin.in-overlay { width: clamp(160px, 60vw, 240px); height: clamp(160px,60vw,240px); }
+  .face .emoji { font-size: 2.6rem; }
+  .face .label { font-size: 0.8rem; }
 }
 </style>
 {% endblock %}
