@@ -291,4 +291,4 @@ ganancia = 500
 - Botón "GIRAR RODILLOS" habilitado y con texto original
 - Animaciones visuales detenidas
 - Balance actualizado correctamente
-- Listo para siguiente giro
+- Listo para siguiente giro. 
