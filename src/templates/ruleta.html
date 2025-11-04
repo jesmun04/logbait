@@ -21,9 +21,10 @@
     .btn.secondary{background:#e5e7ff; color:#10121f}
     .wheel-wrap svg{ width:100%; height:auto; display:block; max-width:460px; }
     .table{display:grid; grid-template-columns: 90px repeat(12, 1fr) 140px 140px; gap:5px; padding:10px; background:var(--felt); border-radius:14px; border:1px solid rgba(255,255,255,.15)}
-    .cell{position:relative; background:var(--tile); border:1px solid rgba(0,0,0,.35); color:#fafafa; text-align:center; padding:22px 8px; border-radius:10px; user-select:none; font-size:22px; font-weight:800}
+  .cell{position:relative; background:var(--tile); border:1px solid rgba(0,0,0,.35); color:#fafafa; text-align:center; padding:22px 8px; border-radius:10px; user-select:none; font-size:28px; font-weight:900}
     .cell.zero{grid-row: 1 / span 3; background:#1d6f3e; display:flex; align-items:center; justify-content:center}
     .cell.red{background:#9e1f24} .cell.black{background:#0b0b0b}
+  .cell.preview{ outline:3px solid rgba(255,215,0,0.85); box-shadow:0 6px 18px rgba(255,215,0,0.12) }
     .outside{ background:var(--tile-outer); font-weight:800; font-size:18px }
     .bet-badge{position:absolute; right:8px; bottom:8px; background:var(--badge-bg); color:var(--badge-fg); padding:2px 8px; border-radius:999px; font-size:13px; font-weight:900}
     .color-dot{position:absolute; left:8px; bottom:8px; width:14px; height:14px; border-radius:50%; border:2px solid rgba(0,0,0,.45); box-shadow: inset 0 0 0 2px rgba(255,255,255,.25)}
@@ -199,6 +200,9 @@ EURO_SEQ.forEach((n,idx)=>{
   const label=document.createElementNS('http://www.w3.org/2000/svg','text');
   const ang=(a0+a1)/2; label.setAttribute('x',(R_TEXT*Math.cos(ang)).toFixed(2)); label.setAttribute('y',(R_TEXT*Math.sin(ang)).toFixed(2));
   label.setAttribute('fill','#fff'); label.setAttribute('font-size','12'); label.setAttribute('text-anchor','middle'); label.setAttribute('dominant-baseline','middle'); label.textContent=String(n); gNums.appendChild(label);
+  // aumentar ligeramente el tamaño del texto para legibilidad
+  label.setAttribute('font-size','14');
+
 });
 
 /* ================== TABLERO ================== */
@@ -258,7 +262,18 @@ function outsideCell(text, kind, set){ const d=cell(text,'outside'); d.dataset.k
 
 /* ================== ARRÁSTRE & DETECCIÓN DE ZONA ================== */
 function enableDrop(el){
-  el.ondragover=(e)=>{e.preventDefault();};
+    el.ondragover=(e)=>{e.preventDefault();
+      // Mostrar previsualización de la apuesta mientras arrastramos
+      try{
+        const rect=el.getBoundingClientRect();
+        const x=(e.clientX-rect.left)/rect.width; const y=(e.clientY-rect.top)/rect.height;
+        const num=Number(el.dataset.number||'0');
+        const target = computeTargetFromPosition(num,x,y);
+        clearPreview();
+        if(target) highlightPreview(target);
+      }catch(err){ /* ignore */ }
+    };
+    el.ondragleave = (e)=>{ clearPreview(); };
   el.ondrop=(e)=>{
     e.preventDefault(); droppedSomewhere=true;
     const kind=el.dataset.kind||'straight';
@@ -285,56 +300,45 @@ function numAt(r,c){ if(r<0||r>2||c<0||c>11) return null; return 3*c + (3-r); }
 
 function computeTargetFromPosition(n,x,y){
   const {r,c}=getRC(n);
-  const m=0.26;
-  const nearLeft = x<m, nearRight = x>1-m, nearTop = y<m, nearBot = y>1-m;
 
-  // Esquinas (4 números)
-  if(nearLeft&&nearTop){
-    const a=n,b=numAt(r,c-1),c2=numAt(r-1,c),d=numAt(r-1,c-1);
-    if(b&&c2&&d) return {type:'corner',set:new Set([a,b,c2,d]),label:`${a}-${b}-${c2}-${d}`};
-  }
-  if(nearRight&&nearTop){
-    const a=n,b=numAt(r,c+1),c2=numAt(r-1,c),d=numAt(r-1,c+1);
-    if(b&&c2&&d) return {type:'corner',set:new Set([a,b,c2,d]),label:`${a}-${b}-${c2}-${d}`};
-  }
-  if(nearLeft&&nearBot){
-    const a=n,b=numAt(r,c-1),c2=numAt(r+1,c),d=numAt(r+1,c-1);
-    if(b&&c2&&d) return {type:'corner',set:new Set([a,b,c2,d]),label:`${a}-${b}-${c2}-${d}`};
-  }
-  if(nearRight&&nearBot){
-    const a=n,b=numAt(r,c+1),c2=numAt(r+1,c),d=numAt(r+1,c+1);
-    if(b&&c2&&d) return {type:'corner',set:new Set([a,b,c2,d]),label:`${a}-${b}-${c2}-${d}`};
+  // Hitbox thresholds
+  const centerMin = 0.25, centerMax = 0.75; // center area -> single number
+  const cornerThreshold = 0.18; // corner area -> 4 numbers
+
+  // If pointer is squarely in the center area -> single number (straight)
+  if(x >= centerMin && x <= centerMax && y >= centerMin && y <= centerMax){
+    return {type:'straight', set:new Set([n]), label:String(n)};
   }
 
-  // Caballos (2 números)
-  if(nearLeft){ const b=numAt(r,c-1); if(b) return {type:'split',set:new Set([n,b]),label:`${n}-${b}`}; }
-  if(nearRight){ const b=numAt(r,c+1); if(b) return {type:'split',set:new Set([n,b]),label:`${n}-${b}`}; }
-  if(nearTop){ const b=numAt(r-1,c); if(b) return {type:'split',set:new Set([n,b]),label:`${n}-${b}`}; }
-  if(nearBot){ const b=numAt(r+1,c); if(b) return {type:'split',set:new Set([n,b]),label:`${n}-${b}`}; }
+  // Corners (4 numbers) - top-left, top-right, bottom-left, bottom-right
+  const nearLeftCorner = x < cornerThreshold, nearRightCorner = x > 1 - cornerThreshold;
+  const nearTopCorner = y < cornerThreshold, nearBottomCorner = y > 1 - cornerThreshold;
+  if(nearLeftCorner && nearTopCorner){ const a=n,b=numAt(r,c-1),c2=numAt(r-1,c),d=numAt(r-1,c-1); if(b&&c2&&d) return {type:'corner', set:new Set([a,b,c2,d]), label:`${a}-${b}-${c2}-${d}`}; }
+  if(nearRightCorner && nearTopCorner){ const a=n,b=numAt(r,c+1),c2=numAt(r-1,c),d=numAt(r-1,c+1); if(b&&c2&&d) return {type:'corner', set:new Set([a,b,c2,d]), label:`${a}-${b}-${c2}-${d}`}; }
+  if(nearLeftCorner && nearBottomCorner){ const a=n,b=numAt(r,c-1),c2=numAt(r+1,c),d=numAt(r+1,c-1); if(b&&c2&&d) return {type:'corner', set:new Set([a,b,c2,d]), label:`${a}-${b}-${c2}-${d}`}; }
+  if(nearRightCorner && nearBottomCorner){ const a=n,b=numAt(r,c+1),c2=numAt(r+1,c),d=numAt(r+1,c+1); if(b&&c2&&d) return {type:'corner', set:new Set([a,b,c2,d]), label:`${a}-${b}-${c2}-${d}`}; }
 
-  // Zona central: Calle (3 números) y Seisena (6 números)
-  const centerBand = x>0.33 && x<0.67;
-  if(centerBand){
-    const a=numAt(0,c), b=numAt(1,c), d=numAt(2,c);
-    if(a && b && d){
-      if(x<=0.40){
-        const a2=numAt(0,c-1), b2=numAt(1,c-1), d2=numAt(2,c-1);
-        if(a2&&b2&&d2){
-          const set = new Set([a,b,d,a2,b2,d2]);
-          return {type:'line', set, label:`${[...set].sort((u,v)=>u-v).join('-')}`};
-        }
-      } else if(x>=0.60){
-        const a2=numAt(0,c+1), b2=numAt(1,c+1), d2=numAt(2,c+1);
-        if(a2&&b2&&d2){
-          const set = new Set([a,b,d,a2,b2,d2]);
-          return {type:'line', set, label:`${[...set].sort((u,v)=>u-v).join('-')}`};
-        }
-      }
-      const setStreet=new Set([a,b,d]);
-      return {type:'street', set:setStreet, label:`${a}-${b}-${d}`};
-    }
-  }
+  // Splits (2 numbers) - left/right/top/bottom middle bands
+  const centerBandX = x >= centerMin && x <= centerMax;
+  const centerBandY = y >= centerMin && y <= centerMax;
+  if(x < centerMin && centerBandY){ const b = numAt(r, c-1); if(b) return {type:'split', set:new Set([n,b]), label:`${n}-${b}`}; }
+  if(x > centerMax && centerBandY){ const b = numAt(r, c+1); if(b) return {type:'split', set:new Set([n,b]), label:`${n}-${b}`}; }
+  if(y < centerMin && centerBandX){ const b = numAt(r-1, c); if(b) return {type:'split', set:new Set([n,b]), label:`${n}-${b}`}; }
+  if(y > centerMax && centerBandX){ const b = numAt(r+1, c); if(b) return {type:'split', set:new Set([n,b]), label:`${n}-${b}`}; }
+
+  // Streets (3 numbers) - if horizontally centered but above/below center area
+  if(centerBandX && y < centerMin){ const a=numAt(0,c), b=numAt(1,c), d=numAt(2,c); if(a&&b&&d) return {type:'street', set:new Set([a,b,d]), label:`${a}-${b}-${d}`}; }
+  if(centerBandX && y > centerMax){ const a=numAt(0,c), b=numAt(1,c), d=numAt(2,c); if(a&&b&&d) return {type:'street', set:new Set([a,b,d]), label:`${a}-${b}-${d}`}; }
+
+  // Fallback: straight
   return {type:'straight', set:new Set([n]), label:String(n)};
+}
+
+// ====== Previsualización de apuesta durante arrastre ======
+function clearPreview(){ document.querySelectorAll('.cell.preview').forEach(el=>el.classList.remove('preview')); }
+function highlightPreview(target){ try{
+  const nums = [...target.set]; nums.forEach(n=>{ const el = indexToCell[n]; if(el) el.classList.add('preview'); });
+}catch(e){}
 }
 
 /* ================== CHIPS ================== */
@@ -348,6 +352,7 @@ styleChips();
 const chipsWrap=document.getElementById('chips'); let droppedSomewhere=false; let lastChipValue=50;
 chipsWrap.addEventListener('dragstart', e=>{ const t=e.target.closest('.chip'); if(!t) return; droppedSomewhere=false; e.dataTransfer.setData('chip', t.dataset.value); });
 document.body.addEventListener('dragend', ()=>{ if(!droppedSomewhere) flash('Ficha no colocada'); });
+document.body.addEventListener('dragend', ()=>{ clearPreview(); });
 document.querySelectorAll('.chip').forEach(ch=>ch.addEventListener('click',()=>{ lastChipValue=Number(ch.dataset.value); flash(`Chip activa: ${centsToEuro(lastChipValue)}`); }));
 
 /* ================== EXTERIORES Y ESPECIALES ================== */
@@ -566,11 +571,33 @@ document.getElementById('spinBtn').onclick = async () => {
 
 function spinAnimTo(resultIdx){
   return new Promise(resolve=>{
-    const start=performance.now();
-    const baseWheel=Math.random()*360;
-    const spinWheel=1440+Math.random()*720;
-    const spinBall=3000+Math.random()*1200;
-    const duration=5200+Math.random()*1000;
+      const start=performance.now();
+      // Obtener rotación actual de la rueda (si ya está alineada por una jugada
+      // previa) para que la animación sea continua y el final coincida con lo
+      // calculado. Si no hay transform, usar valor aleatorio.
+      let baseWheel = 0;
+      try{
+        const cur = gNums.getAttribute('transform')||'';
+        const m = cur.match(/rotate\((-?\d+(?:\.\d+)?)\)/);
+        if(m && m[1]) baseWheel = parseFloat(m[1]); else baseWheel = Math.random()*360;
+      }catch(e){ baseWheel = Math.random()*360; }
+
+      // Calculamos el ángulo final exacto para que el pocket centrado sea el
+      // correspondiente a resultIdx. Usamos (idx + 0.5) para apuntar al centro
+      // de la casilla. Después garantizamos varias vueltas completas antes de
+      // aterrizar en ese ángulo para una animación natural.
+      const per = 360 / EURO_SEQ.length;
+      const desiredFinal = -((resultIdx + 0.5) * per); // grados
+
+      // Duración y giros: dejamos varias vueltas completas (e.g., 5) y añadimos
+      // el delta necesario para acabar exactamente en desiredFinal desde baseWheel.
+      const fullTurns = 5; // número de vueltas completas
+      const baseNorm = ((baseWheel % 360) + 360) % 360;
+      const delta = ((desiredFinal - baseNorm) % 360 + 360) % 360;
+      const spinWheel = 360 * fullTurns + delta;
+
+      const spinBall = 3000+Math.random()*1200;
+      const duration=5200+Math.random()*1000;
     function easeOutQuint(t){ return 1-Math.pow(1-t,5); }
     function frame(now){
       const t=Math.min(1,(now-start)/duration);
@@ -588,10 +615,12 @@ function spinAnimTo(resultIdx){
 
 function alignToPocket(resultIdx){
   const per = 360 / EURO_SEQ.length;
-  const finalWheel = (resultIdx * per);
+  // Para centrar la casilla usamos el punto medio: (idx + 0.5)
+  const finalWheel = -((resultIdx + 0.5) * per);
   gNums.setAttribute('transform', `rotate(${finalWheel})`);
-  const centerAng = resultIdx * per - 90;
-  const finalBallAng = centerAng - 4;
+
+  // La bola debe quedar ligeramente antes del centro (pequeño offset)
+  const finalBallAng = -90 - 4; // en grados: top (-90) menos un pequeño ajuste
   const r2 = 150; const rad2 = finalBallAng * Math.PI / 180;
   ball.setAttribute('cx', (r2 * Math.cos(rad2)).toFixed(2));
   ball.setAttribute('cy', (r2 * Math.sin(rad2)).toFixed(2));
