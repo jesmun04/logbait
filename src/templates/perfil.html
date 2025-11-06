@@ -156,6 +156,41 @@
                 </div>
             </div>
         </div>
+
+        {% if is_admin() %}
+        <hr class="mt-5 mb-5">
+        <div class="text-center">
+            <i class="fa-solid fa-unlock-keyhole fs-1 mb-2"></i>
+            <h3>Opciones de superusuario</h3>
+            <p>
+                Has iniciado sesión como <span class="font-monospace">{{ user.username }}</span>, que dispone de privilegios de superusuario.
+            </p>
+            <div class="d-flex justify-content-center">
+                <div class="alert alert-warning glass-effect w-75">
+                    Las herramientas mostradas a continuación pueden revelar y modificar datos sensibles, y deben usarse únicamente con fines de administración y moderación. Se <b>prohibe</b> su uso a toda persona ajena al equipo responsable de LogBait.
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mt-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex flex-row align-items-center justify-content-between">
+                        <div>
+                            <h4>Panel administrativo</h4>
+                            <span>
+                                Consulta y gestiona los datos almacenados en la plataforma.
+                            </span>
+                        </div>
+                        <a href="{{ url_for('admin_panel.home') }}" class="btn btn-success me-2">
+                            <i class="fas fa-shield me-2"></i>
+                            Acceder al panel administrativo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

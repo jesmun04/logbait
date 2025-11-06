@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Blueprint, render_template
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User, Estadistica
+from endpoints.admin.admin_routes_utils import is_admin_user
 
 bp = Blueprint('perfil', __name__)
 
@@ -39,4 +40,4 @@ def home():
         flash('Perfil actualizado correctamente')
         return redirect(url_for('perfil.home'))
     
-    return render_template('perfil.html', user=current_user, stats=stats)
+    return render_template('perfil.html', user=current_user, stats=stats, is_admin=is_admin_user)
