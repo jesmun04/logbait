@@ -136,7 +136,7 @@ h6 {
   border-color: rgba(0, 243, 255, 0.2);
 }
 
-.navbar-brand {
+#brand {
   font-family: var(--font-family-title), monospace;
   font-weight: 800;
   font-size: 1.6rem;
