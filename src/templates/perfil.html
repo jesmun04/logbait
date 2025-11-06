@@ -1,164 +1,131 @@
 {% extends "base/base_casino.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-xl-10">
-        <!-- Header del Perfil -->
-        <div class="profile-card mb-5">
-            <div class="profile-header">
-                <div class="profile-avatar float">
-                    <i class="fas fa-user-astronaut text-white"></i>
-                </div>
-                <h1 class="text-white fw-bold mb-2">{{ user.username }}</h1>
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="d-flex flex-sm-row flex-column gap-4 align-items-center justify-content-between">
+            <div>
+                <h3>Tu usuario:</h3>
+                <h1 class="text-white fw-bold mb-2"><i class="fas fa-user-astronaut text-white me-2"></i>{{ user.username }}</h1>
                 <p class="text-cyan mb-0">
-                    <i class="fas fa-id-card me-2"></i>
                     Miembro desde {{ user.created_at.strftime('%d/%m/%Y') }}
                 </p>
             </div>
-            
-            <!-- Estadísticas Rápidas -->
-            <div class="profile-stats">
-                <div class="stat-item">
-                    <div class="stat-value neon-pulse">
-                        ${{ "%.2f"|format(user.balance) }}
-                    </div>
-                    <div class="stat-label">Balance Actual</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">
-                        {% set total_partidas = 0 %}
-                        {% for stat in stats %}
-                            {% set total_partidas = total_partidas + stat.partidas_jugadas %}
-                        {% endfor %}
-                        {{ total_partidas }}
-                    </div>
-                    <div class="stat-label">Total Partidas</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">
-                        {% set total_victorias = 0 %}
-                        {% for stat in stats %}
-                            {% set total_victorias = total_victorias + stat.partidas_ganadas %}
-                        {% endfor %}
-                        {{ total_victorias }}
-                    </div>
-                    <div class="stat-label">Victorias</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value {% set ns = namespace(total_ganancia=0) %}{% for stat in stats %}{% set ns.total_ganancia = ns.total_ganancia + stat.ganancia_total %}{% endfor %}{% if ns.total_ganancia >= 0 %}text-success{% else %}text-danger{% endif %}">
-                        ${{ "%.2f"|format(ns.total_ganancia) }}
-                    </div>
-                    <div class="stat-label">Ganancia Total</div>
-                </div>
+            <div class="d-flex flex-column gap-2">
+                <a href="{{ url_for('dashboard.home') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-1"></i>Volver al Dashboard
+                </a>
             </div>
         </div>
+    </div>
+</div>
 
-        <div class="row g-4">
-            <!-- Formulario de Edición -->
-            <div class="col-lg-6">
-                <div class="card profile-card h-100">
-                    <div class="card-header">
-                        <i class="fas fa-user-edit me-2"></i>
-                        EDITAR PERFIL
-                    </div>
-                    <div class="card-body">
-                        <form method="POST" class="scanline">
-                            <div class="mb-4">
-                                <label for="username" class="form-label">
-                                    <i class="fas fa-user me-2"></i>NOMBRE DE USUARIO
-                                </label>
-                                <input type="text" class="form-control" id="username" name="username" 
-                                       value="{{ user.username }}" required>
-                            </div>
-                            
-                            <div class="mb-4">
-                                <label for="email" class="form-label">
-                                    <i class="fas fa-envelope me-2"></i>EMAIL
-                                </label>
-                                <input type="email" class="form-control" id="email" name="email" 
-                                       value="{{ user.email }}" required>
-                            </div>
-                            
-                            <div class="mb-4">
-                                <label for="password" class="form-label">
-                                    <i class="fas fa-key me-2"></i>NUEVA CONTRASEÑA
-                                </label>
-                                <input type="password" class="form-control" id="password" name="password" 
-                                       placeholder="Dejar vacío para no cambiar">
-                                <div class="form-text text-cyan">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    Mínimo 6 caracteres
-                                </div>
-                            </div>
-                            
-                            <div class="d-grid gap-3">
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-sync-alt me-2"></i>
-                                    ACTUALIZAR PERFIL
-                                </button>
-                                <a href="{{ url_for('dashboard.home') }}" class="btn btn-outline-primary">
-                                    <i class="fas fa-arrow-left me-2"></i>
-                                    VOLVER AL DASHBOARD
-                                </a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+<div class="row g-4">
+    <!-- Formulario de Edición -->
+    <div class="col-lg-6">
+        <div class="card profile-card h-100">
+            <div class="card-header">
+                <i class="fas fa-user-edit me-2"></i>
+                EDITAR PERFIL
             </div>
-
-            <!-- Gestión de Fondos -->
-            <div class="col-lg-6">
-                <div class="card profile-card h-100">
-                    <div class="card-header">
-                        <i class="fas fa-coins me-2"></i>
-                        GESTIÓN DE FONDOS
+            <div class="card-body">
+                <form method="POST" class="scanline">
+                    <div class="mb-4">
+                        <label for="username" class="form-label">
+                            <i class="fas fa-user me-2"></i>NOMBRE DE USUARIO
+                        </label>
+                        <input type="text" class="form-control" id="username" name="username" 
+                                value="{{ user.username }}" required>
                     </div>
-                    <div class="card-body">
-                        {% include "partials/agregar_fondos.html" %}
+                    
+                    <div class="mb-4">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope me-2"></i>EMAIL
+                        </label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                                value="{{ user.email }}" required>
                     </div>
-                </div>
-            </div>
-
-            <!-- Estadísticas Rápidas por Juego -->
-            <div class="col-12">
-                <div class="card profile-card">
-                    <div class="card-header">
-                        <i class="fas fa-chart-column me-2"></i>
-                        ESTADÍSTICAS POR JUEGO
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            {% for stat in stats %}
-                            <div class="col-md-4 col-lg-2">
-                                <div class="stat-item text-center">
-                                    <div class="mb-2" style="font-size: 2rem;">
-                                        {% if stat.juego == 'blackjack' %}🎲 
-                                        {% elif stat.juego == 'poker' %}🃏 
-                                        {% elif stat.juego == 'coinflip' %}🪙
-                                        {% elif stat.juego == 'tragaperras' %}🎰
-                                        {% elif stat.juego == 'caballos' %}🏇
-                                        {% endif %}
-                                    </div>
-                                    <div class="stat-value small">
-                                        {{ stat.partidas_jugadas }}
-                                    </div>
-                                    <div class="stat-label">
-                                        {{ stat.juego|title }}
-                                    </div>
-                                    <div class="text-small {% if stat.ganancia_total >= 0 %}text-success{% else %}text-danger{% endif %}">
-                                        ${{ "%.2f"|format(stat.ganancia_total) }}
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
+                    
+                    <div class="mb-4">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-key me-2"></i>NUEVA CONTRASEÑA
+                        </label>
+                        <input type="password" class="form-control" id="password" name="password" 
+                                placeholder="Dejar vacío para no cambiar">
+                        <div class="form-text text-cyan">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Mínimo 6 caracteres
                         </div>
                     </div>
+                    
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sync-alt me-2"></i>
+                            ACTUALIZAR PERFIL
+                        </button>
+                        <a href="{{ url_for('dashboard.home') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            VOLVER AL DASHBOARD
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gestión de Fondos -->
+    <div class="col-lg-6">
+        <div class="card profile-card h-100">
+            <div class="card-header">
+                <i class="fas fa-coins me-2"></i>
+                GESTIÓN DE FONDOS
+            </div>
+            <div class="card-body">
+                {% include "partials/agregar_fondos.html" %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas Rápidas por Juego -->
+    <div class="col-12">
+        <div class="card profile-card">
+            <div class="card-header">
+                <i class="fas fa-chart-column me-2"></i>
+                ESTADÍSTICAS POR JUEGO
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    {% for stat in stats %}
+                    <div class="col-md-4 col-lg-2">
+                        <div class="stat-item text-center">
+                            <div class="mb-2" style="font-size: 2rem;">
+                                {% if stat.juego == 'blackjack' %}🎲 
+                                {% elif stat.juego == 'poker' %}🃏 
+                                {% elif stat.juego == 'coinflip' %}🪙
+                                {% elif stat.juego == 'tragaperras' %}🎰
+                                {% elif stat.juego == 'caballos' %}🏇
+                                {% endif %}
+                            </div>
+                            <div class="stat-value small">
+                                {{ stat.partidas_jugadas }}
+                            </div>
+                            <div class="stat-label">
+                                {{ stat.juego|title }}
+                            </div>
+                            <div class="text-small {% if stat.ganancia_total >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                ${{ "%.2f"|format(stat.ganancia_total) }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
         {% if is_admin() %}
-        <hr class="mt-5 mb-5">
+        <hr class="mt-5 mb-5 w-50 mx-auto">
         <div class="text-center">
             <i class="fa-solid fa-unlock-keyhole fs-1 mb-2"></i>
             <h3>Opciones de superusuario</h3>
@@ -175,7 +142,7 @@
         <div class="col-12 mt-4">
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex flex-row align-items-center justify-content-between">
+                    <div class="d-flex flex-sm-row flex-column gap-3 align-items-center justify-content-between">
                         <div>
                             <h4>Panel administrativo</h4>
                             <span>
@@ -191,8 +158,6 @@
             </div>
         </div>
         {% endif %}
-    </div>
-</div>
 {% endblock %}
 
 {% block scripts %}

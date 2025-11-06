@@ -39,24 +39,26 @@
                 🎯 Historial de Apuestas
             </div>
             <div class="card-body">
-                <div class="d-flex gap-3 flex-row align-items-center">
+                <div class="d-flex gap-4 flex-md-row flex-column align-items-center justify-content-between">
                     <span>Filtrar: </span>
 
-                    <select class="form-select" onchange="filterByGame(this.value)">
-                        <option value="">Todos los juegos</option>
-                        <option value="blackjack">Blackjack</option>
-                        <option value="poker">Poker</option>
-                        <option value="coinflip">Coinflip</option>
-                        <option value="tragaperras">Tragaperras</option>
-                        <option value="caballos">Caballos</option>
-                    </select>
-                    
-                    <select class="form-select" onchange="filterByResult(this.value)">
-                        <option value="">Todos los resultados</option>
-                        <option value="ganada">Ganadas</option>
-                        <option value="perdida">Perdidas</option>
-                        <option value="empate">Empates</option>
-                    </select>
+                    <div class="d-flex gap-2 flex-row">
+                        <select class="form-select" onchange="filterByGame(this.value)">
+                            <option value="">Todos los juegos</option>
+                            <option value="blackjack">Blackjack</option>
+                            <option value="poker">Poker</option>
+                            <option value="coinflip">Coinflip</option>
+                            <option value="tragaperras">Tragaperras</option>
+                            <option value="caballos">Caballos</option>
+                        </select>
+                        
+                        <select class="form-select" onchange="filterByResult(this.value)">
+                            <option value="">Todos los resultados</option>
+                            <option value="ganada">Ganadas</option>
+                            <option value="perdida">Perdidas</option>
+                            <option value="empate">Empates</option>
+                        </select>
+                    </div>
                 </div>
 
                 <table class="table">

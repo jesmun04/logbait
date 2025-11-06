@@ -2,29 +2,23 @@
 
 {% block content %}
 <!-- Header del Dashboard Futurista -->
-<div class="row mb-6">
-    <div class="col-12">
-        <div class="card cyber-grid">
-            <div class="card-body p-5">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h1 class="hero-title mb-3" style="font-size: 3rem;">
-                            BIENVENIDO, <span class="text-gradient">{{ user.username }}</span>
-                        </h1>
-                        <p class="hero-subtitle mb-0">
-                            Desafia al Azar en nuestra plataforma de juegos LogBait.
-                        </p>
-                    </div>
-                    <div class="col-md-4 text-md-end">
-                        <div class="digital-display d-inline-block">
-                            <div class="text-small text-uppercase" style="color: var(--neon-green);">
-                                <i class="fas fa-coins me-2"></i>CRÉDITOS DISPONIBLES
-                            </div>
-                            <div class="h2 mb-0 text-gradient fw-bold money-count">
-                                ${{ "%.2f"|format(user.balance) }}
-                            </div>
-                        </div>
-                    </div>
+<div class="card cyber-grid mb-6">
+    <div class="card-body p-5">
+        <div class="d-flex flex-sm-row flex-column align-items-center justify-content-between gap-5">
+            <div>
+                <h1 class="hero-title mb-3" style="font-size: 3rem;">
+                    BIENVENIDO, <span class="text-gradient">{{ user.username }}</span>
+                </h1>
+                <p class="hero-subtitle mb-0">
+                    Desafia al Azar en nuestra plataforma de juegos LogBait.
+                </p>
+            </div>
+            <div class="digital-display d-inline-block">
+                <div class="text-small text-uppercase">
+                    <i class="fas fa-coins me-2"></i>CRÉDITOS DISPONIBLES
+                </div>
+                <div class="h2 mb-0 text-gradient fw-bold money-count">
+                    ${{ "%.2f"|format(user.balance) }}
                 </div>
             </div>
         </div>
@@ -32,7 +26,7 @@
 </div>
 
 <!-- Panel de Juegos Holográfico -->
-<div class="row g-5">
+<div class="row g-4">
     <!-- Blackjack -->
     <div class="col-xl-3 col-lg-4 col-md-6">
         <div class="card animated-card matrix-rain">
@@ -153,31 +147,34 @@
                 <p class="card-text mb-4">
                     Configuración de identidad digital. Gestiona tu presencia en el sistema.
                 </p>
-                <a href="{{ url_for('perfil.home') }}" class="btn btn-outline-primary btn-lg w-100">
-                    <i class="fas fa-user-cog me-2"></i>CONFIGURAR PERFIL
-                </a>
-                <a href="{{ url_for('logout.home') }}" class="btn btn-danger btn-lg w-100" style="margin-top: 0.4em;">
-                    <i class="fas fa-power-off me-2"></i>SALIR
-                </a>
+                <div class="d-flex flex-column gap-3">
+                    <a href="{{ url_for('perfil.home') }}" class="btn btn-outline-primary btn-lg w-100">
+                        <i class="fas fa-user-cog me-2"></i>CONFIGURAR PERFIL
+                    </a>
+                    <a href="{{ url_for('logout.home') }}" class="btn btn-danger btn-lg w-100">
+                        <i class="fas fa-power-off me-2"></i>SALIR
+                    </a>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
 <!-- Información del Sistema -->
-<div class="card" style="border-color: var(--neon-green); background: rgba(0, 255, 136, 0.05);">
+<div class="card translucent-card mt-5">
     <div class="card-body p-4">
-        <div class="row align-items-center">
-            <div class="col-md-9">
+        <div class="d-flex flex-sm-row flex-column align-items-center justify-content-between gap-4">
+            <div>
                 <h4 class="text-white mb-2">
                     <i class="fas fa-robot text-warning me-2"></i>
                     SISTEMA EDUCATIVO
                 </h4>
                 <p class="text-muted mb-0">
-                    Plataforma de aprendizaje experimental. Todas las transacciones son virtuales 
+                    Plataforma de aprendizaje experimental. Todas las transacciones son virtuales
                     y diseñadas para fines educativos sobre probabilidad y gestión de riesgos.
                 </p>
             </div>
-            <div class="col-md-3 text-md-end">
+            <div>
                 <span class="badge" style="background: var(--gradient-matrix); color: black; font-size: 1rem;">
                     <i class="fas fa-graduation-cap me-1"></i>MODO EDUCATIVO
                 </span>
@@ -190,40 +187,48 @@
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/game_card_animation.js') }}"></script>
 <script>
-// Efectos interactivos para el dashboard
-document.addEventListener('DOMContentLoaded', function() {
-    // Efecto de parpadeo para el display digital
-    const display = document.querySelector('.digital-display');
-    setInterval(() => {
-        display.style.boxShadow = display.style.boxShadow === 'var(--glow-green)' ? 
-            'inset 0 0 20px rgba(0, 243, 255, 0.3)' : 
-            'var(--glow-green)';
-    }, 1000);
-});
+    // Efectos interactivos para el dashboard
+    document.addEventListener('DOMContentLoaded', function () {
+        // Efecto de parpadeo para el display digital
+        const display = document.querySelector('.digital-display');
+        setInterval(() => {
+            display.style.boxShadow = display.style.boxShadow === 'var(--glow-green)' ?
+                'inset 0 0 20px rgba(0, 243, 255, 0.3)' :
+                'var(--glow-green)';
+        }, 1000);
+    });
 </script>
 
 <style>
-.mb-6 {
-    margin-bottom: 5rem !important;
-}
+    .mb-6 {
+        margin-bottom: 5rem !important;
+    }
 
-.text-cyan { color: var(--neon-cyan); }
-.text-pink { color: var(--neon-pink); }
-.text-green { color: var(--neon-green); }
+    .text-cyan {
+        color: var(--neon-cyan);
+    }
 
-.digital-display {
-    font-family: 'Orbitron', monospace;
-    padding: 1.5rem 2rem;
-    border: 2px solid var(--neon-cyan);
-    border-radius: var(--border-radius-card);
-    background: rgba(0, 0, 0, 0.9);
-    box-shadow: var(--glow-cyan);
-    transition: all 0.3s ease;
-}
+    .text-pink {
+        color: var(--neon-pink);
+    }
 
-.text-small {
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-}
+    .text-green {
+        color: var(--neon-green);
+    }
+
+    .digital-display {
+        font-family: 'Orbitron', monospace;
+        padding: 1.5rem 2rem;
+        border: 2px solid var(--neon-cyan);
+        border-radius: var(--border-radius-card);
+        background: rgba(0, 0, 0, 0.9);
+        box-shadow: var(--glow-cyan);
+        transition: all 0.3s ease;
+    }
+
+    .text-small {
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
 </style>
 {% endblock %}

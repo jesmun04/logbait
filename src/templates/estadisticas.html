@@ -3,17 +3,17 @@
 {% block content %}
 <div class="row">
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex flex-sm-row flex-column gap-4 align-items-center justify-content-between">
             <div>
                 <h2>📊 Tus Estadísticas</h2>
-                <p class="text-muted">Resumen de tu actividad en el casino</p>
+                <p class="text-muted mb-0">Resumen de tu actividad en el casino</p>
             </div>
-            <div>
-                <a href="{{ url_for('dashboard.home') }}" class="btn btn-outline-primary me-2">
-                    ← Volver al Dashboard
+            <div class="d-flex flex-column gap-2">
+                <a href="{{ url_for('dashboard.home') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-1"></i>Volver al Dashboard
                 </a>
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalFondos">
-                    💰 Agregar Fondos
+                    <i class="fas fa-money-check-dollar me-1"></i>Agregar Fondos
                 </button>
             </div>
         </div>
