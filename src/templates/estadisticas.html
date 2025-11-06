@@ -90,15 +90,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label for="cantidad_estadisticas" class="form-label">Cantidad a agregar:</label>
-                    <input type="number" class="form-control" id="cantidad_estadisticas" min="1" step="1" placeholder="Ej: 100">
-                </div>
-                <div id="resultado_fondos_estadisticas"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="agregarFondosDesdeEstadisticas()">Agregar</button>
+                {% include "partials/agregar_fondos.html" %}
             </div>
         </div>
     </div>
@@ -361,37 +353,6 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-function agregarFondosDesdeEstadisticas() {
-    const cantidad = parseFloat(document.getElementById('cantidad_estadisticas').value);
-    
-    if (!cantidad || cantidad <= 0) {
-        alert('Ingresa una cantidad válida');
-        return;
-    }
-    
-    fetch('/api/agregar_fondos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cantidad })
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.error) { alert(data.error); return; }
-        document.getElementById('balance').textContent = data.nuevo_balance.toFixed(2);
-        document.getElementById('resultado_fondos_estadisticas').innerHTML =
-            `<div class="alert alert-success">${data.mensaje}</div>`;
-        setTimeout(() => {
-            const modal = bootstrap.Modal.getInstance(document.getElementById('modalFondos'));
-            modal.hide();
-            document.getElementById('cantidad_estadisticas').value = '';
-            document.getElementById('resultado_fondos_estadisticas').innerHTML = '';
-        }, 2000);
-    })
-    .catch(() => alert('Error al agregar fondos'));
-}
-</script>
-
 <style>
 .card { transition: transform 0.2s; }
 .card:hover { transform: translateY(-2px); }

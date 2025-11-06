@@ -1,0 +1,151 @@
+<div class="text-center mb-4">
+    <div class="display-4 fw-bold mb-2 money-count">
+        ${{ "%.2f"|format(user.balance) }}
+    </div>
+    <p class="mb-4">Saldo disponible</p>
+</div>
+
+<div class="mb-4">
+    <label for="cantidad_fondos" class="form-label">
+        <i class="fas fa-money-bill-wave me-2"></i>AGREGAR FONDOS VIRTUALES
+    </label>
+    <div class="input-group">
+        <span class="input-group-text">
+            <i class="fas fa-dollar-sign"></i>
+        </span>
+        <input type="number" class="form-control" id="cantidad_fondos" 
+                placeholder="Cantidad" min="1" step="1">
+        <button class="btn btn-success" onclick="agregarFondos()">
+            <i class="fas fa-rocket me-2"></i>AGREGAR
+        </button>
+    </div>
+</div>
+
+<!-- Opciones Rápidas -->
+<div class="row g-2 mb-4">
+    <div class="col-6">
+        <button class="btn btn-outline-primary w-100" onclick="agregarRapido(100)">
+            +$100
+        </button>
+    </div>
+    <div class="col-6">
+        <button class="btn btn-outline-primary w-100" onclick="agregarRapido(500)">
+            +$500
+        </button>
+    </div>
+    <div class="col-6">
+        <button class="btn btn-outline-primary w-100" onclick="agregarRapido(1000)">
+            +$1,000
+        </button>
+    </div>
+    <div class="col-6">
+        <button class="btn btn-outline-primary w-100" onclick="agregarRapido(5000)">
+            +$5,000
+        </button>
+    </div>
+</div>
+
+<div id="resultado_fondos"></div>
+
+<!-- Información del Sistema -->
+<div class="alert alert-info glass-effect mt-4">
+    <div class="d-flex">
+        <i class="fas fa-robot me-3 display-6"></i>
+        <div>
+            <h6 class="alert-heading mb-2">SISTEMA EDUCATIVO</h6>
+            <p class="mb-0 text-small">
+                Los fondos son virtuales y se utilizan exclusivamente 
+                para fines educativos. ¡Disfruta aprendiendo!
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+function agregarFondos() {
+    const cantidad = parseFloat(document.getElementById('cantidad_fondos').value);
+    
+    if (!cantidad || cantidad <= 0) {
+        mostrarNotificacion('Ingresa una cantidad válida', 'error');
+        return;
+    }
+    
+    realizarTransaccion(cantidad);
+}
+
+function agregarRapido(cantidad) {
+    document.getElementById('cantidad_fondos').value = cantidad;
+    realizarTransaccion(cantidad);
+}
+
+function realizarTransaccion(cantidad) {
+    // Efecto de carga
+    const btn = event?.target || document.querySelector('.btn-success');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>PROCESANDO...';
+    btn.disabled = true;
+
+    fetch('/api/agregar_fondos', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            cantidad: cantidad
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            mostrarNotificacion(data.error, 'error');
+            return;
+        }
+        
+        // Actualizar balance en toda la aplicación
+        document.getElementById('balance').textContent = data.nuevo_balance.toFixed(2);
+        document.querySelector('.display-4').textContent = '$' + data.nuevo_balance.toFixed(2);
+        
+        // Mostrar notificación de éxito
+        mostrarNotificacion(data.mensaje, 'success');
+        
+        // Efecto visual
+        document.querySelector('.display-4').classList.add('neon-pulse');
+        setTimeout(() => {
+            document.querySelector('.display-4').classList.remove('neon-pulse');
+        }, 2000);
+        
+        // Limpiar campo
+        document.getElementById('cantidad_fondos').value = '';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarNotificacion('Error de conexión', 'error');
+    })
+    .finally(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
+
+function mostrarNotificacion(mensaje, tipo) {
+    const alertClass = tipo === 'success' ? 'alert-success' : 'alert-danger';
+    const icon = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+    
+    const notificacion = document.createElement('div');
+    notificacion.className = `alert ${alertClass} alert-dismissible fade show`;
+    notificacion.innerHTML = `
+        <i class="fas ${icon} me-2"></i>${mensaje}
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.getElementById('resultado_fondos').innerHTML = '';
+    document.getElementById('resultado_fondos').appendChild(notificacion);
+    
+    // Auto-eliminar después de 5 segundos
+    setTimeout(() => {
+        if (notificacion.parentElement) {
+            notificacion.remove();
+        }
+    }, 5000);
+}
+</script>

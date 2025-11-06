@@ -426,6 +426,13 @@ html {
   rotate: Y 180deg; /* Requiere CSS Transforms Module Level 2, no queremos sobreescribir 'transform' */
 }
 
+.money-count {
+  color: var(--matrix-green);
+  font-weight: 800;
+  text-shadow: var(--glow-green-button);
+  font-family: var(--font-family-title), monospace;
+}
+
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
   .hero-title {
