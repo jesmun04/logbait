@@ -70,12 +70,13 @@ body::before {
 
 body::after {
   background:
-    radial-gradient(2px 2px at 25% 30%, var(--neon-cyan) 40%, transparent),
+    radial-gradient(2px 2px at 65% 15%, var(--neon-cyan) 40%, transparent),
+    radial-gradient(2px 2px at 25% 30%, var(--neon-green) 40%, transparent),
     radial-gradient(2px 2px at 75% 60%, var(--neon-pink) 40%, transparent),
-    radial-gradient(3px 3px at 50% 80%, var(--matrix-green) 40%, transparent),
+    radial-gradient(3px 3px at 50% 80%, var(--neon-green) 40%, transparent),
     radial-gradient(3px 3px at 10% 60%, var(--neon-orange) 40%, transparent),
     radial-gradient(4px 4px at 35% 90%, var(--neon-purple) 40%, transparent),
-    radial-gradient(4px 4px at 65% 20%, var(--matrix-green) 40%, transparent);
+    radial-gradient(4px 4px at 85% 95%, var(--neon-cyan) 40%, transparent);
   background-repeat: no-repeat;
   animation: floatParticles 15s linear infinite;
   opacity: 0.7;

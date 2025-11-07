@@ -37,7 +37,7 @@
                             {% endfor %}
                             {{ ns.total_partidas }}
                         </h4>
-                        <p class="text-muted">Total Partidas</p>
+                        <p class="text-muted mb-0">Total Partidas</p>
                     </div>
                     <div class="col-md-3">
                         <h4 class="text-success" id="total-victorias">
@@ -47,7 +47,7 @@
                             {% endfor %}
                             {{ ns.total_victorias }}
                         </h4>
-                        <p class="text-muted">Victorias</p>
+                        <p class="text-muted mb-0">Victorias</p>
                     </div>
                     <div class="col-md-3">
                         <h4 id="ratio-victoria">
@@ -62,7 +62,7 @@
                                 0%
                             {% endif %}
                         </h4>
-                        <p class="text-muted">Ratio Victoria</p>
+                        <p class="text-muted mb-0">Ratio Victoria</p>
                     </div>
                     <div class="col-md-3">
                         {# NETO GLOBAL = Σ (ganancia_total - apuesta_total) #}
@@ -73,7 +73,7 @@
                         <h4 class="{% if ns.neto_global >= 0 %}text-success{% else %}text-danger{% endif %}" id="total-ganancia">
                             ${{ "%.2f"|format(ns.neto_global) }}
                         </h4>
-                        <p class="text-muted">Balance Neto</p>
+                        <p class="text-muted mb-0">Balance Neto</p>
                     </div>
                 </div>
             </div>

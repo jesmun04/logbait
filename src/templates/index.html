@@ -180,13 +180,13 @@
     max-height: 25vh;
     align-content: end;
     mask-image: url({{ url_for('static', filename='img/logo.png') }});
-    filter: hue-rotate(-60deg);
+    filter: hue-rotate(-60deg) brightness(125%);
     animation: hueShift 4s linear infinite alternate;
 }
 
 @keyframes hueShift {
-    0% { filter: hue-rotate(-60deg); }
-    100% { filter: hue-rotate(60deg); }
+    0% { filter: hue-rotate(-60deg) brightness(125%); }
+    100% { filter: hue-rotate(60deg) brightness(125%); }
 }
 
 .game-image {
