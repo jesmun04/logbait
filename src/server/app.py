@@ -1,7 +1,8 @@
 from flask import Flask
 from flask_login import LoginManager
+from flask_socketio import SocketIO
 from models import db, User
-from endpoints import register_blueprints  # importamos función que registrará todo automáticamente
+from endpoints import register_blueprints
 
 app = Flask(__name__,
             template_folder='../templates',
@@ -17,6 +18,7 @@ db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -24,6 +26,16 @@ def load_user(user_id):
 
 # Registrar todos los blueprints del paquete endpoints
 register_blueprints(app)
+
+# Importar y registrar handlers de SocketIO - CORREGIDO
+try:
+    # Intenta importar desde el mismo directorio
+    from socketio_handlers import register_socketio_handlers
+    register_socketio_handlers(socketio)
+    print("✅ Handlers de SocketIO registrados")
+except ImportError:
+    print("⚠️  No se pudieron cargar los handlers de SocketIO")
+    print("ℹ️  El modo multijugador funcionará sin tiempo real")
 
 # Inicializar DB
 with app.app_context():
@@ -34,4 +46,4 @@ with app.app_context():
         print(f"❌ Error inicializando base de datos: {e}")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)

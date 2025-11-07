@@ -121,7 +121,23 @@
             </div>
         </div>
     </div>
-
+    
+    <!-- Multijugador -->
+    <div class="col-xl-3 col-lg-4 col-md-6">
+        <div class="card animated-rotate matrix-rain">
+            <div class="card-body text-center p-4">
+                <div class="display-1 text-gradient mb-4" style="font-size: 4rem;">👥</div>
+                <h3 class="card-title">Modo Multijugador</h3>
+                <p class="card-text mb-4">
+                    Juega con otros usuarios en tiempo real. Crea salas y desafía a amigos.
+                </p>
+                <a href="{{ url_for('multijugador.lobby') }}" class="btn btn-primary btn-lg w-100">
+                    <i class="fas fa-users me-2"></i>Unirse
+                </a>
+            </div>
+        </div>
+    </div>
+    
     <!-- Estadísticas -->
     <div class="col-xl-3 col-lg-4 col-md-6">
         <div class="card animated-rotate matrix-rain">
