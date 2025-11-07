@@ -13,6 +13,8 @@ def agregar_fondos():
     
     if cantidad <= 0:
         return jsonify({'error': 'La cantidad debe ser mayor a 0'}), 400
+    elif cantidad > 5000:
+        return jsonify({'error': 'La cantidad no puede superar $5000.00'}), 400
     
     current_user.balance += cantidad
     db.session.commit()
