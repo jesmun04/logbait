@@ -19,6 +19,9 @@
         <a class="nav-link {{ 'active' if request.endpoint == 'dashboard' }}" href="{{ url_for('dashboard.home') }}">
             <i class="fas fa-home me-1"></i>Dashboard
         </a>
+        <a class="nav-link {{ 'active' if request.endpoint == 'multijugador' }}" href="{{ url_for('salas_espera.lobby') }}">
+            <i class="fas fa-people-roof me-1"></i>Salas
+        </a>
         <a class="nav-link {{ 'active' if request.endpoint == 'estadisticas' }}" href="{{ url_for('estadisticas.home') }}">
             <i class="fas fa-chart-column me-1"></i>Estadísticas
         </a>
