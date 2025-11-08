@@ -9,4 +9,9 @@ bp = Blueprint('dashboard', __name__)
 def home():
     page = request.args.get("page", 1, type=int)
     salas_pag = SalaMultijugador.query.paginate(page=page, per_page=3)
+
+    # Necesario para actualización automática de la lista de salas.
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return render_template("salas_espera/lista_salas.html", salas=salas_pag, compact_view=True)
+
     return render_template("dashboard.html", user=current_user, salas=salas_pag)

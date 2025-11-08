@@ -20,6 +20,11 @@ def lobby():
     """Página principal del lobby de salas de espera"""
     page = request.args.get("page", 1, type=int)
     salas_pag = SalaMultijugador.query.paginate(page=page, per_page=8)
+
+    # Necesario para actualización automática de la lista de salas.
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return render_template("salas_espera/lista_salas.html", salas=salas_pag)
+
     return render_template('salas_espera/lobby.html', salas=salas_pag, juegos_permitidos=JUEGOS_PERMITIDOS)
 
 # CAMBIAR RUTA
