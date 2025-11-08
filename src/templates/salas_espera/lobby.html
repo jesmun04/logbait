@@ -73,6 +73,11 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Para actualización automática de la lista de salas multijugador -->
+<script src="{{ url_for('static', filename='js/salas_auto_reload.js') }}"></script>
 
 <script>
 function actualizarCapacidad() {

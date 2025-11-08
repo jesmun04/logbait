@@ -24,7 +24,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="mx-auto">
+                    <div>
                         <a href="{{ url_for('salas_espera.sala', sala_id=sala.id) }}" 
                             class="btn btn-primary">
                             <i class="fas fa-door-open me-2"></i>Unirse
@@ -84,69 +84,3 @@
     <p class="text-muted">Sé el primero en crear una sala y desafiar a otros jugadores</p>
 </div>
 {% endif %}
-
-<!-- Actualización automática de salas -->
-<!-- (funciona solamente si el elemento dentro del cual se incluye este plantilla tiene id "salas-container") -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const socket = io();
-    const container = document.querySelector('#salas-container');
-
-    // Helper: obtener el número de página actual desde la URL
-    function getCurrentPage() {
-        const params = new URLSearchParams(window.location.search);
-        return parseInt(params.get('page')) || 1;
-    }
-
-    // Cargar las salas actuales (HTML parcial)
-    function actualizarSalas(page = getCurrentPage()) {
-        const url = `?page=${page}`;
-        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(response => {
-                if (!response.ok) throw new Error('Error en la respuesta del servidor');
-                return response.text();
-            })
-            .then(html => {
-                // Reemplaza solo el contenido del contenedor
-                container.innerHTML = html;
-
-                // Reasignar listeners a los nuevos botones de paginación
-                inicializarPaginacion();
-            })
-            .catch(error => console.error('Error actualizando salas:', error));
-    }
-
-    // Interceptar clicks en la paginación (para evitar recargar la página completa)
-    function inicializarPaginacion() {
-        const pagLinks = container.querySelectorAll('.pagination a.page-link');
-        pagLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const pageMatch = this.href.match(/page=(\d+)/);
-                const page = pageMatch ? parseInt(pageMatch[1]) : 1;
-                actualizarSalas(page);
-                // Actualizar URL sin recargar
-                window.history.replaceState({}, '', `?page=${page}`);
-            });
-        });
-    }
-
-    // Inicializar los eventos de Socket.IO
-    socket.on('user_joined', (data) => {
-        console.log('Usuario se unió:', data);
-        actualizarSalas();
-    });
-
-    socket.on('user_left', (data) => {
-        console.log('Usuario salió:', data);
-        actualizarSalas();
-    });
-
-    // Actualizar periódicamente
-    setInterval(() => actualizarSalas(), 5000);
-
-    // Inicialización inicial
-    inicializarPaginacion();
-});
-</script>

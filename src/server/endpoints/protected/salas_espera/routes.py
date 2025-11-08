@@ -25,7 +25,7 @@ def lobby():
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return render_template("salas_espera/lista_salas.html", salas=salas_pag)
 
-    return render_template('salas_espera/lobby.html', salas=salas_pag, juegos_permitidos=JUEGOS_PERMITIDOS)
+    return render_template('salas_espera/lobby.html', realtime_required=True, salas=salas_pag, juegos_permitidos=JUEGOS_PERMITIDOS)
 
 # CAMBIAR RUTA
 @bp.route('/salas-espera/crear-sala', methods=['POST'])
