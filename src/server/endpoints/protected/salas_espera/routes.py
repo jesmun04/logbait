@@ -50,10 +50,7 @@ def limpiar_salas_antiguas():
         db.session.commit()
         print(f"🧹 Limpieza: {len(salas_a_eliminar)} salas, {len(usuarios_desconectados)} usuarios")
 
-@bp.route('/salas-espera')
-@login_required
-def lobby():
-    """Página principal del lobby de salas de espera"""
+def obtener_pagina_salas(num_por_pagina):
     limpiar_salas_antiguas()
     
     page = request.args.get("page", 1, type=int)
@@ -61,7 +58,15 @@ def lobby():
     salas_pag = SalaMultijugador.query.filter(
         SalaMultijugador.estado == 'esperando',
         SalaMultijugador.jugadores_actuales > 0
-    ).paginate(page=page, per_page=8)
+    ).paginate(page=page, per_page=num_por_pagina)
+
+    return salas_pag
+
+@bp.route('/salas-espera')
+@login_required
+def lobby():
+    """Página principal del lobby de salas de espera"""    
+    salas_pag = obtener_pagina_salas(8)
 
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return render_template("salas_espera/lista_salas.html", salas=salas_pag)
