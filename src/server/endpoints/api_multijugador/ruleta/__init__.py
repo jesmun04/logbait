@@ -1,12 +1,10 @@
-from flask import Blueprint
+"""Paquete de handlers de ruleta multijugador.
 
-bp = Blueprint('api_multijugador_ruleta', __name__)
+Este archivo se deja intencionadamente casi vacío: la definición
+del blueprint y las rutas viven en `routes.py`. Tener un `bp` aquí
+creaba una definición duplicada y conflictos al importar el
+paquete desde el registrador automático de blueprints.
 
-from . import routes  # noqa
-from . import socket_handlers  # noqa
-
-# Registramos los handlers de socket.io al cargar el blueprint
-def init_app(app, socketio):
-    """Initialize the blueprint with Flask app and Socket.IO instance."""
-    app.register_blueprint(bp, url_prefix='/api/multijugador/ruleta')
-    socket_handlers.register_handlers(socketio)
+# Nada más aquí: `routes.py` declara el `bp` y se registrará por
+# el mecanismo de discovery en `endpoints.register_blueprints()`.
+"""
