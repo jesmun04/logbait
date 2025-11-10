@@ -1,0 +1,236 @@
+{% extends "base/base_casino.html" %}
+{% block content %}
+<style>
+  /* ======= Estilo cartas y mesa (ligero, sin colisionar con vuestro CSS) ======= */
+  .bj-mesa {
+    background: radial-gradient(1200px 600px at 50% 0%, rgba(46, 255, 177, .08), transparent 60%);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 16px;
+    padding: 20px;
+  }
+  .bj-row { display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .bj-dealer { margin-bottom: 22px; }
+  .bj-dealer h5, .bj-jugador h6 { margin: 0 0 8px 0; letter-spacing: .5px; }
+  .bj-jugador {
+    min-width: 260px;
+    padding: 12px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.06);
+    position: relative;
+  }
+  .bj-jugador.turno {
+    outline: 2px solid #ffd54f;
+    box-shadow: 0 0 0 4px rgba(255, 213, 79, .2) inset;
+  }
+  .bj-badges { display: flex; gap: 8px; align-items: center; }
+  .bj-badge { padding: 2px 8px; border-radius: 999px; font-size: .78rem; opacity: .9; }
+  .bj-badge.turno { background: #ffd54f; color: #1a1a1a; }
+  .bj-badge.estado { background: rgba(255,255,255,.08); }
+  .bj-info { font-size: .9rem; opacity: .85; }
+  .bj-cartas { display: flex; gap: 8px; flex-wrap: wrap; }
+  .bj-carta {
+    width: 54px; height: 76px; border-radius: 10px;
+    background: linear-gradient(180deg, #fff, #f6f6f6);
+    border: 1px solid #e6e6e6; color: #111;
+    display: grid; place-items: center; font-weight: 700; font-size: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,.18);
+  }
+  .bj-carta.roja { color: #b71c1c; }
+  .bj-carta.back {
+    background: linear-gradient(135deg, #3a2a69, #22163f);
+    border-color: #2b1f4e; color: transparent;
+    box-shadow: 0 4px 12px rgba(0,0,0,.28) inset, 0 2px 10px rgba(0,0,0,.2);
+  }
+  .bj-total { font-weight: 700; }
+  .bj-sep { height: 12px; }
+  .bj-controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .bj-timer { color: #ff5a5f; font-weight: 700; }
+</style>
+
+<div class="container py-4">
+  <h2>Blackjack Multijugador — Sala {{ sala.id }}</h2>
+
+  <!-- Código de sala -->
+  <div class="mb-3 p-3 border rounded">
+    <div><strong>Código de sala:</strong> {{ sala.id }}</div>
+    <div class="small text-muted">Comparte el código. Desde "Salas de espera" podéis crear/unirse.</div>
+  </div>
+
+  <!-- Controles -->
+  <div class="bj-controls mb-3">
+    <input id="apuesta" type="number" min="1" step="1" placeholder="Apuesta"
+           class="form-control" style="max-width:160px;">
+    <button id="btnApostar" class="btn btn-primary btn-sm">APOSTAR</button>
+    <button id="btnIniciar" class="btn btn-success btn-sm">INICIAR</button>
+    <button id="btnHit" class="btn btn-outline-primary btn-sm" disabled>PEDIR</button>
+    <button id="btnStand" class="btn btn-outline-secondary btn-sm" disabled>PLANTARSE</button>
+    <button id="btnRevancha" class="btn btn-warning btn-sm" style="display:none;">Jugar otra (votar)</button>
+    <span id="contador" class="bj-timer ms-2"></span>
+  </div>
+
+  <!-- Mesa -->
+  <div class="bj-mesa">
+    <div id="dealer" class="bj-dealer"></div>
+    <div id="jugadores" class="bj-row"></div>
+  </div>
+
+  <!-- Debug opcional -->
+  <details class="mt-3">
+    <summary>Debug JSON</summary>
+    <pre id="estado" class="bg-light p-3" style="max-height:420px;overflow:auto;"></pre>
+  </details>
+</div>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+  const salaId = Number('{{ sala.id }}');
+  const myId   = Number('{{ user.id }}');
+  const socket = io();
+
+  let lastState = null, timerHandle = null;
+
+  // ===== Helpers cartas =====
+  function isRoja(s) { return s === '♥' || s === '♦'; }
+  function cartaHTML(c, faceUp=true){
+    if (!faceUp) return `<div class="bj-carta back">🂠</div>`;
+    if (!Array.isArray(c)) return `<div class="bj-carta">?</div>`;
+    const [r,s] = c;
+    const roja = isRoja(s) ? 'roja' : '';
+    return `<div class="bj-carta ${roja}">${r}${s}</div>`;
+  }
+  function manoHTML(mano, faceUpAll=true){
+    if (!mano || mano.length === 0) return `<div class="bj-carta back" style="opacity:.3">🂠</div>`;
+    return mano.map(c => cartaHTML(c, faceUpAll)).join('');
+  }
+
+  // ===== Layout dinámico 1–4 jugadores =====
+  function layoutSlots(ids){
+    // devuelve arrays de columnas por fila para una vista de "mesa inferior" (jugadores abajo)
+    // Dealer se pinta aparte arriba centro.
+    if (ids.length <= 1) return [ids];                // [ [P1] ]
+    if (ids.length === 2) return [[ids[0], ids[1]]];  // [ [P1, P2] ]
+    if (ids.length === 3) return [[ids[0]], [ids[1], ids[2]]]; // P1 centro, P2-P3 lados
+    return [[ids[0], ids[1], ids[2], ids[3]]];        // 4 en fila
+  }
+
+  function render(st){
+    // Debug
+    document.getElementById('estado').textContent = JSON.stringify(st, null, 2);
+
+    // Dealer (oculto segunda carta en fase "turnos" para parecerse al individual)
+    const dealerEl = document.getElementById('dealer');
+    const dealerHand = st.dealer || [];
+    const fase = st.fase;
+    let dealerCardsHTML = '';
+    if (fase === 'turnos' && dealerHand.length >= 2){
+      // 1ª descubierta, 2ª tapada
+      dealerCardsHTML = cartaHTML(dealerHand[0], true) + cartaHTML(dealerHand[1], false) +
+                        dealerHand.slice(2).map(c => cartaHTML(c,true)).join('');
+    } else {
+      dealerCardsHTML = manoHTML(dealerHand, true);
+    }
+    const dealerTotal = (fase === 'crupier' || fase === 'fin') ? (st.dealer_total ?? '') : '??';
+    dealerEl.innerHTML = `
+      <div class="bj-jugador" style="max-width:960px; margin:0 auto;">
+        <div class="d-flex justify-content-between">
+          <h5>Crupier</h5>
+          <div class="bj-info">Total: <span class="bj-total">${dealerTotal}</span></div>
+        </div>
+        <div class="bj-cartas mt-2">${dealerCardsHTML}</div>
+      </div>
+    `;
+
+    // Jugadores
+    const cont = document.getElementById('jugadores');
+    cont.innerHTML = '';
+    const orden = st.orden_turnos || [];
+    const filas = layoutSlots(orden);
+    const turno = st.turno_actual;
+
+    filas.forEach(rowIds => {
+      const row = document.createElement('div');
+      row.className = 'bj-row';
+      rowIds.forEach(uid => {
+        const j = st.jugadores[String(uid)];
+        if (!j) return;
+        const esTurno = (st.fase === 'turnos' && turno === uid);
+        const cartasHTML = manoHTML(j.mano, true);
+        const total = j.total ?? '-';
+        const badgeTurno = esTurno ? `<span class="bj-badge turno">Turno</span>` : '';
+        const estado = j.estado || '';
+        row.insertAdjacentHTML('beforeend', `
+          <div class="bj-jugador ${esTurno ? 'turno' : ''}">
+            <div class="d-flex justify-content-between align-items-center">
+              <h6>${j.username}</h6>
+              <div class="bj-badges">
+                ${badgeTurno}
+                <span class="bj-badge estado">${estado}</span>
+              </div>
+            </div>
+            <div class="bj-info mt-1">Apuesta: <strong>${j.apuesta}</strong> · Saldo: ${j.balance}</div>
+            <div class="bj-sep"></div>
+            <div class="bj-cartas">${cartasHTML}</div>
+            <div class="bj-sep"></div>
+            <div class="bj-info">Total: <span class="bj-total">${total}</span></div>
+          </div>
+        `);
+      });
+      cont.appendChild(row);
+    });
+
+    // Habilitar/deshabilitar acciones según mi turno
+    const esMiTurno = (st.fase === 'turnos' && turno === myId);
+    document.getElementById('btnHit').disabled   = !esMiTurno;
+    document.getElementById('btnStand').disabled = !esMiTurno;
+
+    // Botón Revancha visible en fin
+    document.getElementById('btnRevancha').style.display = (st.fase === 'fin') ? 'inline-block' : 'none';
+  }
+
+  function startCountdown(st){
+    const el = document.getElementById('contador');
+    if (timerHandle){ clearInterval(timerHandle); timerHandle = null; }
+    el.textContent = '';
+    if (st.fase !== 'turnos' || !st.deadline_ts) return;
+    function tick(){
+      const secs = Math.max(0, Math.ceil(st.deadline_ts*1000 - Date.now())/1000);
+      el.textContent = `Tiempo restante turno: ${secs.toFixed(0)}s`;
+      if (secs <= 0){ clearInterval(timerHandle); timerHandle = null; }
+    }
+    tick();
+    timerHandle = setInterval(tick, 250);
+  }
+
+  // ====== SocketIO ======
+  socket.on('connect', () => {
+    socket.emit('join_sala_blackjack', { sala_id: salaId });
+  });
+  socket.on('error_blackjack', (e) => alert(e.msg || 'Error'));
+  socket.on('estado_blackjack', (st) => {
+    lastState = st;
+    render(st);
+    startCountdown(st);
+  });
+
+  // ====== Botones ======
+  document.getElementById('btnApostar').onclick = () => {
+    const cantidad = parseFloat(document.getElementById('apuesta').value || '0');
+    socket.emit('apostar_blackjack', { sala_id: salaId, cantidad });
+  };
+  document.getElementById('btnIniciar').onclick = () => {
+    socket.emit('iniciar_ronda_blackjack', { sala_id: salaId });
+  };
+  document.getElementById('btnHit').onclick = () => {
+    socket.emit('hit_blackjack', { sala_id: salaId });
+  };
+  document.getElementById('btnStand').onclick = () => {
+    socket.emit('stand_blackjack', { sala_id: salaId });
+  };
+  document.getElementById('btnRevancha').onclick = () => {
+    socket.emit('voto_revancha', { sala_id: salaId });
+  };
+</script>
+{% endblock %}
+
+
