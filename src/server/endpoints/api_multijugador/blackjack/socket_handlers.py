@@ -3,6 +3,8 @@ from collections import deque
 from flask_login import current_user
 from flask_socketio import join_room, leave_room, emit
 from models import db, User, SalaMultijugador
+from flask import request
+
 
 # ================== Estado en memoria por sala ==================
 salas_blackjack = {}
@@ -156,6 +158,9 @@ def ejecutar_crupier_y_resolver(sala_id):
             db.session.add(user)
             # Mantener memoria alineada con DB para el header
             j["balance"] = float(user.balance)
+                    
+            emit("balance_update", {"balance": float(user.balance)}, room=f"blackjack_sala_{sala_id}")
+
 
         j["apuesta"] = 0.0
 
@@ -243,6 +248,9 @@ def register_blackjack_handlers(socketio, app):
         j["apuesta"] = cantidad
         j["balance"] = float(user.balance)
         j["estado"] = "jugando"
+
+        emit("balance_update", {"balance": float(user.balance)}, room=request.sid)
+
         emitir_estado(sala_id)
 
     @socketio.on("iniciar_ronda_blackjack")

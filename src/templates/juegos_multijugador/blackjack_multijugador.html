@@ -203,27 +203,32 @@
   }
 
   // ====== SocketIO ======
-  socket.on('connect', () => {
-    socket.emit('join_sala_blackjack', { sala_id: salaId });
-  });
-  socket.on('error_blackjack', (e) => alert(e.msg || 'Error'));
-  socket.on('estado_blackjack', (st) => {
-    lastState = st;
-    render(st);
-    startCountdown(st);
-      socket.on('estado_blackjack', (st) => {
-    lastState = st;
-    render(st);
-    startCountdown(st);
+  // ====== SocketIO ======
+socket.on('connect', () => {
+  socket.emit('join_sala_blackjack', { sala_id: salaId });
+});
 
-    // === Actualiza el saldo del header en tiempo real ===
-    const meId = "{{ user.id }}";
-    if (st.jugadores[meId] && typeof window.updateHeaderBalance === 'function') {
-      window.updateHeaderBalance(st.jugadores[meId].balance);
-    }
-  });
+socket.on('error_blackjack', (e) => alert(e.msg || 'Error'));
 
-  });
+socket.on('estado_blackjack', (st) => {
+  lastState = st;
+  render(st);
+  startCountdown(st);
+
+  // === Actualiza el saldo del header en tiempo real ===
+  const meId = "{{ user.id }}";
+  if (st.jugadores && st.jugadores[meId] && typeof window.updateHeaderBalance === 'function') {
+    window.updateHeaderBalance(st.jugadores[meId].balance);
+  }
+});
+
+socket.on('balance_update', (data) => {
+  if (data && typeof data.balance !== 'undefined' && typeof window.updateHeaderBalance === 'function') {
+    window.updateHeaderBalance(data.balance);
+  }
+});
+
+
 
   // ====== Botones ======
   document.getElementById('btnApostar').onclick = () => {
