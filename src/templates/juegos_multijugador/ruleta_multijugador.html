@@ -1,0 +1,93 @@
+{% extends "base/base_casino.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6>Ruleta Multijugador</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <!-- Tablero de la ruleta -->
+                            <div id="roulette-board" class="mb-4">
+                                <!-- El tablero de la ruleta se cargará aquí dinámicamente -->
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <!-- Panel de jugadores y chat -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Jugadores en sala</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul id="players-list" class="list-group">
+                                        <!-- Lista de jugadores se actualizará dinámicamente -->
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Chat de la sala -->
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Chat</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="chat-messages" class="chat-container mb-3">
+                                        <!-- Mensajes del chat se mostrarán aquí -->
+                                    </div>
+                                    <div class="input-group">
+                                        <input type="text" id="chat-input" class="form-control" placeholder="Escribe un mensaje...">
+                                        <button class="btn btn-primary" id="send-message">Enviar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controles de apuesta -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Control de apuestas</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div id="bet-controls">
+                                                <!-- Controles de apuesta se cargarán aquí -->
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div id="timer-display" class="text-center">
+                                                <h3>Tiempo restante: <span id="countdown">30</span>s</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Conectar con Socket.IO
+        const socket = io('/ruleta');
+
+        // Aquí irá la lógica del juego de ruleta multijugador
+        // TODO: Implementar la lógica del juego
+    });
+</script>
+{% endblock %}
