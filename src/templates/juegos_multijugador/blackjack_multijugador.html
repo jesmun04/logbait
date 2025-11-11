@@ -248,6 +248,22 @@ socket.on('balance_update', (data) => {
     socket.emit('voto_revancha', { sala_id: salaId });
   };
 </script>
+
+<script>
+  window.salaId = Number('{{ sala.id }}');
+  window.myId   = Number('{{ user.id }}');
+
+  window.updateHeaderBalance = function (v) {
+    const el = document.getElementById('balance');
+    if (el) {
+      el.textContent = Number(v).toFixed(2);
+      el.dataset.balance = v;
+    }
+  };
+</script>
+
+<script src="{{ url_for('static', filename='js/balance.js') }}"></script>
+
 {% endblock %}
 
 
