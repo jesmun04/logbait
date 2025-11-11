@@ -34,6 +34,11 @@
   --font-family-body: 'Saira';
 }
 
+/* Sobreescribir variables de Bootstrap */
+body {
+  --bs-font-sans-serif: var(--font-family-body), var(--bs-font-sans-serif);
+}
+
 body {
   background:
     radial-gradient(ellipse at 20% 40%, rgba(0, 243, 255, 0.08) 0%, transparent 50%),

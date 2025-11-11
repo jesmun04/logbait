@@ -74,6 +74,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
     {% endif %}
     <script>
+        // Inicializar tooltips.
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+        // Hacer barra de navegación transparente cuando no se ha hecho scroll.
         const navbar = document.getElementById('mainNavbar');
         function checkScroll() {
             if (window.scrollY > 10) {
