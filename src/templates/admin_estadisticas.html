@@ -1,93 +1,673 @@
 {% extends "base/base_admin.html" %}
 
 {% block content %}
-<h1>📉 Estadísticas Avanzadas</h1>
+<h1>📊 Estadísticas Avanzadas del Sistema</h1>
 
-<div class="row g-4 mt-4">
-    <!-- Top Usuarios por Balance -->
-    <div class="col-lg-6">
-        <div class="card h-100 stat-card">
-            <div class="card-header">
-                🏆 Top 10 Usuarios por Balance
+<!-- Tarjetas de Resumen -->
+<div class="row g-3 mt-3">
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-body text-center p-3">
+                <div class="stat-icon">💰</div>
+                <h5 class="mb-1">Balance Total</h5>
+                <div class="stat-number">${{ "%.2f"|format(total_balance) }}</div>
+                <small class="text-muted">En el sistema</small>
             </div>
-            <div class="card-body">
-                {% for usuario in top_usuarios_balance %}
-                <div class="top-user">
-                    <div>
-                        <span class="user-rank">#{{ loop.index }}</span>
-                        {{ usuario.username }}
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-body text-center p-3">
+                <div class="stat-icon">🎯</div>
+                <h5 class="mb-1">Total Apuestas</h5>
+                <div class="stat-number">{{ total_apuestas }}</div>
+                <small class="text-muted">Realizadas</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-body text-center p-3">
+                <div class="stat-icon">👥</div>
+                <h5 class="mb-1">Usuarios Activos</h5>
+                <div class="stat-number">{{ total_usuarios }}</div>
+                <small class="text-muted">Registrados</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-body text-center p-3">
+                <div class="stat-icon">📈</div>
+                <h5 class="mb-1">Apuesta Promedio</h5>
+                <div class="stat-number">${{ "%.2f"|format(total_apostado / total_apuestas if total_apuestas > 0 else 0) }}</div>
+                <small class="text-muted">Por apuesta</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Distribución por Juegos -->
+<div class="row g-3 mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header py-2">
+                🎮 Distribución por Juegos ({{ juegos_stats|length }} juegos encontrados)
+            </div>
+            <div class="card-body p-3">
+                {% if juegos_stats %}
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="chart-container" style="position: relative; height: 350px; width: 100%;">
+                            <canvas id="gamesChart"></canvas>
+                        </div>
                     </div>
-                    <div class="user-balance {% if usuario.balance >= 0 %}positive{% else %}negative{% endif %}">
+                    <div class="col-md-4">
+                        <div class="games-stats-list">
+                            {% for juego, stats in juegos_stats.items() %}
+                            <div class="game-stat-item mb-2 p-2 rounded" style="background: rgba(20, 20, 40, 0.5); border-left: 4px solid #00f3ff;">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <h6 class="fw-bold mb-0 text-uppercase small">
+                                        {% if juego == 'coinflip' %}🪙
+                                        {% elif juego == 'blackjack' %}🎲
+                                        {% elif juego == 'poker' %}🃏
+                                        {% elif juego == 'tragaperras' %}🎰
+                                        {% elif juego == 'caballos' %}🏇
+                                        {% elif juego == 'ruleta' %}🎯
+                                        {% else %}🎮{% endif %}
+                                        {{ juego|title }}
+                                    </h6>
+                                    {% if stats.variantes and stats.variantes|length > 1 %}
+                                    <span class="badge bg-info ms-1" title="Incluye: {{ stats.variantes|join(', ') }}">
+                                        {{ stats.variantes|length }} modos
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if stats.variantes and stats.variantes|length > 1 %}
+                                <div class="mb-1">
+                                    <small class="text-muted">
+                                        <i>Incluye: 
+                                        {% for variante in stats.variantes %}
+                                            {% if 'multijugador' in variante %}
+                                                <strong>Multijugador</strong>{% if not loop.last %}, {% endif %}
+                                            {% else %}
+                                                <strong>Individual</strong>{% if not loop.last %}, {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        </i>
+                                    </small>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="row text-center mb-1">
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Apuestas</small>
+                                        <span class="fw-bold">{{ stats.total_apuestas }}</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Ganadas</small>
+                                        <span class="fw-bold text-success">{{ stats.ganadas }}</span>
+                                    </div>
+                                </div>
+                                <div class="border-top pt-1">
+                                    <div class="d-flex justify-content-between mb-0">
+                                        <small>Apostado:</small>
+                                        <strong>${{ "%.2f"|format(stats.total_apostado) }}</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-0">
+                                        <small>Ganado:</small>
+                                        <strong>${{ "%.2f"|format(stats.total_ganado) }}</strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <small>Neto:</small>
+                                        <strong class="{% if stats.neto >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                            ${{ "%.2f"|format(stats.neto) }}
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-3">
+                    <h5 class="text-muted">📊 No hay datos de juegos</h5>
+                    <p class="text-muted mb-0">No se encontraron apuestas registradas en el sistema.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tops de Usuarios -->
+<div class="row g-3 mt-3">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header py-2">
+                🏆 Top Usuarios por Balance
+            </div>
+            <div class="card-body p-2">
+                {% for usuario in top_usuarios_balance %}
+                <div class="d-flex justify-content-between align-items-center p-1 {% if loop.index <= 3 %}bg-primary bg-opacity-10 rounded{% endif %}">
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-primary me-1">#{{ loop.index }}</span>
+                        <div>
+                            <div class="fw-bold small">{{ usuario.username }}</div>
+                            <small class="text-muted">{{ usuario.created_at.strftime('%d/%m/%Y') }}</small>
+                        </div>
+                    </div>
+                    <div class="fw-bold small {% if usuario.balance >= 0 %}text-success{% else %}text-danger{% endif %}">
                         ${{ "%.2f"|format(usuario.balance) }}
                     </div>
                 </div>
+                {% if not loop.last %}<hr class="my-1">{% endif %}
                 {% endfor %}
             </div>
         </div>
     </div>
 
-    <!-- Top Apostadores -->
     <div class="col-lg-6">
-        <div class="card h-100 stat-card">
-            <div class="card-header">
-                🎯 Top 10 Apostadores
+        <div class="card h-100">
+            <div class="card-header py-2">
+                🎯 Top Apostadores
             </div>
-            <div class="card-body">
+            <div class="card-body p-2">
                 {% for apostador in top_apostadores %}
-                <div class="top-user">
-                    <div>
-                        <span class="user-rank">#{{ loop.index }}</span>
-                        {{ apostador.username }}
+                <div class="d-flex justify-content-between align-items-center p-1 {% if loop.index <= 3 %}bg-primary bg-opacity-10 rounded{% endif %}">
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-primary me-1">#{{ loop.index }}</span>
+                        <div>
+                            <div class="fw-bold small">{{ apostador.username }}</div>
+                            <small class="text-muted">{{ apostador.total_apuestas }} apuestas</small>
+                        </div>
                     </div>
-                    <div class="user-balance">
+                    <div class="fw-bold small">
                         ${{ "%.2f"|format(apostador.total_apostado or 0) }}
                     </div>
                 </div>
+                {% if not loop.last %}<hr class="my-1">{% endif %}
                 {% endfor %}
             </div>
         </div>
     </div>
+</div>
 
+<!-- Métricas del Sistema -->
+<div class="row g-3 mt-3">
     <div class="col-12">
         <div class="card">
-            <div class="card-header">
-                📈 Estadísticas Detalladas del Sistema
+            <div class="card-header py-2">
+                📈 Métricas del Sistema
             </div>
-            <div class="card-body">
-                <div class="row g-4">
-                    <div class="col-lg-6">
-                        <h3>🎮 Distribución por Juegos</h3>
-                        <p>Análisis de popularidad de cada juego</p>
-                        <!-- Aquí podrías agregar gráficos con Chart.js -->
+            <div class="card-body p-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="mb-2">📊 Métricas de Rentabilidad</h6>
+                        <div class="metrics-grid">
+                            <div class="metric-item p-2">
+                                <div class="metric-label">House Edge</div>
+                                <div class="metric-value small {% if house_edge >= 0 %}positive{% else %}negative{% endif %}">
+                                    {{ "%.2f"|format(house_edge * 100) }}%
+                                </div>
+                            </div>
+                            <div class="metric-item p-2">
+                                <div class="metric-label">Apuestas Ganadas</div>
+                                <div class="metric-value small">{{ apuestas_ganadas }} ({{ "%.1f"|format((apuestas_ganadas / total_apuestas) * 100 if total_apuestas > 0 else 0) }}%)</div>
+                            </div>
+                            <div class="metric-item p-2">
+                                <div class="metric-label">Apuestas Perdidas</div>
+                                <div class="metric-value small">{{ apuestas_perdidas }} ({{ "%.1f"|format((apuestas_perdidas / total_apuestas) * 100 if total_apuestas > 0 else 0) }}%)</div>
+                            </div>
+                            <div class="metric-item p-2">
+                                <div class="metric-label">Ratio Ganancia/Pérdida</div>
+                                <div class="metric-value small {% if (total_ganado / total_apostado if total_apostado > 0 else 0) >= 1 %}positive{% else %}negative{% endif %}">
+                                    {{ "%.2f"|format(total_ganado / total_apostado if total_apostado > 0 else 0) }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-lg-6">
-                        <h3>📊 Rendimiento del Sistema</h3>
-                        <p>Métricas de uso y performance</p>
-                        <!-- Aquí podrías agregar más estadísticas -->
+                    <div class="col-md-6">
+                        <h6 class="mb-2">📅 Distribución de Resultados</h6>
+                        <div style="position: relative; height: 200px; width: 100%;">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                💡 Recomendaciones del Sistema
-            </div>
-            <div class="card-body">
-                <div style="background: rgba(0, 243, 255, 0.1); padding: 15px; border-radius: 10px; margin: 10px 0;">
-                    <h4>🎯 Juegos Más Populares</h4>
-                    <p>Basado en el número de apuestas, estos son los juegos más jugados:</p>
-                    <!-- Aquí podrías agregar análisis automático -->
-                </div>
-                <div style="background: rgba(0, 255, 136, 0.1); padding: 15px; border-radius: 10px; margin: 10px 0;">
-                    <h4>💰 Usuarios Destacados</h4>
-                    <p>Usuarios con mejor rendimiento en apuestas:</p>
-                    <!-- Aquí podrías agregar análisis de usuarios -->
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Resumen Financiero Detallado - Ultra Compacto -->
+<div class="row mt-2">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header py-1 px-3">
+                <h6 class="mb-0">💰 Resumen Financiero Detallado</h6>
+            </div>
+            <div class="card-body py-2 px-3">
+                <div class="row text-center align-items-center">
+                    <div class="col-md-4 border-end pe-3">
+                        <div class="text-primary fw-bold fs-5 mb-0">${{ "%.2f"|format(total_apostado) }}</div>
+                        <small class="text-muted">Total Apostado</small>
+                    </div>
+                    <div class="col-md-4 border-end pe-3">
+                        <div class="text-success fw-bold fs-5 mb-0">${{ "%.2f"|format(total_ganado) }}</div>
+                        <small class="text-muted">Total Ganado</small>
+                    </div>
+                    <div class="col-md-4 ps-3">
+                        <div class="fw-bold fs-5 mb-0 {% if (total_apostado - total_ganado) >= 0 %}text-success{% else %}text-danger{% endif %}">
+                            ${{ "%.2f"|format(total_apostado - total_ganado) }}
+                        </div>
+                        <small class="text-muted">Ganancia/Pérdida Neta</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Esperar a que el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Inicializando gráficos...');
+    
+    // ===== GRÁFICO DE JUEGOS =====
+    const gamesChartElement = document.getElementById('gamesChart');
+    if (gamesChartElement) {
+        console.log('Inicializando gráfico de juegos...');
+        
+        const juegosStats = {{ juegos_stats|tojson }};
+        console.log('Datos de juegos:', juegosStats);
+        
+        if (Object.keys(juegosStats).length === 0) {
+            console.log('No hay datos para el gráfico de juegos');
+            // Crear un gráfico vacío
+            new Chart(gamesChartElement, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Sin datos'],
+                    datasets: [{
+                        data: [1],
+                        backgroundColor: ['rgba(128, 128, 128, 0.5)']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'No hay datos disponibles',
+                            color: '#c0c0ff'
+                        }
+                    }
+                }
+            });
+        } else {
+            // Preparar datos para el gráfico
+            const labels = [];
+            const data = [];
+            const backgroundColors = [
+                'rgba(0, 243, 255, 0.8)',  // Cyan
+                'rgba(255, 0, 255, 0.8)',  // Pink
+                'rgba(138, 43, 226, 0.8)', // Purple
+                'rgba(255, 107, 53, 0.8)', // Orange
+                'rgba(0, 255, 136, 0.8)',  // Green
+                'rgba(255, 215, 0, 0.8)',  // Yellow
+                'rgba(0, 150, 255, 0.8)',  // Blue
+                'rgba(255, 100, 0, 0.8)',  // Red-Orange
+                'rgba(100, 255, 100, 0.8)' // Light Green
+            ];
+
+            let colorIndex = 0;
+            for (const [juego, stats] of Object.entries(juegosStats)) {
+                let label = juego.charAt(0).toUpperCase() + juego.slice(1);
+                
+                // Agregar icono según el juego
+                if (juego === 'coinflip') label = '🪙 ' + label;
+                else if (juego === 'blackjack') label = '🎲 ' + label;
+                else if (juego === 'poker') label = '🃏 ' + label;
+                else if (juego === 'tragaperras') label = '🎰 ' + label;
+                else if (juego === 'caballos') label = '🏇 ' + label;
+                else if (juego === 'ruleta') label = '🎯 ' + label;
+                else label = '🎮 ' + label;
+                
+                labels.push(label);
+                data.push(stats.total_apostado);
+                colorIndex = (colorIndex + 1) % backgroundColors.length;
+            }
+
+            const gamesData = {
+                labels: labels,
+                datasets: [{
+                    label: 'Total Apostado ($)',
+                    data: data,
+                    backgroundColor: backgroundColors.slice(0, labels.length),
+                    borderColor: backgroundColors.slice(0, labels.length).map(color => color.replace('0.8', '1')),
+                    borderWidth: 2
+                }]
+            };
+
+            // Configuración del gráfico de juegos
+            const gamesConfig = {
+                type: 'doughnut',
+                data: gamesData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    layout: {
+                        padding: {
+                            top: 10,
+                            bottom: 10
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#c0c0ff',
+                                font: {
+                                    size: 10,
+                                    family: "'Saira', sans-serif"
+                                },
+                                padding: 10,
+                                usePointStyle: true
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribución del Total Apostado por Juego',
+                            color: '#00f3ff',
+                            font: {
+                                size: 14,
+                                weight: 'bold',
+                                family: "'Orbitron', monospace"
+                            },
+                            padding: {
+                                top: 5,
+                                bottom: 10
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(10, 10, 20, 0.9)',
+                            titleColor: '#00f3ff',
+                            bodyColor: '#c0c0ff',
+                            borderColor: '#00f3ff',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return `${label}: $${value.toFixed(2)} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            // Crear el gráfico de juegos
+            try {
+                new Chart(gamesChartElement, gamesConfig);
+                console.log('Gráfico de juegos creado exitosamente');
+            } catch (error) {
+                console.error('Error creando gráfico de juegos:', error);
+            }
+        }
+    } else {
+        console.error('No se encontró el elemento gamesChart');
+    }
+
+    // ===== GRÁFICO DE RESULTADOS =====
+    const resultsChartElement = document.getElementById('resultsChart');
+    if (resultsChartElement) {
+        console.log('Inicializando gráfico de resultados...');
+        
+        const resultsData = {
+            labels: ['Ganadas', 'Perdidas', 'Empates'],
+            datasets: [{
+                data: [{{ apuestas_ganadas }}, {{ apuestas_perdidas }}, {{ apuestas_empate }}],
+                backgroundColor: [
+                    'rgba(0, 255, 136, 0.8)',
+                    'rgba(255, 107, 53, 0.8)',
+                    'rgba(255, 215, 0, 0.8)'
+                ],
+                borderColor: [
+                    'rgb(0, 255, 136)',
+                    'rgb(255, 107, 53)',
+                    'rgb(255, 215, 0)'
+                ],
+                borderWidth: 2
+            }]
+        };
+
+        // Configuración del gráfico de resultados
+        const resultsConfig = {
+            type: 'pie',
+            data: resultsData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#c0c0ff',
+                            font: {
+                                size: 10,
+                                family: "'Saira', sans-serif"
+                            },
+                            padding: 10
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Distribución de Resultados',
+                        color: '#00f3ff',
+                        font: {
+                            size: 12,
+                            weight: 'bold',
+                            family: "'Orbitron', monospace"
+                        },
+                        padding: {
+                            top: 5,
+                            bottom: 5
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(10, 10, 20, 0.9)',
+                        titleColor: '#00f3ff',
+                        bodyColor: '#c0c0ff',
+                        borderColor: '#00f3ff',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // Crear el gráfico de resultados
+        try {
+            new Chart(resultsChartElement, resultsConfig);
+            console.log('Gráfico de resultados creado exitosamente');
+        } catch (error) {
+            console.error('Error creando gráfico de resultados:', error);
+        }
+    } else {
+        console.error('No se encontró el elemento resultsChart');
+    }
+});
+</script>
+
+<style>
+/* Reducción radical de todos los espacios */
+.stat-card {
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(0, 243, 255, 0.3);
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 243, 255, 0.2);
+}
+
+.stat-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: 'Orbitron', monospace;
+    background: linear-gradient(135deg, #00f3ff, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.25rem;
+}
+
+.games-stats-list {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.game-stat-item {
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.game-stat-item:hover {
+    transform: translateX(3px);
+    background: rgba(0, 243, 255, 0.1) !important;
+}
+
+.badge.bg-info {
+    background: linear-gradient(135deg, #00f3ff, #008cff) !important;
+    border: none;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.metric-item {
+    background: rgba(20, 20, 40, 0.5);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.metric-item:hover {
+    transform: translateY(-1px);
+    border-color: rgba(0, 243, 255, 0.5);
+    box-shadow: 0 3px 8px rgba(0, 243, 255, 0.1);
+}
+
+.metric-label {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+.metric-value {
+    font-weight: bold;
+    font-family: var(--font-family-title);
+}
+
+.positive {
+    color: var(--neon-green);
+    text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+}
+
+.negative {
+    color: var(--neon-orange);
+    text-shadow: 0 0 5px rgba(255, 107, 53, 0.3);
+}
+
+/* Estilos específicos para los gráficos */
+.chart-container {
+    position: relative !important;
+    height: 350px !important;
+    width: 100% !important;
+}
+
+/* Forzar el tamaño de los canvas */
+#gamesChart, #resultsChart {
+    display: block !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+}
+
+/* Reducción máxima de espacios en el resumen financiero */
+.card-header.py-1 {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+}
+
+.card-body.py-2 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
+
+.border-end {
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Eliminar todos los márgenes innecesarios */
+.row.mt-2 {
+    margin-top: 0.5rem !important;
+}
+
+/* Ajustes ultra compactos */
+.card-body .fs-5 {
+    font-size: 1.1rem !important;
+}
+
+/* Reducir todos los elementos de texto */
+.card-header h6 {
+    font-size: 0.95rem;
+}
+
+.card-body small {
+    font-size: 0.75rem;
+}
+
+/* Compactar elementos de lista */
+.games-stats-list .game-stat-item {
+    margin-bottom: 0.5rem !important;
+    padding: 0.5rem !important;
+}
+
+/* Reducir padding general de cards */
+.card-body.p-2 {
+    padding: 0.5rem !important;
+}
+
+.card-body.p-3 {
+    padding: 0.75rem !important;
+}
+</style>
 {% endblock %}
