@@ -12,6 +12,31 @@ def home():
     """Página principal de la ruleta multijugador"""
     return render_template('ruleta_multijugador.html')
 
+
+@bp.route('/ruleta/sala/<int:sala_id>')
+@login_required
+def sala_ruleta(sala_id):
+    """Página de sala para una partida multijugador de ruleta.
+
+    Esta ruta sigue la convención usada por CoinFlip y otras rutas de
+    juegos: `/ruleta/sala/<id>` para que las redirecciones desde la
+    sala de espera funcionen sin problemas.
+    """
+    sala = SalaMultijugador.query.get_or_404(sala_id)
+
+    # Verificar que el usuario está en la sala
+    usuario_en_sala = UsuarioSala.query.filter_by(usuario_id=current_user.id, sala_id=sala_id).first()
+    if not usuario_en_sala:
+        from flask import redirect, url_for
+        return redirect(url_for('salas_espera.lobby'))
+
+    # Solo permitir acceso si la sala está en estado 'jugando'
+    if sala.estado != 'jugando':
+        from flask import redirect, url_for
+        return redirect(url_for('salas_espera.lobby'))
+
+    return render_template('juegos_multijugador/ruleta_multijugador.html', sala=sala, user=current_user)
+
 # Registrar handlers de Socket.IO cuando el blueprint se registre (patrón igual a coinflip)
 from .socket_handlers import register_ruleta_handlers
 

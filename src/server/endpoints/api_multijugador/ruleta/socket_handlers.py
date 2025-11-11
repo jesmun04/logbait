@@ -111,7 +111,8 @@ def register_ruleta_handlers(socketio, app):
                 a['has_spun'] = True
 
         # chequear si todos listos o 30s desde la primera apuesta
-        required = sala.capacidad
+        # Considerar el número de jugadores actualmente conectados en la sala
+        required = len(st['jugadores']) if len(st.get('jugadores', [])) > 0 else sala.capacidad
         ready_count = sum(1 for j in st['jugadores'] if j.get('ready'))
         created_at = None
         if st['apuestas']:
@@ -181,9 +182,11 @@ def register_ruleta_handlers(socketio, app):
 
             results.append({
                 'usuario_id': a['usuario_id'],
+                'username': user.username if user else None,
                 'bet_total_euros': total_bet_euros,
                 'win_euros': total_win_euros,
-                'payout_euros': total_payout_euros
+                'payout_euros': total_payout_euros,
+                'nuevo_balance': user.balance if user else None
             })
 
         # commit DB

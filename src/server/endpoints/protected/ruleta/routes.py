@@ -10,9 +10,3 @@ bp = Blueprint('ruleta', __name__)
 def home():
     """Página principal de la ruleta"""
     return render_template('ruleta.html')
-
-@bp.route('/ruleta/jugar')
-@login_required
-def jugar():
-    """Alternativa para acceder a la ruleta"""
-    return render_template('ruleta.html')
