@@ -95,7 +95,7 @@ Inicio
                             <td>${{ "%.2f"|format(usuario.balance) }}</td>
                             <td>{{ usuario.created_at.strftime('%d/%m/%Y') }}</td>
                             <td>
-                                <a href="{{ url_for('admin_usuario_detalle.home', user_id=usuario.id) }}" class="btn btn-primary">Ver</a>
+                                <a href="{{ url_for('admin_usuarios.detalle_usuario', user_id=usuario.id) }}" class="btn btn-primary">Ver</a>
                             </td>
                         </tr>
                         {% endfor %}
