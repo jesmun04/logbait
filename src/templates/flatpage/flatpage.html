@@ -15,7 +15,7 @@
 {% if page.meta.get("toc", True) %}
 <div class="d-flex gap-5 flex-column flex-md-row-reverse">
     <!-- TOC sticky sidebar -->
-    <nav class="flex-grow-0 flex-shrink-0 toc sticky-md-top" style="flex-basis: 25%; top: 6rem; max-height: calc(100vh - 6rem); overflow-y: auto;">
+    <nav class="flex-grow-0 flex-shrink-0 toc sticky-md-top z-1" style="flex-basis: 25%; top: 6rem; max-height: calc(100vh - 6rem); overflow-y: auto;">
         <div class="card translucent-card">
             <div class="card-body">
                 {% set headings = get_headings(html) %}
