@@ -1,5 +1,9 @@
 {% extends "base/base.html" %}
 
+{% block platform_name %}
+Panel administrativo de LogBait
+{% endblock %}
+
 {% block navbar %}
 <a class="d-flex flex-column navbar-brand" href="{{ url_for('admin_panel.home') }}">
     <span class="fw-bold" id="brand">
