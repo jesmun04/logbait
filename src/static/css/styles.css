@@ -127,6 +127,14 @@ h6 {
   transition: background-color 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease;
 }
 
+@media (scripting: none) {
+  .navbar {
+    background: rgba(10, 10, 20, 0.7);
+    backdrop-filter: blur(20px);
+    border-color: rgba(0, 243, 255, 0.2);
+  }
+}
+
 /* cuando se hace scroll */
 .navbar.scrolled {
   background: rgba(10, 10, 20, 0.7);
@@ -453,17 +461,6 @@ html {
   background-size: 20px 20px;
 }
 
-.animated-rotate {
-  opacity: 0;
-  scale: 0.8; /* Requiere CSS Transforms Module Level 2, no queremos sobreescribir 'transform' */
-  rotate: Y 180deg; /* Requiere CSS Transforms Module Level 2, no queremos sobreescribir 'transform' */
-}
-
-.animated-translateY {
-  opacity: 0;
-  translate: 0 50px;
-}
-
 .money-count {
   color: var(--matrix-green);
   font-weight: 800;
@@ -498,5 +495,19 @@ html {
 
   100% {
     text-shadow: var(--glow-multi);
+  }
+}
+
+/* Estas animaciones dependen del script 'animations.js' para mostrarse */
+@media (scripting: enabled) {
+  .animated-rotate {
+    opacity: 0;
+    scale: 0.8; /* Requiere CSS Transforms Module Level 2, no queremos sobreescribir 'transform' */
+    rotate: Y 180deg; /* Requiere CSS Transforms Module Level 2, no queremos sobreescribir 'transform' */
+  }
+
+  .animated-translateY {
+    opacity: 0;
+    translate: 0 50px;
   }
 }
