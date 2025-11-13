@@ -5,14 +5,14 @@ Estadísticas
 {% endblock %}
 
 {% block content %}
-<h1>📊 Estadísticas Avanzadas del Sistema</h1>
+<h1>📊 Estadísticas Avanzadas</h1>
 
 <!-- Tarjetas de Resumen -->
 <div class="row g-3 mt-3">
     <div class="col-xl-3 col-md-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-3">
-                <div class="stat-icon">💰</div>
+                <div class="fs-2">💰</div>
                 <h5 class="mb-1">Balance Total</h5>
                 <div class="stat-number">${{ "%.2f"|format(total_balance) }}</div>
                 <small class="text-muted">En el sistema</small>
@@ -20,9 +20,9 @@ Estadísticas
         </div>
     </div>
     <div class="col-xl-3 col-md-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-3">
-                <div class="stat-icon">🎯</div>
+                <div class="fs-2">🎯</div>
                 <h5 class="mb-1">Total Apuestas</h5>
                 <div class="stat-number">{{ total_apuestas }}</div>
                 <small class="text-muted">Realizadas</small>
@@ -30,9 +30,9 @@ Estadísticas
         </div>
     </div>
     <div class="col-xl-3 col-md-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-3">
-                <div class="stat-icon">👥</div>
+                <div class="fs-2">👥</div>
                 <h5 class="mb-1">Usuarios Activos</h5>
                 <div class="stat-number">{{ total_usuarios }}</div>
                 <small class="text-muted">Registrados</small>
@@ -40,9 +40,9 @@ Estadísticas
         </div>
     </div>
     <div class="col-xl-3 col-md-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-3">
-                <div class="stat-icon">📈</div>
+                <div class="fs-2">📈</div>
                 <h5 class="mb-1">Apuesta Promedio</h5>
                 <div class="stat-number">${{ "%.2f"|format(total_apostado / total_apuestas if total_apuestas > 0 else 0) }}</div>
                 <small class="text-muted">Por apuesta</small>
@@ -54,16 +54,19 @@ Estadísticas
 <!-- Distribución por Juegos -->
 <div class="row g-3 mt-3">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header py-2">
-                🎮 Distribución por Juegos ({{ juegos_stats|length }} juegos encontrados)
+        <div class="card animated-translateY">
+            <div class="card-header">
+                <div class="d-flex align-items-center gap-3">
+                    <span>🎮 Distribución por Juegos</span>
+                    <span class="badge text-bg-light">Juegos encontrados: {{ juegos_stats|length }}</span>
+                </div>
             </div>
             <div class="card-body p-3">
                 {% if juegos_stats %}
                 <div class="row">
                     <div class="col-md-8">
                         <div class="chart-container" style="position: relative; height: 350px; width: 100%;">
-                            <canvas id="gamesChart"></canvas>
+                            <canvas id="gamesChart" class="d-block mw-100 mh-100"></canvas>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -149,21 +152,21 @@ Estadísticas
 <!-- Tops de Usuarios -->
 <div class="row g-3 mt-3">
     <div class="col-lg-6">
-        <div class="card h-100">
-            <div class="card-header py-2">
+        <div class="card animated-translateY h-100">
+            <div class="card-header">
                 🏆 Top Usuarios por Balance
             </div>
             <div class="card-body p-2">
                 {% for usuario in top_usuarios_balance %}
-                <div class="d-flex justify-content-between align-items-center p-1 {% if loop.index <= 3 %}bg-primary bg-opacity-10 rounded{% endif %}">
-                    <div class="d-flex align-items-center">
+                <div class="d-flex justify-content-between align-items-center p-1">
+                    <div class="d-flex gap-2 align-items-center">
                         <span class="badge bg-primary me-1">#{{ loop.index }}</span>
                         <div>
-                            <div class="fw-bold small">{{ usuario.username }}</div>
+                            <div class="fw-bold">{{ usuario.username }}</div>
                             <small class="text-muted">{{ usuario.created_at.strftime('%d/%m/%Y') }}</small>
                         </div>
                     </div>
-                    <div class="fw-bold small {% if usuario.balance >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    <div class="fw-bold {% if usuario.balance >= 0 %}balance-positive{% else %}balance-negative{% endif %}">
                         ${{ "%.2f"|format(usuario.balance) }}
                     </div>
                 </div>
@@ -174,21 +177,21 @@ Estadísticas
     </div>
 
     <div class="col-lg-6">
-        <div class="card h-100">
-            <div class="card-header py-2">
+        <div class="card animated-translateY h-100">
+            <div class="card-header">
                 🎯 Top Apostadores
             </div>
             <div class="card-body p-2">
                 {% for apostador in top_apostadores %}
-                <div class="d-flex justify-content-between align-items-center p-1 {% if loop.index <= 3 %}bg-primary bg-opacity-10 rounded{% endif %}">
-                    <div class="d-flex align-items-center">
+                <div class="d-flex justify-content-between align-items-center p-1">
+                    <div class="d-flex gap-2 align-items-center">
                         <span class="badge bg-primary me-1">#{{ loop.index }}</span>
                         <div>
-                            <div class="fw-bold small">{{ apostador.username }}</div>
+                            <div class="fw-bold">{{ apostador.username }}</div>
                             <small class="text-muted">{{ apostador.total_apuestas }} apuestas</small>
                         </div>
                     </div>
-                    <div class="fw-bold small">
+                    <div class="balance-neutral">
                         ${{ "%.2f"|format(apostador.total_apostado or 0) }}
                     </div>
                 </div>
@@ -202,33 +205,49 @@ Estadísticas
 <!-- Métricas del Sistema -->
 <div class="row g-3 mt-3">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header py-2">
+        <div class="card animated-translateY">
+            <div class="card-header">
                 📈 Métricas del Sistema
             </div>
             <div class="card-body p-3">
                 <div class="row">
                     <div class="col-md-6">
                         <h6 class="mb-2">📊 Métricas de Rentabilidad</h6>
-                        <div class="metrics-grid">
-                            <div class="metric-item p-2">
-                                <div class="metric-label">House Edge</div>
-                                <div class="metric-value small {% if house_edge >= 0 %}positive{% else %}negative{% endif %}">
-                                    {{ "%.2f"|format(house_edge * 100) }}%
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="card translucent-card">
+                                    <div class="card-body">
+                                        <div class="fw-bold">House Edge</div>
+                                        <div class="{% if house_edge >= 0 %}balance-positive{% else %}balance-negative{% endif %}">
+                                            {{ "%.2f"|format(house_edge * 100) }}%
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="metric-item p-2">
-                                <div class="metric-label">Apuestas Ganadas</div>
-                                <div class="metric-value small">{{ apuestas_ganadas }} ({{ "%.1f"|format((apuestas_ganadas / total_apuestas) * 100 if total_apuestas > 0 else 0) }}%)</div>
+                            <div class="col-6">
+                                <div class="card translucent-card">
+                                    <div class="card-body">
+                                        <div class="fw-bold">Apuestas Ganadas</div>
+                                        <div class="balance-neutral">{{ apuestas_ganadas }} ({{ "%.1f"|format((apuestas_ganadas / total_apuestas) * 100 if total_apuestas > 0 else 0) }}%)</div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="metric-item p-2">
-                                <div class="metric-label">Apuestas Perdidas</div>
-                                <div class="metric-value small">{{ apuestas_perdidas }} ({{ "%.1f"|format((apuestas_perdidas / total_apuestas) * 100 if total_apuestas > 0 else 0) }}%)</div>
+                            <div class="col-6">
+                                <div class="card translucent-card">
+                                    <div class="card-body">
+                                        <div class="fw-bold">Apuestas Perdidas</div>
+                                        <div class="balance-neutral">{{ apuestas_perdidas }} ({{ "%.1f"|format((apuestas_perdidas / total_apuestas) * 100 if total_apuestas > 0 else 0) }}%)</div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="metric-item p-2">
-                                <div class="metric-label">Ratio Ganancia/Pérdida</div>
-                                <div class="metric-value small {% if (total_ganado / total_apostado if total_apostado > 0 else 0) >= 1 %}positive{% else %}negative{% endif %}">
-                                    {{ "%.2f"|format(total_ganado / total_apostado if total_apostado > 0 else 0) }}
+                            <div class="col-6">
+                                <div class="card translucent-card">
+                                    <div class="card-body">
+                                        <div class="fw-bold">Ratio Ganancia/Pérdida</div>
+                                        <div class="{% if (total_ganado / total_apostado if total_apostado > 0 else 0) >= 1 %}balance-positive{% else %}balance-negative{% endif %}">
+                                            {{ "%.2f"|format(total_ganado / total_apostado if total_apostado > 0 else 0) }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -236,7 +255,7 @@ Estadísticas
                     <div class="col-md-6">
                         <h6 class="mb-2">📅 Distribución de Resultados</h6>
                         <div style="position: relative; height: 200px; width: 100%;">
-                            <canvas id="resultsChart"></canvas>
+                            <canvas id="resultsChart" class="d-block mw-100 mh-100"></canvas>
                         </div>
                     </div>
                 </div>
@@ -248,22 +267,22 @@ Estadísticas
 <!-- Resumen Financiero Detallado - Ultra Compacto -->
 <div class="row mt-2">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header py-1 px-3">
-                <h6 class="mb-0">💰 Resumen Financiero Detallado</h6>
+        <div class="card animated-translateY">
+            <div class="card-header">
+                💰 Resumen Financiero
             </div>
             <div class="card-body py-2 px-3">
                 <div class="row text-center align-items-center">
                     <div class="col-md-4 border-end pe-3">
-                        <div class="text-primary fw-bold fs-5 mb-0">${{ "%.2f"|format(total_apostado) }}</div>
+                        <div class="balance-neutral fw-bold fs-2 mb-0">${{ "%.2f"|format(total_apostado) }}</div>
                         <small class="text-muted">Total Apostado</small>
                     </div>
                     <div class="col-md-4 border-end pe-3">
-                        <div class="text-success fw-bold fs-5 mb-0">${{ "%.2f"|format(total_ganado) }}</div>
+                        <div class="balance-positive fw-bold fs-2 mb-0">${{ "%.2f"|format(total_ganado) }}</div>
                         <small class="text-muted">Total Ganado</small>
                     </div>
                     <div class="col-md-4 ps-3">
-                        <div class="fw-bold fs-5 mb-0 {% if (total_apostado - total_ganado) >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        <div class="fw-bold fs-2 mb-0 {% if (total_apostado - total_ganado) >= 0 %}balance-positive{% else %}balance-negative{% endif %}">
                             ${{ "%.2f"|format(total_apostado - total_ganado) }}
                         </div>
                         <small class="text-muted">Ganancia/Pérdida Neta</small>
@@ -520,158 +539,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-
-<style>
-/* Reducción radical de todos los espacios */
-.stat-card {
-    transition: transform 0.3s ease;
-    border: 1px solid rgba(0, 243, 255, 0.3);
-}
-
-.stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 3px 10px rgba(0, 243, 255, 0.2);
-}
-
-.stat-icon {
-    font-size: 1.8rem;
-    margin-bottom: 0.25rem;
-}
-
-.stat-number {
-    font-size: 1.5rem;
-    font-weight: bold;
-    font-family: 'Orbitron', monospace;
-    background: linear-gradient(135deg, #00f3ff, #ff00ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.25rem;
-}
-
-.games-stats-list {
-    max-height: 350px;
-    overflow-y: auto;
-}
-
-.game-stat-item {
-    transition: all 0.3s ease;
-    font-size: 0.85rem;
-}
-
-.game-stat-item:hover {
-    transform: translateX(3px);
-    background: rgba(0, 243, 255, 0.1) !important;
-}
-
-.badge.bg-info {
-    background: linear-gradient(135deg, #00f3ff, #008cff) !important;
-    border: none;
-    font-size: 0.65rem;
-    padding: 0.2rem 0.4rem;
-}
-
-.metrics-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-}
-
-.metric-item {
-    background: rgba(20, 20, 40, 0.5);
-    border-radius: 8px;
-    border: 1px solid rgba(0, 243, 255, 0.2);
-    transition: all 0.3s ease;
-}
-
-.metric-item:hover {
-    transform: translateY(-1px);
-    border-color: rgba(0, 243, 255, 0.5);
-    box-shadow: 0 3px 8px rgba(0, 243, 255, 0.1);
-}
-
-.metric-label {
-    font-size: 0.8rem;
-    color: var(--text-light);
-    margin-bottom: 0.25rem;
-    font-weight: 600;
-}
-
-.metric-value {
-    font-weight: bold;
-    font-family: var(--font-family-title);
-}
-
-.positive {
-    color: var(--neon-green);
-    text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
-}
-
-.negative {
-    color: var(--neon-orange);
-    text-shadow: 0 0 5px rgba(255, 107, 53, 0.3);
-}
-
-/* Estilos específicos para los gráficos */
-.chart-container {
-    position: relative !important;
-    height: 350px !important;
-    width: 100% !important;
-}
-
-/* Forzar el tamaño de los canvas */
-#gamesChart, #resultsChart {
-    display: block !important;
-    max-width: 100% !important;
-    max-height: 100% !important;
-}
-
-/* Reducción máxima de espacios en el resumen financiero */
-.card-header.py-1 {
-    padding-top: 0.25rem !important;
-    padding-bottom: 0.25rem !important;
-}
-
-.card-body.py-2 {
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
-}
-
-.border-end {
-    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-/* Eliminar todos los márgenes innecesarios */
-.row.mt-2 {
-    margin-top: 0.5rem !important;
-}
-
-/* Ajustes ultra compactos */
-.card-body .fs-5 {
-    font-size: 1.1rem !important;
-}
-
-/* Reducir todos los elementos de texto */
-.card-header h6 {
-    font-size: 0.95rem;
-}
-
-.card-body small {
-    font-size: 0.75rem;
-}
-
-/* Compactar elementos de lista */
-.games-stats-list .game-stat-item {
-    margin-bottom: 0.5rem !important;
-    padding: 0.5rem !important;
-}
-
-/* Reducir padding general de cards */
-.card-body.p-2 {
-    padding: 0.5rem !important;
-}
-
-.card-body.p-3 {
-    padding: 0.75rem !important;
-}
-</style>
 {% endblock %}

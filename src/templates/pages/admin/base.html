@@ -54,74 +54,103 @@ Panel administrativo de LogBait
     }
 </style>
 
-<style>
-    /* TODO: suprimir todos los estilos redundantes de esta sección */
-
-    .top-user {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px;
-        margin: 5px 0;
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 8px;
-    }
-
-    .user-info {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-    
-    .user-rank {
-        font-weight: bold;
-        color: #00f3ff;
-        margin-right: 10px;
-    }
-    
-    .user-balance {
-        font-weight: bold;
-    }
-    
-    .positive { color: #00ff88; }
-    .negative { color: #ff6b6b; }
-
-    .balance-positive { color: #00ff88; }
-    .balance-negative { color: #ff6b6b; }
-
-    .badge {
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 0.8em;
-        font-weight: bold;
-    }
-    
-    .badge-success { background: #00ff88; color: black; }
-    .badge-danger { background: #ff6b6b; color: white; }
-    .badge-warning { background: #ffa500; color: black; }
-    
+<style>    
+    /* Tabla mejorada */
     .table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
+        --bs-table-bg: transparent;
+        --bs-table-border-color: rgba(0, 243, 255, 0.2);
     }
-    
-    .table th, .table td {
-        padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    .table thead {
+        background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(138, 43, 226, 0.1));
     }
-    
-    .table th {
-        background: rgba(0, 243, 255, 0.2);
-        color: #00f3ff;
+
+    .table thead th {
+        color: var(--neon-cyan);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        border-bottom: 2px solid var(--neon-cyan);
+        padding: 1rem 0.75rem;
     }
-    
+
+    .table tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(0, 243, 255, 0.1);
+    }
+
     .table tr:hover {
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(0, 243, 255, 0.05);
     }
-    
+
+    .table td, .table th[scope="row"] {
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+        border-color: rgba(0, 243, 255, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        .table td, .table th {
+            padding: 0.5rem 0.25rem;
+        }
+    }
+
+    /* Barra de fortaleza de contraseña */
+    .password-strength {
+        margin-top: 1rem;
+    }
+
+    .strength-bar {
+        width: 100%;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 0.5rem 0;
+    }
+
+    .strength-fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .strength-weak {
+        background: #dc3545;
+        width: 25%;
+    }
+
+    .strength-medium {
+        background: #ffc107;
+        width: 50%;
+    }
+
+    .strength-strong {
+        background: #28a745;
+        width: 75%;
+    }
+
+    .strength-very-strong {
+        background: #20c997;
+        width: 100%;
+    }
+
+    /* Elementos de usuario */
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #000;
+        font-size: 1.1rem;
+    }
+
     .progress-bar {
         width: 100%;
         height: 20px;
@@ -153,10 +182,10 @@ Panel administrativo de LogBait
     }
     
     .stat-number {
-        font-size: 2.5em;
+        font-size: 1.5rem;
         font-weight: bold;
-        margin: 10px 0;
-        background: linear-gradient(45deg, #00f3ff, #00ff88);
+        font-family: var(--font-family-title);
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
@@ -172,43 +201,6 @@ Panel administrativo de LogBait
         padding: 15px;
         border-radius: 10px;
         text-align: center;
-    }
-    
-    .back-link {
-        display: inline-block;
-        margin-bottom: 20px;
-        color: #00f3ff;
-        text-decoration: none;
-        font-weight: bold;
-    }
-    
-    .back-link:hover {
-        text-decoration: underline;
-    }
-
-    .pagination {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 20px;
-    }
-    
-    .page-btn {
-        padding: 8px 12px;
-        background: rgba(0, 243, 255, 0.2);
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        transition: all 0.3s ease;
-    }
-    
-    .page-btn:hover {
-        background: rgba(0, 243, 255, 0.4);
-    }
-    
-    .page-btn.active {
-        background: #00f3ff;
-        color: black;
     }
 </style>
 {% endblock %}

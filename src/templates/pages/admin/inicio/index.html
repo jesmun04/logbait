@@ -14,39 +14,43 @@ Inicio
 
 <div class="row g-4 mt-4">
     <!-- Estadísticas Principales -->
-    <div class="col-lg-3">
+    <div class="col-xl-3 col-md-6">
         <div class="card animated-rotate h-100">
             <div class="card-body text-center">
-                <h4>👥 Total Usuarios</h4>
+                <div class="fs-2">👥</div>
+                <h5 class="mb-1">Total Usuarios</h5>
                 <div class="stat-number">{{ total_usuarios }}</div>
-                <p>Usuarios registrados</p>
+                <small class="text-muted">Usuarios registrados</small>
             </div>
         </div>
     </div>
-    <div class="col-lg-3">
+    <div class="col-xl-3 col-md-6">
         <div class="card animated-rotate h-100">
             <div class="card-body text-center">
-                <h4>🎯 Total Apuestas</h4>
+                <div class="fs-2">🎯</div>
+                <h5 class="mb-1">Total Apuestas</h5>
                 <div class="stat-number">{{ total_apuestas }}</div>
-                <p>Apuestas realizadas</p>
+                <small class="text-muted">Apuestas realizadas</small>
             </div>
         </div>
     </div>
-    <div class="col-lg-3">
+    <div class="col-xl-3 col-md-6">
         <div class="card animated-rotate h-100">
             <div class="card-body text-center">
-                <h4>💰 Balance Total</h4>
+                <div class="fs-2">💰</div>
+                <h5 class="mb-1">Balance Total</h5>
                 <div class="stat-number">${{ "%.2f"|format(total_balance) }}</div>
-                <p>En el sistema</p>
+                <small class="text-muted">En el sistema</small>
             </div>
         </div>
     </div>
-    <div class="col-lg-3">
+    <div class="col-xl-3 col-md-6">
         <div class="card animated-rotate h-100">
             <div class="card-body text-center">
-                <h4>📊 Total Apostado</h4>
+                <div class="fs-2">📊</div>
+                <h5 class="mb-1">Total Apostado</h5>
                 <div class="stat-number">${{ "%.2f"|format(total_apostado) }}</div>
-                <p>Historial completo</p>
+                <small class="text-muted">Historial completo</small>
             </div>
         </div>
     </div>
@@ -79,28 +83,54 @@ Inicio
                 👥 Usuarios Recientes
             </div>
             <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Usuario</th>
-                            <th>Balance</th>
-                            <th>Registro</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for usuario in usuarios_recientes %}
-                        <tr>
-                            <td>{{ usuario.username }}</td>
-                            <td>${{ "%.2f"|format(usuario.balance) }}</td>
-                            <td>{{ usuario.created_at.strftime('%d/%m/%Y') }}</td>
-                            <td>
-                                <a href="{{ url_for('admin_usuarios.detalle_usuario', user_id=usuario.id) }}" class="btn btn-primary">Ver</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Balance</th>
+                                <th>Registro</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario in usuarios_recientes %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex flex-row align-items-center gap-2">
+                                        <div class="user-avatar">
+                                            {{ usuario.username[0]|upper }}
+                                        </div>
+                                        <div class="d-flex flex-column align-items-start">
+                                            <strong class="data-username">{{ usuario.username }}</strong>
+                                            {% if usuario.username == current_user.username %}
+                                            <span class="badge text-bg-primary">TÚ</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="data-balance {% if usuario.balance > 0 %}balance-positive{% elif usuario.balance < 0 %}balance-negative{% else %}balance-neutral{% endif %}">
+                                        ${{ "%.2f"|format(usuario.balance) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div title="{{ usuario.created_at.strftime('%d/%m/%Y %H:%M:%S') }}">
+                                        <span>{{ usuario.created_at.strftime('%d/%m/%Y') }}</span>
+                                        <br>
+                                        <small class="text-muted">{{ usuario.created_at.strftime('%H:%M') }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('admin_usuarios.detalle_usuario', user_id=usuario.id) }}" class="btn btn-primary">
+                                        <i class="fa-solid fa-eye me-1"></i>Detalles
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -112,30 +142,49 @@ Inicio
                 📈 Apuestas Recientes
             </div>
             <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Usuario</th>
-                            <th>Juego</th>
-                            <th>Cantidad</th>
-                            <th>Resultado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for apuesta in apuestas_recientes %}
-                        <tr>
-                            <td>{{ apuesta.user.username }}</td>
-                            <td>{{ apuesta.juego }}</td>
-                            <td>${{ "%.2f"|format(apuesta.cantidad) }}</td>
-                            <td>
-                                <span class="badge {% if apuesta.resultado == 'ganada' %}badge-success{% elif apuesta.resultado == 'perdida' %}badge-danger{% else %}badge-warning{% endif %}">
-                                    {{ apuesta.resultado }}
-                                </span>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Juego</th>
+                                <th>Cantidad</th>
+                                <th>Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for apuesta in apuestas_recientes %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('admin_usuarios.detalle_usuario', user_id=apuesta.user.id) }}" class="text-decoration-none">
+                                    <div class="d-flex flex-row align-items-center gap-2">
+                                        <div class="user-avatar">
+                                            {{ apuesta.user.username[0]|upper }}
+                                        </div>
+                                        <strong class="data-username">{{ apuesta.user.username }}</strong>
+                                    </div>
+                                    </a>
+                                </td>
+                                <td>{{ apuesta.juego|title }}</td>
+                                <td>
+                                    <span class="{% if apuesta.cantidad > 0 %}balance-positive{% elif apuesta.cantidad < 0 %}balance-negative{% else %}balance-neutral{% endif %}">
+                                        ${{ "%.2f"|format(apuesta.cantidad) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge rounded-pill
+                                        {% if apuesta.resultado == 'ganada' %}text-bg-success
+                                        {% elif apuesta.resultado == 'perdida' %}text-bg-danger
+                                        {% elif apuesta.resultado == 'empate' %}text-bg-warning
+                                        {% endif %}">
+                                            {{ apuesta.resultado|title }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

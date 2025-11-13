@@ -10,9 +10,9 @@ Apuestas
 <div class="row g-3 mt-3">
     <!-- Tarjetas de Resumen Mejoradas -->
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="stat-icon">💰</div>
+                <div class="fs-2">💰</div>
                 <h6 class="mb-1">Total</h6>
                 <div class="stat-number">{{ apuestas.total }}</div>
                 <small class="text-muted">Apuestas</small>
@@ -20,9 +20,9 @@ Apuestas
         </div>
     </div>
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="stat-icon">📊</div>
+                <div class="fs-2">📊</div>
                 <h6 class="mb-1">Página</h6>
                 <div class="stat-number text-info">{{ apuestas.page }}</div>
                 <small class="text-muted">de {{ apuestas.pages }}</small>
@@ -30,9 +30,9 @@ Apuestas
         </div>
     </div>
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="stat-icon">🔄</div>
+                <div class="fs-2">🔄</div>
                 <h6 class="mb-1">Por Página</h6>
                 <div class="stat-number text-warning">{{ apuestas.per_page }}</div>
                 <small class="text-muted">Registros</small>
@@ -40,9 +40,9 @@ Apuestas
         </div>
     </div>
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="stat-icon">✅</div>
+                <div class="fs-2">✅</div>
                 <h6 class="mb-1">Ganadas</h6>
                 <div class="stat-number text-success">{{ apuestas_ganadas }}</div>
                 <small class="text-muted">Victorias</small>
@@ -50,9 +50,9 @@ Apuestas
         </div>
     </div>
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="stat-icon">❌</div>
+                <div class="fs-2">❌</div>
                 <h6 class="mb-1">Perdidas</h6>
                 <div class="stat-number text-danger">{{ apuestas_perdidas }}</div>
                 <small class="text-muted">Derrotas</small>
@@ -60,9 +60,9 @@ Apuestas
         </div>
     </div>
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="stat-icon">⚡</div>
+                <div class="fs-2">⚡</div>
                 <h6 class="mb-1">Filtros</h6>
                 <div class="stat-number {% if juego_actual or resultado_actual %}text-success{% else %}text-muted{% endif %}">
                     {% if juego_actual or resultado_actual %}ON{% else %}OFF{% endif %}
@@ -71,20 +71,24 @@ Apuestas
             </div>
         </div>
     </div>
+</div>
 
+<div class="row mt-4">
     <div class="col-12">
-        <div class="card glass-card">
-            <div class="card-header cyber-header">
+        <div class="card animated-translateY">
+            <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <span class="h4 mb-0">🎯 Historial de Apuestas</span>
-                        {% if juego_actual or resultado_actual %}
-                        <span class="badge bg-pulse ms-2">Filtrado</span>
-                        {% endif %}
+                        <div class="d-flex align-items-center gap-3">
+                            <h4 class="mb-0">🎯 Historial de Apuestas</h4>
+                            {% if juego_actual or resultado_actual %}
+                            <span class="badge text-bg-info">Filtrado</span>
+                            {% endif %}
+                        </div>
                     </div>
                     <div class="d-flex align-items-center">
-                        <span class="text-muted me-2 small">Mostrando</span>
-                        <span class="badge bg-cyan">{{ apuestas.items|length }}</span>
+                        <span class="me-2 small">Mostrando</span>
+                        <span class="badge text-bg-light">{{ apuestas.items|length }}</span>
                     </div>
                 </div>
             </div>
@@ -92,9 +96,9 @@ Apuestas
                 <!-- Filtros Automáticos Mejorados -->
                 <div class="row g-3 mb-4">
                     <div class="col-lg-5 col-md-6">
-                        <div class="filter-group">
-                            <label class="filter-label">🎮 Filtrar por Juego</label>
-                            <select class="form-select cyber-select" id="juegoFilter">
+                        <div>
+                            <label class="mb-1 fw-bold">Filtrar por Juego</label>
+                            <select class="form-select data-filter-select" id="juegoFilter">
                                 <option value="">Todos los juegos</option>
                                 <option value="blackjack" {% if juego_actual == 'blackjack' %}selected{% endif %}>🎲 Blackjack</option>
                                 <option value="poker" {% if juego_actual == 'poker' %}selected{% endif %}>🃏 Poker</option>
@@ -106,9 +110,9 @@ Apuestas
                         </div>
                     </div>
                     <div class="col-lg-5 col-md-6">
-                        <div class="filter-group">
-                            <label class="filter-label">🎯 Filtrar por Resultado</label>
-                            <select class="form-select cyber-select" id="resultadoFilter">
+                        <div>
+                            <label class="mb-1 fw-bold">Filtrar por Resultado</label>
+                            <select class="form-select data-filter-select" id="resultadoFilter">
                                 <option value="">Todos los resultados</option>
                                 <option value="ganada" {% if resultado_actual == 'ganada' %}selected{% endif %}>✅ Ganadas</option>
                                 <option value="perdida" {% if resultado_actual == 'perdida' %}selected{% endif %}>❌ Perdidas</option>
@@ -117,9 +121,9 @@ Apuestas
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-12 d-flex align-items-end">
-                        <button class="btn btn-outline-cyan w-100" onclick="clearFilters()" 
+                        <button class="btn btn-outline-primary w-100" onclick="clearFilters()" 
                                 {% if not juego_actual and not resultado_actual %}disabled{% endif %}>
-                            🗑️ Limpiar
+                            <i class="fa-solid fa-trash me-1"></i>Limpiar
                         </button>
                     </div>
                 </div>
@@ -153,28 +157,38 @@ Apuestas
                             <tr>
                                 <th class="cyber-th">ID</th>
                                 <th class="cyber-th">Usuario</th>
-                                <th class="cyber-th">Juego</th>
-                                <th class="cyber-th">Apuesta</th>
-                                <th class="cyber-th">Resultado</th>
-                                <th class="cyber-th">Ganancia</th>
                                 <th class="cyber-th">Fecha</th>
+                                <th class="cyber-th">Juego</th>
+                                <th class="cyber-th">Resultado</th>
+                                <th class="cyber-th">Apuesta</th>
+                                <th class="cyber-th">Ganancia</th>
                                 <th class="cyber-th">Neto</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for apuesta in apuestas.items %}
-                            <tr class="cyber-row">
-                                <td class="cyber-td">
-                                    <span class="id-badge">#{{ apuesta.id }}</span>
-                                </td>
-                                <td class="cyber-td">
-                                    <a href="{{ url_for('admin_usuario_detalle.home', user_id=apuesta.user.id) }}" 
-                                       class="user-link">
-                                        <span class="user-avatar">👤</span>
-                                        {{ apuesta.user.username }}
+                            <tr>
+                                <th scope="row">
+                                    <span class="small text-cyan">#{{ apuesta.id }}</span>
+                                </th>
+                                <td>
+                                    <a href="{{ url_for('admin_usuarios.detalle_usuario', user_id=apuesta.user.id) }}" class="text-decoration-none">
+                                    <div class="d-flex flex-row align-items-center gap-2">
+                                        <div class="user-avatar">
+                                            {{ apuesta.user.username[0]|upper }}
+                                        </div>
+                                        <strong class="data-username">{{ apuesta.user.username }}</strong>
+                                    </div>
                                     </a>
                                 </td>
-                                <td class="cyber-td">
+                                <td>
+                                    <div title="{{ apuesta.fecha.strftime('%d/%m/%Y %H:%M:%S') }}">
+                                        <span>{{ apuesta.fecha.strftime('%d/%m/%Y') }}</span>
+                                        <br>
+                                        <small class="text-muted">{{ apuesta.fecha.strftime('%H:%M') }}</small>
+                                    </div>
+                                </td>
+                                <td>
                                     <span class="game-badge game-{{ apuesta.juego }}">
                                         {% if apuesta.juego == 'blackjack' %}🎲
                                         {% elif apuesta.juego == 'poker' %}🃏
@@ -186,33 +200,36 @@ Apuestas
                                         {{ apuesta.juego|title }}
                                     </span>
                                 </td>
-                                <td class="cyber-td">
-                                    <span class="amount">${{ "%.2f"|format(apuesta.cantidad) }}</span>
-                                </td>
-                                <td class="cyber-td">
-                                    <span class="result-badge result-{{ apuesta.resultado }}">
+                                <td>
+                                    <span class="badge rounded-pill
+                                      {% if apuesta.resultado == 'ganada' %}text-bg-success
+                                      {% elif apuesta.resultado == 'perdida' %}text-bg-danger
+                                      {% elif apuesta.resultado == 'empate' %}text-bg-warning
+                                      {% endif %}">
                                         {{ apuesta.resultado|title }}
                                     </span>
                                 </td>
-                                <td class="cyber-td">
-                                    <span class="{% if apuesta.ganancia > 0 %}profit{% elif apuesta.ganancia < 0 %}loss{% else %}neutral{% endif %}">
+                                <td>
+                                    <span class="small {% if apuesta.cantidad > 0 %}balance-positive{% elif apuesta.cantidad < 0 %}balance-negative{% else %}balance-neutral{% endif %}">
+                                        ${{ "%.2f"|format(apuesta.cantidad) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="small {% if apuesta.ganancia > 0 %}balance-positive{% elif apuesta.ganancia < 0 %}balance-negative{% else %}balance-neutral{% endif %}">
                                         ${{ "%.2f"|format(apuesta.ganancia) }}
                                     </span>
                                 </td>
-                                <td class="cyber-td">
-                                    <span class="timestamp">{{ apuesta.fecha.strftime('%d/%m/%Y %H:%M') }}</span>
-                                </td>
-                                <td class="cyber-td">
-                                    <span class="{% if (apuesta.ganancia - apuesta.cantidad) >= 0 %}profit{% else %}loss{% endif %} net-amount">
+                                <td>
+                                    <span class="{% if (apuesta.ganancia - apuesta.cantidad) > 0 %}balance-positive{% elif (apuesta.ganancia - apuesta.cantidad) < 0 %}balance-negative{% else %}balance-neutral{% endif %}">
                                         ${{ "%.2f"|format(apuesta.ganancia - apuesta.cantidad) }}
                                     </span>
                                 </td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="8" class="text-center py-5">
-                                    <div class="empty-state">
-                                        <div class="empty-icon">📭</div>
+                                <td colspan="8" class="text-center py-5 pe-none">
+                                    <div>
+                                        <div class="fs-1">📭</div>
                                         <h5 class="text-muted mt-3">No se encontraron apuestas</h5>
                                         <p class="text-muted mb-0">
                                             {% if juego_actual or resultado_actual %}
@@ -303,7 +320,7 @@ function clearFilters() {
 
 // Filtro automático con retardo
 function setupAutoFilters() {
-    const selects = document.querySelectorAll('.cyber-select');
+    const selects = document.querySelectorAll('.data-filter-select');
     
     selects.forEach(select => {
         select.addEventListener('change', function() {
@@ -327,276 +344,4 @@ document.addEventListener('DOMContentLoaded', function() {
     setupAutoFilters();
 });
 </script>
-
-<style>
-/* Estilos mejorados para la gestión de apuestas */
-.glass-card {
-    background: rgba(20, 20, 40, 0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 243, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 243, 255, 0.1);
-}
-
-.cyber-header {
-    background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(138, 43, 226, 0.2));
-    border-bottom: 1px solid rgba(0, 243, 255, 0.3);
-}
-
-.stat-card {
-    background: rgba(30, 30, 60, 0.6);
-    border: 1px solid rgba(0, 243, 255, 0.2);
-    border-radius: 12px;
-    transition: all 0.3s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--neon-cyan);
-    box-shadow: 0 5px 20px rgba(0, 243, 255, 0.3);
-}
-
-.stat-icon {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-    opacity: 0.8;
-}
-
-.stat-number {
-    font-size: 1.5rem;
-    font-weight: bold;
-    font-family: var(--font-family-title);
-    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-/* Filtros mejorados */
-.filter-group {
-    position: relative;
-}
-
-.filter-label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--neon-cyan);
-    margin-bottom: 0.5rem;
-    display: block;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.cyber-select {
-    background: rgba(15, 15, 30, 0.8);
-    border: 1px solid rgba(0, 243, 255, 0.4);
-    border-radius: 8px;
-    color: var(--text-light);
-    transition: all 0.3s ease;
-}
-
-.cyber-select:focus {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
-    background: rgba(20, 20, 40, 0.9);
-}
-
-/* Tabla mejorada */
-.table-cyber {
-    --bs-table-bg: transparent;
-    --bs-table-border-color: rgba(0, 243, 255, 0.2);
-}
-
-.cyber-thead {
-    background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(138, 43, 226, 0.1));
-}
-
-.cyber-th {
-    color: var(--neon-cyan);
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
-    border-bottom: 2px solid var(--neon-cyan);
-    padding: 1rem 0.75rem;
-}
-
-.cyber-row {
-    transition: all 0.3s ease;
-    border-bottom: 1px solid rgba(0, 243, 255, 0.1);
-}
-
-.cyber-row:hover {
-    background: rgba(0, 243, 255, 0.05);
-    transform: translateX(5px);
-}
-
-.cyber-td {
-    padding: 1rem 0.75rem;
-    vertical-align: middle;
-    border-color: rgba(0, 243, 255, 0.1);
-}
-
-/* Elementos de la tabla */
-.id-badge {
-    background: rgba(0, 243, 255, 0.1);
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    color: var(--neon-cyan);
-    font-family: var(--font-family-title);
-}
-
-.user-link {
-    color: var(--text-light);
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.user-link:hover {
-    color: var(--neon-cyan);
-    transform: translateX(3px);
-}
-
-.user-avatar {
-    font-size: 1rem;
-}
-
-.game-badge {
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.game-blackjack { background: rgba(0, 123, 255, 0.2); color: #007bff; border: 1px solid #007bff; }
-.game-poker { background: rgba(40, 167, 69, 0.2); color: #28a745; border: 1px solid #28a745; }
-.game-coinflip { background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid #ffc107; }
-.game-tragaperras { background: rgba(220, 53, 69, 0.2); color: #dc3545; border: 1px solid #dc3545; }
-.game-caballos { background: rgba(23, 162, 184, 0.2); color: #17a2b8; border: 1px solid #17a2b8; }
-.game-ruleta { background: rgba(108, 117, 125, 0.2); color: #6c757d; border: 1px solid #6c757d; }
-
-.result-badge {
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.result-ganada { background: rgba(0, 255, 136, 0.2); color: var(--neon-green); border: 1px solid var(--neon-green); }
-.result-perdida { background: rgba(255, 107, 53, 0.2); color: var(--neon-orange); border: 1px solid var(--neon-orange); }
-.result-empate { background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid #ffc107; }
-
-.amount {
-    font-weight: 600;
-    color: var(--text-light);
-}
-
-.profit {
-    color: var(--neon-green);
-    font-weight: 700;
-}
-
-.loss {
-    color: var(--neon-orange);
-    font-weight: 700;
-}
-
-.neutral {
-    color: #ffc107;
-    font-weight: 700;
-}
-
-.net-amount {
-    font-size: 1rem;
-}
-
-.timestamp {
-    font-size: 0.85rem;
-    color: #888;
-    font-family: var(--font-family-title);
-}
-
-/* Estados vacíos */
-.empty-state {
-    padding: 3rem 1rem;
-}
-
-.empty-icon {
-    font-size: 4rem;
-    opacity: 0.5;
-}
-
-/* Badges personalizados */
-.badge.bg-pulse {
-    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
-    animation: pulse 2s infinite;
-}
-
-.badge.bg-cyan {
-    background: var(--neon-cyan);
-    color: #000;
-}
-
-.badge.bg-game {
-    background: rgba(0, 243, 255, 0.2);
-    color: var(--neon-cyan);
-    border: 1px solid var(--neon-cyan);
-}
-
-.badge.bg-result {
-    background: rgba(255, 0, 255, 0.2);
-    color: var(--neon-pink);
-    border: 1px solid var(--neon-pink);
-}
-
-.alert-cyber {
-    background: rgba(0, 243, 255, 0.1);
-    border: 1px solid rgba(0, 243, 255, 0.3);
-    border-radius: 12px;
-    color: var(--neon-cyan);
-}
-
-/* Paginación mejorada */
-.cyber-pagination .page-link {
-    background: rgba(20, 20, 40, 0.8);
-    border: 1px solid rgba(0, 243, 255, 0.3);
-    color: var(--neon-cyan);
-    margin: 0 2px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.cyber-pagination .page-item.active .page-link {
-    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
-    border-color: var(--neon-cyan);
-    color: #000;
-    font-weight: 700;
-}
-
-/* Animaciones */
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.7; }
-    100% { opacity: 1; }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .cyber-td, .cyber-th {
-        padding: 0.5rem 0.25rem;
-        font-size: 0.8rem;
-    }
-    
-    .game-badge, .result-badge {
-        font-size: 0.7rem;
-        padding: 0.3rem 0.6rem;
-    }
-}
-</style>
 {% endblock %}

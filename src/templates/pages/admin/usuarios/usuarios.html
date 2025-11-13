@@ -10,9 +10,9 @@ Usuarios
 <div class="row g-3 mt-3">
     <!-- Tarjetas de Resumen -->
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="stat-icon">👥</div>
+                <div class="fs-2">👥</div>
                 <h6 class="mb-1">Total</h6>
                 <div class="stat-number">{{ usuarios|length }}</div>
                 <small class="text-muted">Usuarios</small>
@@ -20,9 +20,9 @@ Usuarios
         </div>
     </div>
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="stat-icon">💰</div>
+                <div class="fs-2">💰</div>
                 <h6 class="mb-1">Balance Total</h6>
                 <div class="stat-number">${{ "%.2f"|format(total_balance) }}</div>
                 <small class="text-muted">En sistema</small>
@@ -30,9 +30,9 @@ Usuarios
         </div>
     </div>
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="stat-icon">📈</div>
+                <div class="fs-2">📈</div>
                 <h6 class="mb-1">Positivos</h6>
                 <div class="stat-number text-success">{{ usuarios_positivos }}</div>
                 <small class="text-muted">Balance +</small>
@@ -40,9 +40,9 @@ Usuarios
         </div>
     </div>
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="stat-icon">⚡</div>
+                <div class="fs-2">⚡</div>
                 <h6 class="mb-1">Cero</h6>
                 <div class="stat-number text-warning">{{ usuarios_cero }}</div>
                 <small class="text-muted">Sin saldo</small>
@@ -50,9 +50,9 @@ Usuarios
         </div>
     </div>
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="stat-icon">🆕</div>
+                <div class="fs-2">🆕</div>
                 <h6 class="mb-1">Hoy</h6>
                 <div class="stat-number text-info">{{ usuarios_hoy }}</div>
                 <small class="text-muted">Registrados</small>
@@ -60,23 +60,25 @@ Usuarios
         </div>
     </div>
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="card stat-card h-100">
+        <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="stat-icon">🎯</div>
+                <div class="fs-2">🎯</div>
                 <h6 class="mb-1">Activos</h6>
                 <div class="stat-number text-cyan">{{ usuarios_activos }}</div>
                 <small class="text-muted">Este mes</small>
             </div>
         </div>
     </div>
+</div>
 
+<div class="row mt-4">
     <div class="col-12">
-        <div class="card glass-card">
-            <div class="card-header cyber-header">
+        <div class="card animated-translateY">
+            <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="h4 mb-0">📊 Lista de Usuarios</span>
-                        <span class="badge bg-cyan ms-2">{{ usuarios|length }} total</span>
+                    <div class="d-flex align-items-center gap-3">
+                        <h4 class="mb-0">📊 Lista de Usuarios</h4>
+                        <span class="badge text-bg-light">{{ usuarios|length }} total</span>
                     </div>
                 </div>
             </div>
@@ -84,20 +86,17 @@ Usuarios
                 <!-- Búsqueda y Filtros en una línea -->
                 <div class="row g-3 mb-4 align-items-end">
                     <div class="col-md-6">
-                        <div class="search-box-cyber">
-                            <div class="search-icon">🔍</div>
-                            <input type="text" class="form-control cyber-input" 
-                                   placeholder="Buscar usuarios..." 
+                        <div>
+                            <label class="mb-1 fw-bold">Buscar</label>
+                            <input type="text" class="form-control" 
+                                   placeholder="🔍 Buscar usuarios..." 
                                    id="searchInput" onkeyup="filterUsers()">
-                            <div class="search-stats" id="searchStats">
-                                {{ usuarios|length }} usuarios
-                            </div>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="filter-group">
-                            <label class="filter-label">🎮 Juego Favorito</label>
-                            <select class="form-select cyber-select" id="gameFilter" onchange="filterUsers()">
+                        <div>
+                            <label class="mb-1 fw-bold">Juego favorito</label>
+                            <select class="form-select" id="gameFilter" onchange="filterUsers()">
                                 <option value="all">Todos los juegos</option>
                                 <option value="blackjack">🎲 Blackjack</option>
                                 <option value="poker">🃏 Poker</option>
@@ -109,15 +108,15 @@ Usuarios
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="filter-group">
-                            <label class="filter-label">📅 Ordenar por</label>
-                            <select class="form-select cyber-select" id="sortFilter" onchange="applySort()">
-                                <option value="newest">🆕 Más recientes</option>
-                                <option value="oldest">📅 Más antiguos</option>
-                                <option value="balance_high">💰 Balance alto</option>
-                                <option value="balance_low">📊 Balance bajo</option>
-                                <option value="name_asc">🔤 A-Z</option>
-                                <option value="name_desc">🔤 Z-A</option>
+                        <div>
+                            <label class="mb-1 fw-bold">Ordenar por</label>
+                            <select class="form-select" id="sortFilter" onchange="applySort()">
+                                <option value="newest">Más recientes</option>
+                                <option value="oldest">Más antiguos</option>
+                                <option value="balance_high">Balance más alto</option>
+                                <option value="balance_low">Balance más bajo</option>
+                                <option value="name_asc">Alfabético (A-Z)</option>
+                                <option value="name_desc">Alfabético (Z-A)</option>
                             </select>
                         </div>
                     </div>
@@ -125,16 +124,16 @@ Usuarios
 
                 <!-- Tabla Mejorada -->
                 <div class="table-responsive">
-                    <table class="table table-cyber" id="usersTable">
+                    <table class="table" id="usersTable">
                         <thead class="cyber-thead">
                             <tr>
-                                <th class="cyber-th">ID</th>
-                                <th class="cyber-th">Usuario</th>
-                                <th class="cyber-th">Email</th>
-                                <th class="cyber-th">Balance</th>
-                                <th class="cyber-th">Registro</th>
-                                <th class="cyber-th">Estado</th>
-                                <th class="cyber-th">Acciones</th>
+                                <th scope="col" class="cyber-th">ID</th>
+                                <th scope="col" class="cyber-th">Usuario</th>
+                                <th scope="col" class="cyber-th">Email</th>
+                                <th scope="col" class="cyber-th">Balance</th>
+                                <th scope="col" class="cyber-th">Registro</th>
+                                <th scope="col" class="cyber-th">Estado</th>
+                                <th scope="col" class="cyber-th">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -146,76 +145,73 @@ Usuarios
                                 data-balance="{{ usuario.balance }}"
                                 data-created="{{ usuario.created_at.timestamp() }}"
                                 data-game="{{ usuario.juego_favorito or 'none' }}">
-                                <td class="cyber-td">
-                                    <span class="id-badge">#{{ usuario.id }}</span>
-                                </td>
-                                <td class="cyber-td">
-                                    <div class="user-info">
+                                <th scope="row">
+                                    <span class="small text-cyan">#{{ usuario.id }}</span>
+                                </th>
+                                <td>
+                                    <div class="d-flex flex-row align-items-center gap-2">
                                         <div class="user-avatar">
                                             {{ usuario.username[0]|upper }}
                                         </div>
-                                        <div class="user-details">
-                                            <strong class="username">{{ usuario.username }}</strong>
+                                        <div class="d-flex flex-column align-items-start">
+                                            <strong class="data-username">{{ usuario.username }}</strong>
                                             {% if usuario.username == current_user.username %}
-                                            <span class="you-badge">TÚ</span>
+                                            <span class="badge text-bg-primary">TÚ</span>
                                             {% endif %}
                                         </div>
                                     </div>
                                 </td>
-                                <td class="cyber-td">
-                                    <span class="email">{{ usuario.email }}</span>
+                                <td>
+                                    <span class="font-monospace data-email">{{ usuario.email }}</span>
                                 </td>
-                                <td class="cyber-td">
-                                    <span class="balance {% if usuario.balance > 0 %}balance-positive{% else %}balance-zero{% endif %}">
+                                <td>
+                                    <span class="data-balance {% if usuario.balance > 0 %}balance-positive{% elif usuario.balance < 0 %}balance-negative{% else %}balance-neutral{% endif %}">
                                         ${{ "%.2f"|format(usuario.balance) }}
                                     </span>
                                 </td>
-                                <td class="cyber-td">
-                                    <span class="timestamp" title="{{ usuario.created_at.strftime('%d/%m/%Y %H:%M:%S') }}">
-                                        {{ usuario.created_at.strftime('%d/%m/%Y') }}
-                                    </span>
-                                    <br>
-                                    <small class="text-muted">{{ usuario.created_at.strftime('%H:%M') }}</small>
+                                <td>
+                                    <div title="{{ usuario.created_at.strftime('%d/%m/%Y %H:%M:%S') }}">
+                                        <span>{{ usuario.created_at.strftime('%d/%m/%Y') }}</span>
+                                        <br>
+                                        <small class="text-muted">{{ usuario.created_at.strftime('%H:%M') }}</small>
+                                    </div>
                                 </td>
-                                <td class="cyber-td">
+                                <td>
                                     {% set days_since_registration = (now - usuario.created_at).days %}
-                                    <span class="status-badge {% if days_since_registration <= 7 %}status-new
-                                          {% elif days_since_registration <= 30 %}status-active
-                                          {% else %}status-inactive{% endif %}">
+                                    <span class="badge rounded-pill {% if days_since_registration <= 7 %}text-bg-info
+                                          {% elif days_since_registration <= 30 %}text-bg-success
+                                          {% else %}text-bg-warning{% endif %}">
                                         {% if days_since_registration <= 7 %}
-                                        🆕 Nuevo
+                                        Nuevo
                                         {% elif days_since_registration <= 30 %}
-                                        ⚡ Activo
+                                        Activo
                                         {% else %}
-                                        💤 Inactivo
+                                        Inactivo
                                         {% endif %}
                                     </span>
                                 </td>
-                                <td class="cyber-td">
-                                    <div class="action-buttons">
+                                <td>
+                                    <div class="d-flex flex-row flex-wrap gap-2">
                                         <a href="{{ url_for('admin_usuarios.detalle_usuario', user_id=usuario.id) }}" 
-                                           class="btn btn-action btn-view" 
-                                           title="Ver detalles">
-                                            👀
+                                           class="btn btn-primary">
+                                            <i class="fa-solid fa-eye me-1"></i>Detalles
                                         </a>
                                         {% if usuario.username != current_user.username %}
-                                        <button class="btn btn-action btn-edit"
+                                        <button class="btn btn-outline-primary"
                                                 onclick="editUser({{ usuario.id }})"
                                                 title="Editar usuario">
-                                            ✏️
+                                            <i class="fa-solid fa-user-pen"></i>
                                         </button>
-                                        <button class="btn btn-action btn-password"
+                                        <button class="btn btn-outline-primary"
                                                 onclick="changePassword({{ usuario.id }}, '{{ usuario.username }}')"
                                                 title="Cambiar contraseña">
-                                            🔒
+                                            <i class="fa-solid fa-key"></i>
                                         </button>
-                                        <button class="btn btn-action btn-delete"
+                                        <button class="btn btn-danger"
                                                 onclick="deleteUser({{ usuario.id }}, '{{ usuario.username }}')"
                                                 title="Eliminar usuario">
-                                            🗑️
+                                            <i class="fa-solid fa-trash"></i>
                                         </button>
-                                        {% else %}
-                                        <span class="text-muted small">Tú</span>
                                         {% endif %}
                                     </div>
                                 </td>
@@ -228,9 +224,9 @@ Usuarios
                 <!-- Estado Vacío -->
                 <div id="noResults" class="d-none">
                     <div class="empty-state text-center py-5">
-                        <div class="empty-icon">🔍</div>
-                        <h5 class="text-muted mt-3">No se encontraron usuarios</h5>
-                        <p class="text-muted mb-0">Intenta con otros términos de búsqueda o filtros</p>
+                        <div class="fs-1">🔍</div>
+                        <h5 class="text-muted mt-3">No se han encontrado usuarios</h5>
+                        <p class="text-muted mb-0">Prueba con otros términos de búsqueda o filtros</p>
                     </div>
                 </div>
 
@@ -262,50 +258,41 @@ Usuarios
 <!-- Modal de Edición -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content cyber-modal">
-            <div class="modal-header cyber-modal-header">
-                <h5 class="modal-title">✏️ Editar Usuario</h5>
-                <button type="button" class="btn-close btn-close-cyber" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+        <div class="modal-content">
             <div class="modal-body">
-                <div class="text-center mb-3">
-                    <div class="edit-icon">👤</div>
-                    <h4 class="text-cyan mt-2">Editando: <span id="editCurrentUser" class="text-warning"></span></h4>
+                <div class="text-center mb-4">
+                    <div class="fs-1">👤</div>
+                    <h4 class="modal-title mt-2">Editar datos de <span id="editCurrentUser" class="font-monospace"></span></h4>
                 </div>
                 
                 <form id="editUserForm">
                     <input type="hidden" id="editUserId">
                     
                     <div class="mb-3">
-                        <label for="editUsername" class="form-label">📛 Nombre de Usuario</label>
-                        <input type="text" class="form-control cyber-input" id="editUsername" required>
-                        <div class="form-text">Mínimo 3 caracteres, sin espacios</div>
+                        <label for="editUsername" class="form-label mb-1 fw-bold">Nombre de usuario</label>
+                        <input type="text" class="form-control" id="editUsername" required>
+                        <div class="small text-muted">Mínimo 3 caracteres, sin espacios.</div>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="editEmail" class="form-label">📧 Email</label>
-                        <input type="email" class="form-control cyber-input" id="editEmail" required>
-                        <div class="form-text">Debe ser un email válido</div>
+                        <label for="editEmail" class="form-label mb-1 fw-bold">Correo electrónico</label>
+                        <input type="email" class="form-control" id="editEmail" required>
+                        <div class="small text-muted">Debe ser una dirección de correo electrónico válida.</div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="editBalance" class="form-label">💰 Balance</label>
-                        <input type="number" step="0.01" min="0" class="form-control cyber-input" id="editBalance" required>
-                        <div class="form-text">Balance actual del usuario</div>
+                    <div>
+                        <label for="editBalance" class="form-label mb-1 fw-bold">Balance</label>
+                        <input type="number" step="0.01" min="0" class="form-control" id="editBalance" required>
+                        <div class="small text-muted">Balance actual del usuario. No puede ser negativo.</div>
                     </div>
                 </form>
-                
-                <div class="alert alert-info mt-3">
-                    <small>
-                        <strong>💡 Información:</strong> 
-                        Los cambios se guardarán inmediatamente. El balance no puede ser negativo.
-                    </small>
-                </div>
             </div>
-            <div class="modal-footer cyber-modal-footer">
-                <button type="button" class="btn btn-outline-cyan" data-bs-dismiss="modal">❌ Cancelar</button>
-                <button type="button" class="btn btn-primary" id="saveEditBtn">
-                    💾 Guardar Cambios
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-ban me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-success" id="saveEditBtn">
+                    <i class="fa-solid fa-floppy-disk me-1"></i> Guardar Cambios
                 </button>
             </div>
         </div>
@@ -315,55 +302,53 @@ Usuarios
 <!-- Modal para Cambiar Contraseña -->
 <div class="modal fade" id="passwordModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content cyber-modal">
-            <div class="modal-header cyber-modal-header">
-                <h5 class="modal-title">🔒 Cambiar Contraseña</h5>
-                <button type="button" class="btn-close btn-close-cyber" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+        <div class="modal-content">
             <div class="modal-body">
-                <div class="text-center mb-3">
-                    <div class="password-icon">🔐</div>
-                    <h4 class="text-cyan mt-2">Usuario: <span id="passwordCurrentUser" class="text-warning"></span></h4>
+                <div class="text-center mb-4">
+                    <div class="fs-1">🔐</div>
+                    <h4 class="modal-title mt-2">Cambiar contraseña de <span id="passwordCurrentUser" class="font-monospace"></span></h4>
                 </div>
                 
                 <form id="passwordUserForm">
                     <input type="hidden" id="passwordUserId">
                     
                     <div class="mb-3">
-                        <label for="nuevaPassword" class="form-label">🆕 Nueva Contraseña</label>
-                        <input type="password" class="form-control cyber-input" id="nuevaPassword" required 
+                        <label for="nuevaPassword" class="form-label mb-1 fw-bold">Nueva Contraseña</label>
+                        <input type="password" class="form-control" id="nuevaPassword" required 
                                placeholder="Ingresa la nueva contraseña">
-                        <div class="form-text">Mínimo 6 caracteres</div>
+                        <div class="small text-muted">Mínimo 6 caracteres.</div>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="confirmarPassword" class="form-label">✅ Confirmar Contraseña</label>
-                        <input type="password" class="form-control cyber-input" id="confirmarPassword" required 
+                        <label for="confirmarPassword" class="form-label mb-1 fw-bold">Confirmar Contraseña</label>
+                        <input type="password" class="form-control" id="confirmarPassword" required 
                                placeholder="Confirma la nueva contraseña">
-                        <div class="form-text">Debe coincidir con la nueva contraseña</div>
+                        <div class="small text-muted">Debe coincidir con la nueva contraseña.</div>
                     </div>
                     
                     <div class="password-strength mt-3">
-                        <label class="form-label">💪 Fortaleza de la contraseña:</label>
+                        <label class="form-label mb-1 fw-bold">Fortaleza de la contraseña</label>
                         <div class="strength-bar">
                             <div class="strength-fill" id="strengthFill"></div>
                         </div>
-                        <small class="text-muted" id="strengthText">Ingresa una contraseña</small>
+                        <small class="text-muted" id="strengthText">Ingresa una contraseña.</small>
                     </div>
                 </form>
                 
-                <div class="alert alert-warning mt-3">
+                <div class="alert alert-warning mt-3 mb-0">
                     <small>
-                        <strong>⚠️ Importante:</strong> 
+                        <i class="fa-solid fa-warning me-1"></i>
                         El usuario tendrá que usar esta nueva contraseña para iniciar sesión. 
                         Esta acción no se puede deshacer.
                     </small>
                 </div>
             </div>
             <div class="modal-footer cyber-modal-footer">
-                <button type="button" class="btn btn-outline-cyan" data-bs-dismiss="modal">❌ Cancelar</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-ban me-1"></i>Cancelar
+                </button>
                 <button type="button" class="btn btn-warning" id="savePasswordBtn">
-                    🔒 Cambiar Contraseña
+                    <i class="fa-solid fa-key me-1"></i>Cambiar Contraseña
                 </button>
             </div>
         </div>
@@ -373,31 +358,28 @@ Usuarios
 <!-- Modal de Confirmación para Eliminar -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content cyber-modal">
-            <div class="modal-header cyber-modal-header">
-                <h5 class="modal-title">⚠️ Confirmar Eliminación</h5>
-                <button type="button" class="btn-close btn-close-cyber" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+        <div class="modal-content">
             <div class="modal-body">
                 <div class="text-center mb-4">
-                    <div class="warning-icon">🗑️</div>
-                    <h4 class="text-danger mt-3">¿Estás seguro?</h4>
+                    <div class="fs-1">🗑️</div>
+                    <h4 class="modal-title mt-2 mb-2">¿Estás seguro?</h4>
+                    <p>
+                        Estás a punto de eliminar al usuario <span id="deleteUserName" class="font-monospace"></span>.
+                    </p>
                 </div>
-                <p class="text-center">
-                    Estás a punto de eliminar al usuario: <br>
-                    <strong id="deleteUserName" class="text-warning"></strong>
-                </p>
-                <div class="alert alert-warning mt-3">
+                <div class="alert alert-warning mt-3 mb-0">
                     <small>
-                        <strong>⚠️ Advertencia:</strong> Esta acción no se puede deshacer. 
+                        <i class="fa-solid fa-warning me-1"></i><strong>Advertencia:</strong> Esta acción no se puede deshacer. 
                         Se eliminarán todos los datos del usuario incluyendo apuestas, historial y saldo.
                     </small>
                 </div>
             </div>
-            <div class="modal-footer cyber-modal-footer">
-                <button type="button" class="btn btn-outline-cyan" data-bs-dismiss="modal">❌ Cancelar</button>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-ban me-1"></i>Cancelar
+                </button>
                 <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
-                    🗑️ Sí, Eliminar Usuario
+                    <i class="fa-solid fa-trash me-1"></i> Eliminar Usuario
                 </button>
             </div>
         </div>
@@ -443,7 +425,6 @@ function filterUsers() {
 
     // Actualizar contador y mostrar estado vacío
     document.getElementById('visibleCount').textContent = visibleCount;
-    document.getElementById('searchStats').textContent = `${visibleCount} usuarios`;
     
     const noResults = document.getElementById('noResults');
     if (visibleCount === 0) {
@@ -487,9 +468,9 @@ function applySort() {
 function editUser(userId) {
     // Obtener datos actuales del usuario
     const row = document.querySelector(`.user-row[data-user-id="${userId}"]`);
-    const username = row.querySelector('.username').textContent;
-    const email = row.querySelector('.email').textContent;
-    const balance = row.querySelector('.balance').textContent.replace('$', '').trim();
+    const username = row.querySelector('.data-username').textContent;
+    const email = row.querySelector('.data-email').textContent;
+    const balance = row.querySelector('.data-balance').textContent.replace('$', '').trim();
 
     // Mostrar modal de edición
     const editModal = new bootstrap.Modal(document.getElementById('editModal'));
@@ -804,7 +785,6 @@ function updateUserCounts() {
     // Recalcular contadores después de eliminar
     const visibleRows = document.querySelectorAll('.user-row:not([style*="display: none"])');
     document.getElementById('visibleCount').textContent = visibleRows.length;
-    document.getElementById('searchStats').textContent = `${visibleRows.length} usuarios`;
 }
 
 // Inicialización cuando el DOM está listo
@@ -835,546 +815,6 @@ document.addEventListener('DOMContentLoaded', function() {
             saveNewPassword();
         }
     });
-
-    // Efecto de escritura en la búsqueda
-    const searchInput = document.getElementById('searchInput');
-    const placeholderText = "Buscar usuarios...";
-    let i = 0;
-    
-    function typeWriter() {
-        if (i < placeholderText.length) {
-            searchInput.placeholder += placeholderText.charAt(i);
-            i++;
-            setTimeout(typeWriter, 50);
-        }
-    }
-    
-    // Iniciar efecto solo si el input está vacío
-    if (searchInput.value === '') {
-        searchInput.placeholder = '';
-        typeWriter();
-    }
 });
 </script>
-
-<style>
-/* Estilos mejorados para gestión de usuarios */
-.glass-card {
-    background: rgba(20, 20, 40, 0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 243, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 243, 255, 0.1);
-}
-
-.cyber-header {
-    background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(138, 43, 226, 0.2));
-    border-bottom: 1px solid rgba(0, 243, 255, 0.3);
-}
-
-/* Tarjetas de estadísticas */
-.stat-card {
-    background: rgba(30, 30, 60, 0.6);
-    border: 1px solid rgba(0, 243, 255, 0.2);
-    border-radius: 12px;
-    transition: all 0.3s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--neon-cyan);
-    box-shadow: 0 5px 20px rgba(0, 243, 255, 0.3);
-}
-
-.stat-icon {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-    opacity: 0.8;
-}
-
-.stat-number {
-    font-size: 1.5rem;
-    font-weight: bold;
-    font-family: var(--font-family-title);
-    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.text-cyan {
-    color: var(--neon-cyan) !important;
-}
-
-/* Búsqueda y Filtros en línea */
-.search-box-cyber {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.search-icon {
-    position: absolute;
-    left: 15px;
-    font-size: 1.2rem;
-    z-index: 3;
-    color: var(--neon-cyan);
-}
-
-.cyber-input {
-    background: rgba(15, 15, 30, 0.8);
-    border: 1px solid rgba(0, 243, 255, 0.4);
-    border-radius: 10px;
-    color: var(--text-light);
-    padding-left: 45px;
-    padding-right: 120px;
-    transition: all 0.3s ease;
-}
-
-.cyber-input:focus {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
-    background: rgba(20, 20, 40, 0.9);
-}
-
-.search-stats {
-    position: absolute;
-    right: 15px;
-    color: var(--neon-cyan);
-    font-size: 0.8rem;
-    font-weight: 600;
-    background: rgba(0, 243, 255, 0.1);
-    padding: 2px 8px;
-    border-radius: 8px;
-}
-
-/* Filtros */
-.filter-group {
-    position: relative;
-}
-
-.filter-label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--neon-cyan);
-    margin-bottom: 0.5rem;
-    display: block;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.cyber-select {
-    background: rgba(15, 15, 30, 0.8);
-    border: 1px solid rgba(0, 243, 255, 0.4);
-    border-radius: 8px;
-    color: var(--text-light);
-    transition: all 0.3s ease;
-}
-
-.cyber-select:focus {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
-    background: rgba(20, 20, 40, 0.9);
-}
-
-/* Tabla mejorada */
-.table-cyber {
-    --bs-table-bg: transparent;
-    --bs-table-border-color: rgba(0, 243, 255, 0.2);
-}
-
-.cyber-thead {
-    background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(138, 43, 226, 0.1));
-}
-
-.cyber-th {
-    color: var(--neon-cyan);
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
-    border-bottom: 2px solid var(--neon-cyan);
-    padding: 1rem 0.75rem;
-}
-
-.cyber-row {
-    transition: all 0.3s ease;
-    border-bottom: 1px solid rgba(0, 243, 255, 0.1);
-}
-
-.cyber-row:hover {
-    background: rgba(0, 243, 255, 0.05);
-    transform: translateX(5px);
-}
-
-.cyber-td {
-    padding: 1rem 0.75rem;
-    vertical-align: middle;
-    border-color: rgba(0, 243, 255, 0.1);
-}
-
-/* Elementos de usuario */
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: #000;
-    font-size: 1.1rem;
-}
-
-.user-details {
-    display: flex;
-    flex-direction: column;
-}
-
-.username {
-    font-weight: 600;
-    color: var(--text-light);
-}
-
-.you-badge {
-    background: var(--neon-green);
-    color: #000;
-    padding: 0.1rem 0.4rem;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: bold;
-    margin-left: 0.5rem;
-}
-
-.email {
-    color: #888;
-    font-family: monospace;
-    font-size: 0.9rem;
-}
-
-/* Balance */
-.balance {
-    font-weight: 700;
-    font-family: var(--font-family-title);
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-}
-
-.balance-positive {
-    background: rgba(0, 255, 136, 0.1);
-    color: var(--neon-green);
-    border: 1px solid var(--neon-green);
-}
-
-.balance-zero {
-    background: rgba(255, 193, 7, 0.1);
-    color: #ffc107;
-    border: 1px solid #ffc107;
-}
-
-/* Estados */
-.status-badge {
-    padding: 0.3rem 0.6rem;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.status-new {
-    background: rgba(0, 243, 255, 0.1);
-    color: var(--neon-cyan);
-    border: 1px solid var(--neon-cyan);
-}
-
-.status-active {
-    background: rgba(0, 255, 136, 0.1);
-    color: var(--neon-green);
-    border: 1px solid var(--neon-green);
-}
-
-.status-inactive {
-    background: rgba(255, 107, 53, 0.1);
-    color: var(--neon-orange);
-    border: 1px solid var(--neon-orange);
-}
-
-/* Acciones */
-.action-buttons {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.btn-action {
-    width: 35px;
-    height: 35px;
-    padding: 0;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-}
-
-.btn-view {
-    background: rgba(0, 123, 255, 0.2);
-    border: 1px solid #007bff;
-    color: #007bff;
-}
-
-.btn-edit {
-    background: rgba(255, 193, 7, 0.2);
-    border: 1px solid #ffc107;
-    color: #ffc107;
-}
-
-.btn-password {
-    background: rgba(108, 117, 125, 0.2);
-    border: 1px solid #6c757d;
-    color: #6c757d;
-}
-
-.btn-delete {
-    background: rgba(220, 53, 69, 0.2);
-    border: 1px solid #dc3545;
-    color: #dc3545;
-}
-
-.btn-action:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 10px currentColor;
-}
-
-.btn-password:hover {
-    background: rgba(108, 117, 125, 0.3);
-    box-shadow: 0 0 15px rgba(108, 117, 125, 0.5);
-}
-
-.btn-delete:hover {
-    background: rgba(220, 53, 69, 0.3);
-    box-shadow: 0 0 15px rgba(220, 53, 69, 0.5);
-}
-
-/* Modales */
-.cyber-modal {
-    background: rgba(20, 20, 40, 0.95);
-    backdrop-filter: blur(20px);
-    border-radius: 15px;
-    box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
-}
-
-.cyber-modal-header {
-    background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(138, 43, 226, 0.2));
-    border-bottom: 1px solid rgba(0, 243, 255, 0.3);
-}
-
-.cyber-modal-footer {
-    border-top: 1px solid rgba(0, 243, 255, 0.3);
-}
-
-.btn-close-cyber {
-    filter: invert(1);
-}
-
-.warning-icon, .edit-icon, .password-icon {
-    font-size: 3rem;
-    opacity: 0.8;
-}
-
-/* Modal de eliminación específico */
-#deleteModal .cyber-modal {
-    border: 1px solid rgba(220, 53, 69, 0.5);
-    box-shadow: 0 0 30px rgba(220, 53, 69, 0.3);
-}
-
-#deleteModal .cyber-modal-header {
-    background: linear-gradient(135deg, rgba(220, 53, 69, 0.2), rgba(255, 107, 53, 0.2));
-    border-bottom: 1px solid rgba(220, 53, 69, 0.3);
-}
-
-#deleteModal .cyber-modal-footer {
-    border-top: 1px solid rgba(220, 53, 69, 0.3);
-}
-
-/* Modal de contraseña específico */
-#passwordModal .cyber-modal {
-    border: 1px solid rgba(255, 193, 7, 0.5);
-    box-shadow: 0 0 30px rgba(255, 193, 7, 0.3);
-}
-
-#passwordModal .cyber-modal-header {
-    background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(253, 126, 20, 0.2));
-    border-bottom: 1px solid rgba(255, 193, 7, 0.3);
-}
-
-#passwordModal .cyber-modal-footer {
-    border-top: 1px solid rgba(255, 193, 7, 0.3);
-}
-
-/* Barra de fortaleza de contraseña */
-.password-strength {
-    margin-top: 1rem;
-}
-
-.strength-bar {
-    width: 100%;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    overflow: hidden;
-    margin: 0.5rem 0;
-}
-
-.strength-fill {
-    height: 100%;
-    width: 0%;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.strength-weak {
-    background: #dc3545;
-    width: 25%;
-}
-
-.strength-medium {
-    background: #ffc107;
-    width: 50%;
-}
-
-.strength-strong {
-    background: #28a745;
-    width: 75%;
-}
-
-.strength-very-strong {
-    background: #20c997;
-    width: 100%;
-}
-
-/* Badges */
-.id-badge {
-    background: rgba(0, 243, 255, 0.1);
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    color: var(--neon-cyan);
-    font-family: var(--font-family-title);
-}
-
-.badge.bg-cyan {
-    background: var(--neon-cyan);
-    color: #000;
-    font-weight: 700;
-}
-
-/* Estados vacíos */
-.empty-state {
-    padding: 3rem 1rem;
-}
-
-.empty-icon {
-    font-size: 4rem;
-    opacity: 0.5;
-}
-
-/* Alertas informativas */
-.alert-info {
-    background: rgba(0, 243, 255, 0.1);
-    border: 1px solid rgba(0, 243, 255, 0.3);
-    border-radius: 10px;
-    color: var(--neon-cyan);
-}
-
-.alert-warning {
-    background: rgba(255, 193, 7, 0.1);
-    border: 1px solid #ffc107;
-    border-radius: 10px;
-    color: #ffc107;
-}
-
-/* Mejoras para los inputs en el modal */
-.modal-body .form-label {
-    color: var(--neon-cyan);
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.modal-body .form-text {
-    color: #888;
-    font-size: 0.8rem;
-}
-
-/* Spinner para botones de carga */
-.btn .spinner-border-sm {
-    margin-right: 0.5rem;
-}
-
-/* Alertas dinámicas */
-.alert {
-    border-radius: 10px;
-    border: 1px solid;
-}
-
-.alert-success {
-    background: rgba(0, 255, 136, 0.1);
-    border-color: var(--neon-green);
-    color: var(--neon-green);
-}
-
-.alert-danger {
-    background: rgba(220, 53, 69, 0.1);
-    border-color: #dc3545;
-    color: #dc3545;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .cyber-td, .cyber-th {
-        padding: 0.5rem 0.25rem;
-        font-size: 0.8rem;
-    }
-    
-    .user-info {
-        flex-direction: column;
-        gap: 0.25rem;
-        text-align: center;
-    }
-    
-    .action-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .btn-action {
-        width: 30px;
-        height: 30px;
-        font-size: 0.8rem;
-    }
-    
-    .cyber-input {
-        padding: 10px 40px 10px 40px;
-        font-size: 0.9rem;
-    }
-    
-    .search-stats {
-        position: static;
-        margin-top: 0.5rem;
-        text-align: center;
-    }
-    
-    /* En móviles, los filtros se apilan */
-    .row.align-items-end .col-md-6,
-    .row.align-items-end .col-md-3 {
-        margin-bottom: 1rem;
-    }
-}
-</style>
 {% endblock %}
