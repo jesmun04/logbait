@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Actualizar periódicamente
-    setInterval(() => actualizarSalas(), 5000);
+    setInterval(() => actualizarSalas(), 20000);
 
     // Inicialización inicial
     inicializarPaginacion();
