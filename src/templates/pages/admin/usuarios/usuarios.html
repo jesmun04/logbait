@@ -88,9 +88,15 @@ Usuarios
                     <div class="col-md-6">
                         <div>
                             <label class="mb-1 fw-bold">Buscar</label>
-                            <input type="text" class="form-control" 
-                                   placeholder="🔍 Buscar usuarios..." 
-                                   id="searchInput" onkeyup="filterUsers()">
+                            <div class="input-group">
+                                <div class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <input type="text" class="form-control" 
+                                       placeholder="Buscar usuarios..." 
+                                       id="searchInput" onkeyup="filterUsers()">
+                            </div>
+                            
                         </div>
                     </div>
                     <div class="col-md-3">
