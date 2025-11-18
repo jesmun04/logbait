@@ -1,5 +1,5 @@
-import random
 import json
+import random
 from datetime import datetime
 
 from flask_login import current_user
@@ -7,29 +7,69 @@ from flask_socketio import join_room, leave_room, emit
 
 from models import db, SalaMultijugador, UsuarioSala, PartidaMultijugador
 
-# ⚠️ Si este archivo no está en el mismo paquete que routes.py,
-# cambia el import al path correcto
-from .routes import (
-    _obtener_o_crear_partida,
-    _cargar_estado,
-    _guardar_estado,
-    _sanitizar_estado_para_usuario,
-    _crear_mazo,          # reutilizamos tu mismo mazo (dict con valor/palo)
-    _resolver_si_todos_han_actuado
-)
 
-
-def init_socket_handlers(socketio):
+def register_poker_handlers(socketio, app):
     """
-    Llamar una vez desde app.py:
-        from socket_handlers_poker import init_poker_socket_handlers
-        init_poker_socket_handlers(socketio)
+    Se llama desde routes.py en @bp.record_once.
+    Aquí definimos todos los eventos Socket.IO para el póker multijugador.
     """
 
-    # --------- helpers internos ---------
+    # ===========================
+    #   HELPERS INTERNOS
+    # ===========================
 
     def _nombre_room_poker(sala_id: int) -> str:
         return f"poker_{sala_id}"
+
+    def _crear_mazo():
+        palos = ['♠', '♥', '♦', '♣']
+        valores = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+        return [{'valor': v, 'palo': p} for p in palos for v in valores]
+
+    def _obtener_o_crear_partida(sala: SalaMultijugador) -> PartidaMultijugador:
+        partida = (
+            PartidaMultijugador.query
+            .filter_by(sala_id=sala.id, estado='activa')
+            .order_by(PartidaMultijugador.fecha_inicio.desc())
+            .first()
+        )
+
+        if partida is None:
+            partida = PartidaMultijugador(
+                sala_id=sala.id,
+                estado='activa',
+                datos_juego=json.dumps({
+                    'juego': 'poker',
+                    'fase': 'esperando',
+                    'cartas_comunitarias': [],
+                    'jugadores': {},
+                    'bote': 0.0,
+                    'ganador': None,
+                    'ultima_actualizacion': datetime.utcnow().isoformat()
+                })
+            )
+            db.session.add(partida)
+            db.session.commit()
+
+        return partida
+
+    def _cargar_estado(partida: PartidaMultijugador) -> dict:
+        try:
+            return json.loads(partida.datos_juego or '{}')
+        except json.JSONDecodeError:
+            return {
+                'juego': 'poker',
+                'fase': 'esperando',
+                'cartas_comunitarias': [],
+                'jugadores': {},
+                'bote': 0.0,
+                'ganador': None
+            }
+
+    def _guardar_estado(partida: PartidaMultijugador, estado: dict):
+        estado['ultima_actualizacion'] = datetime.utcnow().isoformat()
+        partida.datos_juego = json.dumps(estado)
+        db.session.commit()
 
     def _es_miembro_de_sala(usuario_id: int, sala_id: int) -> bool:
         return UsuarioSala.query.filter_by(
@@ -37,71 +77,44 @@ def init_socket_handlers(socketio):
             usuario_id=usuario_id
         ).first() is not None
 
-    def _crear_estado_nueva_mano(sala: SalaMultijugador) -> dict:
-        """
-        Misma estructura que usas en iniciar_mano() de routes.py
-        pero aquí para sockets.
-        """
-        mazo = _crear_mazo()
-        random.shuffle(mazo)
+    def _sanitizar_estado_para_usuario(estado: dict, user_id: int) -> dict:
+        estado_copia = json.loads(json.dumps(estado))
 
-        comunitarias = [mazo.pop() for _ in range(5)]
+        jugadores = estado_copia.get('jugadores', {})
+        for uid, info in jugadores.items():
+            if int(uid) != int(user_id):
+                if estado_copia.get('fase') not in ('showdown', 'terminada'):
+                    info.pop('cartas', None)
+        return estado_copia
 
-        jugadores_estado = {}
-        jugadores_sala = UsuarioSala.query.filter_by(sala_id=sala.id).all()
+    def _resolver_si_todos_han_actuado(estado: dict):
+        jugadores = estado.get('jugadores', {})
+        activos = [j for j in jugadores.values() if j.get('estado') == 'activo']
+        if not activos:
+            return
 
-        for us in jugadores_sala:
-            cartas = [mazo.pop(), mazo.pop()]
-            jugadores_estado[str(us.usuario_id)] = {
-                'user_id': us.usuario_id,
-                'username': getattr(us, "player", None).username
-                    if hasattr(us, "player") and us.player
-                    else f'Usuario {us.usuario_id}',
-                'stack': 1000.0,
-                'apuesta_actual': 0.0,
-                'estado': 'activo',
-                'ultima_accion': '---',
-                'ha_actuado': False,
-                'cartas': cartas,
-                'cartas_visibles': None
-            }
+        if not all(j.get('ha_actuado') for j in activos):
+            return
 
-        estado = {
-            'juego': 'poker',
-            'fase': 'apuestas',
-            'cartas_comunitarias': comunitarias,
-            'jugadores': jugadores_estado,
-            'bote': 0.0,
-            'ganador': None
+        ganador = random.choice(activos)
+        bote = estado.get('bote', 0.0) or 0.0
+
+        ganador['stack'] = float(ganador.get('stack', 1000.0)) + float(bote)
+        ganador['ultima_accion'] = 'ganador'
+
+        for j in jugadores.values():
+            j['cartas_visibles'] = j.get('cartas')
+
+        estado['fase'] = 'terminada'
+        estado['ganador'] = {
+            'user_id': ganador['user_id'],
+            'username': ganador['username'],
+            'ganancia': bote
         }
 
-        return estado
-
-    def _crear_o_reiniciar_partida_poker(sala: SalaMultijugador) -> PartidaMultijugador:
-        """
-        Igual idea que en routes.py pero usando el estado con cartas ya repartidas.
-        """
-        partida = PartidaMultijugador.query.filter_by(
-            sala_id=sala.id,
-            estado='activa'
-        ).order_by(PartidaMultijugador.fecha_inicio.desc()).first()
-
-        nuevo_estado = _crear_estado_nueva_mano(sala)
-
-        if partida is None:
-            partida = PartidaMultijugador(
-                sala_id=sala.id,
-                estado='activa',
-                datos_juego=json.dumps(nuevo_estado)
-            )
-            db.session.add(partida)
-        else:
-            partida.datos_juego = json.dumps(nuevo_estado)
-
-        db.session.commit()
-        return partida
-
-    # --------- eventos socket.io ---------
+    # ===========================
+    #      EVENTOS SOCKET.IO
+    # ===========================
 
     @socketio.on("poker_join")
     def handle_poker_join(data):
@@ -115,8 +128,8 @@ def init_socket_handlers(socketio):
             return
 
         sala = SalaMultijugador.query.get(sala_id)
-        if sala is None:
-            emit("poker_error", {"mensaje": "Sala no encontrada"})
+        if sala is None or sala.juego != 'poker':
+            emit("poker_error", {"mensaje": "Sala de póker no encontrada"})
             return
 
         if not _es_miembro_de_sala(current_user.id, sala_id):
@@ -126,10 +139,8 @@ def init_socket_handlers(socketio):
         room = _nombre_room_poker(sala_id)
         join_room(room)
 
-        # Recuperamos/creamos partida como en routes.py
         partida = _obtener_o_crear_partida(sala)
         estado = _cargar_estado(partida)
-
         emit("poker_estado", _sanitizar_estado_para_usuario(estado, current_user.id))
 
     @socketio.on("poker_leave")
@@ -156,21 +167,56 @@ def init_socket_handlers(socketio):
             return
 
         sala = SalaMultijugador.query.get(sala_id)
-        if sala is None:
-            emit("poker_error", {"mensaje": "Sala no encontrada"})
+        if sala is None or sala.juego != 'poker':
+            emit("poker_error", {"mensaje": "Sala de póker no encontrada"})
             return
 
-        # Solo el creador de la sala puede iniciar
         if sala.creador_id != current_user.id:
-            emit("poker_error", {"mensaje": "Solo el creador puede iniciar la mano"})
+            emit("poker_error", {"mensaje": "Solo el creador de la sala puede iniciar la mano"})
             return
 
         if not _es_miembro_de_sala(current_user.id, sala_id):
             emit("poker_error", {"mensaje": "No perteneces a esta sala"})
             return
 
-        partida = _crear_o_reiniciar_partida_poker(sala)
-        estado = _cargar_estado(partida)
+        # Crear nueva mano (similar a iniciar_mano() en routes.py)
+        partida = _obtener_o_crear_partida(sala)
+
+        mazo = _crear_mazo()
+        random.shuffle(mazo)
+
+        comunitarias = [mazo.pop() for _ in range(5)]
+
+        jugadores_estado = {}
+        jugadores_sala = UsuarioSala.query.filter_by(sala_id=sala.id).all()
+
+        for us in jugadores_sala:
+            cartas = [mazo.pop(), mazo.pop()]
+            jugadores_estado[str(us.usuario_id)] = {
+                'user_id': us.usuario_id,
+                'username': (
+                    us.player.username if hasattr(us, 'player') and us.player
+                    else f'Usuario {us.usuario_id}'
+                ),
+                'stack': 1000.0,
+                'apuesta_actual': 0.0,
+                'estado': 'activo',
+                'ultima_accion': '---',
+                'ha_actuado': False,
+                'cartas': cartas,
+                'cartas_visibles': None
+            }
+
+        estado = {
+            'juego': 'poker',
+            'fase': 'apuestas',
+            'cartas_comunitarias': comunitarias,
+            'jugadores': jugadores_estado,
+            'bote': 0.0,
+            'ganador': None
+        }
+
+        _guardar_estado(partida, estado)
 
         room = _nombre_room_poker(sala_id)
         socketio.emit(
@@ -186,20 +232,20 @@ def init_socket_handlers(socketio):
             return
 
         sala_id = data.get("sala_id")
+        accion = data.get("accion")
+        cantidad = data.get("cantidad", 0)
+
         if sala_id is None:
             emit("poker_error", {"mensaje": "Falta sala_id"})
             return
-
-        accion = data.get("accion")
-        cantidad = data.get("cantidad", 0)
 
         if accion not in ("apostar", "pasar", "retirarse"):
             emit("poker_error", {"mensaje": "Acción no válida"})
             return
 
         sala = SalaMultijugador.query.get(sala_id)
-        if sala is None:
-            emit("poker_error", {"mensaje": "Sala no encontrada"})
+        if sala is None or sala.juego != 'poker':
+            emit("poker_error", {"mensaje": "Sala de póker no encontrada"})
             return
 
         if not _es_miembro_de_sala(current_user.id, sala_id):
@@ -210,7 +256,7 @@ def init_socket_handlers(socketio):
         estado = _cargar_estado(partida)
 
         if estado.get('fase') not in ('apuestas',):
-            emit("poker_error", {"mensaje": "No se pueden realizar acciones ahora"})
+            emit("poker_error", {"mensaje": "No se pueden realizar acciones en este momento"})
             return
 
         jugadores = estado.setdefault('jugadores', {})
@@ -223,24 +269,24 @@ def init_socket_handlers(socketio):
             emit("poker_error", {"mensaje": "Ya no participas en esta mano"})
             return
 
-        # ----- aplicar acción -----
         if accion == "apostar":
             try:
                 cantidad = float(cantidad)
             except (ValueError, TypeError):
                 emit("poker_error", {"mensaje": "Cantidad de apuesta no válida"})
                 return
+
             if cantidad <= 0:
                 emit("poker_error", {"mensaje": "La cantidad debe ser positiva"})
                 return
 
             apuesta_minima = sala.apuesta_minima or 10.0
             if cantidad < apuesta_minima:
-                emit("poker_error", {"mensaje": f"La apuesta mínima es {apuesta_minima}"})
+                emit("poker_error", {"mensaje": f"La apuesta mínima de la sala es {apuesta_minima}"})
                 return
 
-            jugador['apuesta_actual'] = float(jugador.get('apuesta_actual', 0.0)) + cantidad
-            estado['bote'] = float(estado.get('bote', 0.0)) + cantidad
+            jugador['apuesta_actual'] = float(jugador.get('apuesta_actual', 0.0)) + float(cantidad)
+            estado['bote'] = float(estado.get('bote', 0.0)) + float(cantidad)
             jugador['ultima_accion'] = f'apuesta {cantidad:.2f}€'
 
         elif accion == "pasar":
@@ -252,7 +298,6 @@ def init_socket_handlers(socketio):
 
         jugador['ha_actuado'] = True
 
-        # Resolver mano si todos han actuado (reutilizamos tu función)
         _resolver_si_todos_han_actuado(estado)
         _guardar_estado(partida, estado)
 

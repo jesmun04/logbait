@@ -2,14 +2,12 @@ from flask import Blueprint, jsonify, request
 from flask_login import login_required, current_user
 from models import db, SalaMultijugador, UsuarioSala, PartidaMultijugador
 import json
+from .socket_handlers import register_poker_handlers
 import random
 from datetime import datetime
 
-bp = Blueprint(
-    'api_multijugador_poker',
-    __name__,
-    url_prefix='/api/multijugador/poker'
-)
+bp = Blueprint('api_multijugador_poker', __name__)
+
 PALOS = ['♠', '♥', '♦', '♣']
 VALORES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 
@@ -96,6 +94,32 @@ def estado(sala_id):
     partida = _obtener_o_crear_partida(sala)
     estado = _cargar_estado(partida)
     return jsonify(_sanitizar_estado_para_usuario(estado, current_user.id))
+
+from flask import render_template, abort
+from flask_login import login_required, current_user
+from models import SalaMultijugador, UsuarioSala
+
+# ... arriba ya tienes bp definido
+
+@bp.route('/multijugador/partida/poker/<int:sala_id>')
+@login_required
+def vista_poker_multijugador(sala_id):
+    sala = SalaMultijugador.query.get_or_404(sala_id)
+    if sala.juego != 'poker':
+        abort(404)
+
+    usuario_sala = UsuarioSala.query.filter_by(
+        sala_id=sala_id,
+        usuario_id=current_user.id
+    ).first()
+    if not usuario_sala:
+        abort(403)
+
+    return render_template(
+        'pages/casino/juegos/multiplayer/poker.html',
+        sala=sala
+        # current_user lo tienes global por flask-login
+    )
 
 
 @bp.route('/iniciar/<int:sala_id>', methods=['POST'])
@@ -251,3 +275,10 @@ def pasar(sala_id):
 @login_required
 def retirarse(sala_id):
     return _accion_generica(sala_id, 'retirarse')
+
+@bp.record_once
+def on_register(state):
+    socketio = state.app.extensions.get("socketio")
+    if socketio:
+        register_poker_handlers(socketio, state.app)
+        print("✅ Handlers de SocketIO para Póker registrados")

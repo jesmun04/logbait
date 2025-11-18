@@ -22,6 +22,8 @@ def generar_url_redireccion(juego, sala_id):
         return f'/ruleta/sala/{sala_id}'
     elif juego == 'caballos':
         return f'/caballos/sala/{sala_id}'
+    elif juego == 'poker':
+        return f'/multijugador/partida/poker/{sala_id}'
     else:
         return f'/multijugador/partida/{juego}/{sala_id}'
 

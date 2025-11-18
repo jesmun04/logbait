@@ -9,8 +9,10 @@ JUEGOS_PERMITIDOS = {
     'blackjack': {'nombre': 'Blackjack', 'max_jugadores': 4},
     'ruleta': {'nombre': 'Ruleta', 'max_jugadores': 4},
     'coinflip': {'nombre': 'Coinflip', 'max_jugadores': 2},
-    'caballos': {'nombre': 'Carrera de Caballos', 'max_jugadores': 4}
+    'caballos': {'nombre': 'Carrera de Caballos', 'max_jugadores': 4},
+    'poker': {'nombre': 'Póker', 'max_jugadores': 6},
 }
+
 
 def limpiar_salas_antiguas():
     """Eliminar salas terminadas o con usuarios desconectados por mucho tiempo"""
