@@ -198,42 +198,52 @@ Blackjack (multijugador)
     if (timerHandle){ clearInterval(timerHandle); timerHandle = null; }
     el.textContent = '';
     if (st.fase !== 'turnos' || !st.deadline_ts) return;
+
     function tick(){
-      const secs = Math.max(0, Math.ceil(st.deadline_ts*1000 - Date.now())/1000);
+      const millisRestantes = st.deadline_ts * 1000 - Date.now();
+      const secs = Math.max(0, Math.ceil(millisRestantes / 1000));
       el.textContent = `Tiempo restante turno: ${secs.toFixed(0)}s`;
-      if (secs <= 0){ clearInterval(timerHandle); timerHandle = null; }
+
+      if (secs <= 0){
+        clearInterval(timerHandle);
+        timerHandle = null;
+
+        // 🔹 AUTO-PLANTARSE CUANDO SE AGOTA EL TIEMPO 🔹
+        // Solo si sigue siendo mi turno en esta fase de turnos.
+        if (st.fase === 'turnos' && st.turno_actual === myId) {
+          socket.emit('stand_blackjack', { sala_id: salaId });
+        }
+      }
     }
+
     tick();
     timerHandle = setInterval(tick, 250);
   }
 
   // ====== SocketIO ======
-  // ====== SocketIO ======
-socket.on('connect', () => {
-  socket.emit('join_sala_blackjack', { sala_id: salaId });
-});
+  socket.on('connect', () => {
+    socket.emit('join_sala_blackjack', { sala_id: salaId });
+  });
 
-socket.on('error_blackjack', (e) => alert(e.msg || 'Error'));
+  socket.on('error_blackjack', (e) => alert(e.msg || 'Error'));
 
-socket.on('estado_blackjack', (st) => {
-  lastState = st;
-  render(st);
-  startCountdown(st);
+  socket.on('estado_blackjack', (st) => {
+    lastState = st;
+    render(st);
+    startCountdown(st);
 
-  // === Actualiza el saldo del header en tiempo real ===
-  const meId = "{{ user.id }}";
-  if (st.jugadores && st.jugadores[meId] && typeof window.updateHeaderBalance === 'function') {
-    window.updateHeaderBalance(st.jugadores[meId].balance);
-  }
-});
+    // === Actualiza el saldo del header en tiempo real ===
+    const meId = "{{ user.id }}";
+    if (st.jugadores && st.jugadores[meId] && typeof window.updateHeaderBalance === 'function') {
+      window.updateHeaderBalance(st.jugadores[meId].balance);
+    }
+  });
 
-socket.on('balance_update', (data) => {
-  if (data && typeof data.balance !== 'undefined' && typeof window.updateHeaderBalance === 'function') {
-    window.updateHeaderBalance(data.balance);
-  }
-});
-
-
+  socket.on('balance_update', (data) => {
+    if (data && typeof data.balance !== 'undefined' && typeof window.updateHeaderBalance === 'function') {
+      window.updateHeaderBalance(data.balance);
+    }
+  });
 
   // ====== Botones ======
   document.getElementById('btnApostar').onclick = () => {
