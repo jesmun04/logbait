@@ -1,15 +1,35 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template, abort
 from flask_login import login_required, current_user
 from models import db, SalaMultijugador, UsuarioSala, PartidaMultijugador
 import json
-from .socket_handlers import register_poker_handlers
 import random
 from datetime import datetime
 
+from .socket_handlers import register_poker_handlers
+
+# Blueprint SIN url_prefix, y las rutas ponen el path completo,
+# igual que en otros juegos (ruleta, etc.)
 bp = Blueprint('api_multijugador_poker', __name__)
 
 PALOS = ['♠', '♥', '♦', '♣']
 VALORES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+
+
+@bp.record_once
+def on_register(state):
+    """
+    Esto se ejecuta cuando el blueprint se registra.
+    Igual que en blackjack/ruleta/coinflip: aquí enganchamos
+    los socket handlers específicos de póker.
+    """
+    socketio = state.app.extensions.get("socketio")
+    if socketio:
+        register_poker_handlers(socketio, state.app)
+
+
+# ===========================
+#   LÓGICA COMÚN / HELPERS
+# ===========================
 
 
 def _crear_mazo():
@@ -17,9 +37,13 @@ def _crear_mazo():
 
 
 def _obtener_o_crear_partida(sala: SalaMultijugador) -> PartidaMultijugador:
-    partida = PartidaMultijugador.query.filter_by(sala_id=sala.id, estado='activa').order_by(
-        PartidaMultijugador.fecha_inicio.desc()
-    ).first()
+    partida = (
+        PartidaMultijugador.query
+        .filter_by(sala_id=sala.id, estado='activa')
+        .order_by(PartidaMultijugador.fecha_inicio.desc())
+        .first()
+    )
+
     if partida is None:
         partida = PartidaMultijugador(
             sala_id=sala.id,
@@ -36,6 +60,7 @@ def _obtener_o_crear_partida(sala: SalaMultijugador) -> PartidaMultijugador:
         )
         db.session.add(partida)
         db.session.commit()
+
     return partida
 
 
@@ -60,16 +85,18 @@ def _guardar_estado(partida: PartidaMultijugador, estado: dict):
 
 
 def _sanitizar_estado_para_usuario(estado: dict, user_id: int) -> dict:
-    """Quita las cartas privadas de otros jugadores antes de mandar al frontend."""
-    estado_copia = json.loads(json.dumps(estado))  # copia profunda sencilla
+    """
+    Quita las cartas privadas de otros jugadores antes de mandar al frontend.
+    """
+    estado_copia = json.loads(json.dumps(estado))  # copia profunda
 
     jugadores = estado_copia.get('jugadores', {})
     for uid, info in jugadores.items():
         if int(uid) != int(user_id):
             # No enseñar cartas de otros salvo en showdown
-            if estado_copia.get('fase') != 'showdown':
+            if estado_copia.get('fase') != 'showdown' and estado_copia.get('fase') != 'terminada':
                 info.pop('cartas', None)
-            # 'cartas_visibles' solo se rellena en showdown
+            # 'cartas_visibles' se rellena sólo en showdown/terminada
     return estado_copia
 
 
@@ -84,104 +111,15 @@ def _asegurar_usuario_en_sala(sala_id: int):
     return sala, usuario_sala, None, None
 
 
-@bp.route('/estado/<int:sala_id>', methods=['GET'])
-@login_required
-def estado(sala_id):
-    sala, usuario_sala, resp, code = _asegurar_usuario_en_sala(sala_id)
-    if resp is not None:
-        return resp, code
-
-    partida = _obtener_o_crear_partida(sala)
-    estado = _cargar_estado(partida)
-    return jsonify(_sanitizar_estado_para_usuario(estado, current_user.id))
-
-from flask import render_template, abort
-from flask_login import login_required, current_user
-from models import SalaMultijugador, UsuarioSala
-
-# ... arriba ya tienes bp definido
-
-@bp.route('/multijugador/partida/poker/<int:sala_id>')
-@login_required
-def vista_poker_multijugador(sala_id):
-    sala = SalaMultijugador.query.get_or_404(sala_id)
-    if sala.juego != 'poker':
-        abort(404)
-
-    usuario_sala = UsuarioSala.query.filter_by(
-        sala_id=sala_id,
-        usuario_id=current_user.id
-    ).first()
-    if not usuario_sala:
-        abort(403)
-
-    return render_template(
-        'pages/casino/juegos/multiplayer/poker.html',
-        sala=sala
-        # current_user lo tienes global por flask-login
-    )
-
-
-@bp.route('/iniciar/<int:sala_id>', methods=['POST'])
-@login_required
-def iniciar_mano(sala_id):
-    sala, usuario_sala, resp, code = _asegurar_usuario_en_sala(sala_id)
-    if resp is not None:
-        return resp, code
-
-    # Solo el creador de la sala puede iniciar la mano
-    if sala.creador_id != current_user.id:
-        return jsonify({'error': 'Solo el creador de la sala puede iniciar una mano'}), 403
-
-    partida = _obtener_o_crear_partida(sala)
-
-    mazo = _crear_mazo()
-    random.shuffle(mazo)
-
-    # Cartas comunitarias (mostradas directamente para simplificar)
-    comunitarias = [mazo.pop() for _ in range(5)]
-
-    # Jugadores: todos los usuarios unidos a la sala
-    jugadores_estado = {}
-    jugadores_sala = UsuarioSala.query.filter_by(sala_id=sala.id).all()
-
-    for us in jugadores_sala:
-        # Dos cartas privadas por jugador
-        cartas = [mazo.pop(), mazo.pop()]
-        jugadores_estado[str(us.usuario_id)] = {
-            'user_id': us.usuario_id,
-            'username': us.player.username if hasattr(us, 'player') and us.player else f'Usuario {us.usuario_id}',
-            'stack': 1000.0,
-            'apuesta_actual': 0.0,
-            'estado': 'activo',
-            'ultima_accion': '---',
-            'ha_actuado': False,
-            'cartas': cartas,
-            'cartas_visibles': None
-        }
-
-    estado = {
-        'juego': 'poker',
-        'fase': 'apuestas',
-        'cartas_comunitarias': comunitarias,
-        'jugadores': jugadores_estado,
-        'bote': 0.0,
-        'ganador': None
-    }
-
-    _guardar_estado(partida, estado)
-
-    return jsonify({'mensaje': 'Nueva mano de póker iniciada'})
-
-
 def _resolver_si_todos_han_actuado(estado: dict):
     jugadores = estado.get('jugadores', {})
     activos = [j for j in jugadores.values() if j.get('estado') == 'activo']
     if not activos:
         return  # nadie activo, dejamos la mano como está
 
+    # Si falta alguien por actuar, todavía no resolvemos
     if not all(j.get('ha_actuado') for j in activos):
-        return  # aún quedan jugadores por actuar
+        return
 
     # Todos han actuado: elegimos un ganador aleatorio entre los activos
     ganador = random.choice(activos)
@@ -257,7 +195,79 @@ def _accion_generica(sala_id: int, tipo: str, cantidad: float | None = None):
     })
 
 
-@bp.route('/apostar/<int:sala_id>', methods=['POST'])
+# ===========================
+#        RUTAS API
+# ===========================
+
+
+@bp.route('/api/multijugador/poker/estado/<int:sala_id>', methods=['GET'])
+@login_required
+def estado(sala_id):
+    sala, usuario_sala, resp, code = _asegurar_usuario_en_sala(sala_id)
+    if resp is not None:
+        return resp, code
+
+    partida = _obtener_o_crear_partida(sala)
+    estado = _cargar_estado(partida)
+    return jsonify(_sanitizar_estado_para_usuario(estado, current_user.id))
+
+
+@bp.route('/api/multijugador/poker/iniciar/<int:sala_id>', methods=['POST'])
+@login_required
+def iniciar_mano(sala_id):
+    sala, usuario_sala, resp, code = _asegurar_usuario_en_sala(sala_id)
+    if resp is not None:
+        return resp, code
+
+    # Solo el creador de la sala puede iniciar la mano
+    if sala.creador_id != current_user.id:
+        return jsonify({'error': 'Solo el creador de la sala puede iniciar una mano'}), 403
+
+    partida = _obtener_o_crear_partida(sala)
+
+    mazo = _crear_mazo()
+    random.shuffle(mazo)
+
+    # Cartas comunitarias (mostradas directamente para simplificar)
+    comunitarias = [mazo.pop() for _ in range(5)]
+
+    # Jugadores: todos los usuarios unidos a la sala
+    jugadores_estado = {}
+    jugadores_sala = UsuarioSala.query.filter_by(sala_id=sala.id).all()
+
+    for us in jugadores_sala:
+        # Dos cartas privadas por jugador
+        cartas = [mazo.pop(), mazo.pop()]
+        jugadores_estado[str(us.usuario_id)] = {
+            'user_id': us.usuario_id,
+            'username': (
+                us.player.username if hasattr(us, 'player') and us.player
+                else f'Usuario {us.usuario_id}'
+            ),
+            'stack': 1000.0,
+            'apuesta_actual': 0.0,
+            'estado': 'activo',
+            'ultima_accion': '---',
+            'ha_actuado': False,
+            'cartas': cartas,
+            'cartas_visibles': None
+        }
+
+    estado = {
+        'juego': 'poker',
+        'fase': 'apuestas',
+        'cartas_comunitarias': comunitarias,
+        'jugadores': jugadores_estado,
+        'bote': 0.0,
+        'ganador': None
+    }
+
+    _guardar_estado(partida, estado)
+
+    return jsonify({'mensaje': 'Nueva mano de póker iniciada'})
+
+
+@bp.route('/api/multijugador/poker/apostar/<int:sala_id>', methods=['POST'])
 @login_required
 def apostar(sala_id):
     data = request.get_json() or {}
@@ -265,20 +275,45 @@ def apostar(sala_id):
     return _accion_generica(sala_id, 'apostar', cantidad)
 
 
-@bp.route('/pasar/<int:sala_id>', methods=['POST'])
+@bp.route('/api/multijugador/poker/pasar/<int:sala_id>', methods=['POST'])
 @login_required
 def pasar(sala_id):
     return _accion_generica(sala_id, 'pasar')
 
 
-@bp.route('/retirarse/<int:sala_id>', methods=['POST'])
+@bp.route('/api/multijugador/poker/retirarse/<int:sala_id>', methods=['POST'])
 @login_required
 def retirarse(sala_id):
     return _accion_generica(sala_id, 'retirarse')
 
-@bp.record_once
-def on_register(state):
-    socketio = state.app.extensions.get("socketio")
-    if socketio:
-        register_poker_handlers(socketio, state.app)
-        print("✅ Handlers de SocketIO para Póker registrados")
+
+# ===========================
+#     VISTA HTML MULTI
+# ===========================
+
+
+@bp.route('/multijugador/partida/poker/<int:sala_id>')
+@login_required
+def vista_poker_multijugador(sala_id):
+    """
+    Esta es la URL a la que redirige salas_espera:
+        /multijugador/partida/poker/<sala_id>
+    Coincide con el resto de juegos (blackjack, ruleta, etc.).
+    """
+    sala = SalaMultijugador.query.get_or_404(sala_id)
+
+    if sala.juego != 'poker':
+        abort(404)
+
+    usuario_sala = UsuarioSala.query.filter_by(
+        sala_id=sala_id,
+        usuario_id=current_user.id
+    ).first()
+
+    if not usuario_sala:
+        abort(403)
+
+    return render_template(
+        'pages/casino/juegos/multiplayer/poker.html',
+        sala=sala
+    )
