@@ -295,10 +295,18 @@ def register_blackjack_handlers(socketio, app):
         if not st or st["fase"] != "esperando_apuestas":
             return
 
-        # Mínimo 2 jugadores con apuesta
-        if sum(1 for j in st["jugadores"].values() if j["apuesta"] > 0) < 2:
-            emit("error_blackjack", {"msg": "Se necesitan al menos 2 jugadores con apuesta."},
-                 to=f"blackjack_sala_{sala_id}")
+        # Mínimo 2 jugadores con apuesta y aviso de quién falta por apostar
+        jugadores_con_apuesta = [j for j in st["jugadores"].values() if j["apuesta"] > 0]
+        jugadores_sin_apuesta = [j["username"] for j in st["jugadores"].values() if j["apuesta"] <= 0]
+
+        if len(jugadores_con_apuesta) < 2:
+            mensaje = "Se necesitan al menos 2 jugadores con apuesta."
+            if jugadores_sin_apuesta:
+                mensaje += " Falta apostar: " + ", ".join(jugadores_sin_apuesta)
+            emit("error_blackjack", {
+                "msg": mensaje,
+                "faltan_apostar": jugadores_sin_apuesta
+            }, to=f"blackjack_sala_{sala_id}")
             return
 
         # Reparto inicial
@@ -332,6 +340,9 @@ def register_blackjack_handlers(socketio, app):
             avanzar_turno(st)
             if st["fase"] == "crupier":
                 ejecutar_crupier_y_resolver(sala_id)
+        else:
+            # Reinicia el temporizador a 15s si la acci��n no fue plantarse
+            st["deadline_ts"] = time.time() + 15
         emitir_estado(sala_id)
 
     @socketio.on("stand_blackjack")
@@ -359,6 +370,16 @@ def register_blackjack_handlers(socketio, app):
         if len(st["votos_revancha"]) >= 2 and len(st["jugadores"]) >= 2:
             reset_para_nueva_ronda(st)
         emitir_estado(sala_id)
+
+    @socketio.on("rechazar_revancha")
+    def rechazar_revancha(data):
+        sala_id = int(data["sala_id"])
+        st = salas_blackjack.get(sala_id)
+        if not st or st["fase"] != "fin":
+            return
+        # Marcar sala cerrada y redirigir a todos al dashboard
+        st["fase"] = "cerrada"
+        emit("blackjack_redirect_dashboard", {}, room=f"blackjack_sala_{sala_id}")
 
 # ================== Reset de ronda ==================
 def reset_para_nueva_ronda(st):

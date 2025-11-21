@@ -104,9 +104,14 @@ Blackjack (multijugador)
     <button id="btnIniciar" class="btn btn-success btn-sm">INICIAR</button>
     <button id="btnHit" class="btn btn-action-green btn-sm" disabled>PEDIR</button>
     <button id="btnStand" class="btn btn-action-red btn-sm" disabled>PLANTARSE</button>
-    <button id="btnRevancha" class="btn btn-warning btn-sm" style="display:none;">Jugar otra (votar)</button>
+    <div id="revancha-actions" style="display:none; gap:8px; align-items:center;">
+      <button id="btnRevanchaYes" class="btn btn-warning btn-sm">Jugar otra (Sí)</button>
+      <button id="btnRevanchaNo" class="btn btn-global exit btn-sm">Salir (No)</button>
+    </div>
     <span id="contador" class="puntos-display" style="border-color:rgba(0,243,255,.35);background:rgba(0,243,255,.08);color:#ff8c1a;"></span>
   </div>
+  <div id="aviso-apuestas" class="text-warning small mb-2" style="display:none;"></div>
+  <div id="info-revancha" class="text-info small mb-2" style="display:none;"></div>
 
   <div class="holo-table">
     <div id="dealer"></div>
@@ -168,6 +173,24 @@ Blackjack (multijugador)
   function render(st){
     document.getElementById('estado').textContent = JSON.stringify(st, null, 2);
 
+    // Aviso apuestas pendientes
+    const avisoApuestas = document.getElementById('aviso-apuestas');
+    if (avisoApuestas){
+      if (st.fase === 'esperando_apuestas'){
+        const pendientes = Object.values(st.jugadores || {}).filter(j => (j.apuesta || 0) <= 0).map(j => j.username);
+        if (pendientes.length){
+          avisoApuestas.style.display = 'block';
+          avisoApuestas.textContent = 'Falta apostar: ' + pendientes.join(', ');
+        } else {
+          avisoApuestas.style.display = 'none';
+          avisoApuestas.textContent = '';
+        }
+      } else {
+        avisoApuestas.style.display = 'none';
+        avisoApuestas.textContent = '';
+      }
+    }
+
     // Dealer
     const dealerEl = document.getElementById('dealer');
     const dealerHand = st.dealer || [];
@@ -217,7 +240,33 @@ Blackjack (multijugador)
     const esMiTurno = (fase === 'turnos' && turno === myId);
     document.getElementById('btnHit').disabled   = !esMiTurno;
     document.getElementById('btnStand').disabled = !esMiTurno;
-    document.getElementById('btnRevancha').style.display = (fase === 'fin') ? 'inline-block' : 'none';
+    // Mostrar solo acciones de revancha al final
+    const revWrap = document.getElementById('revancha-actions');
+    if (revWrap){
+      revWrap.style.display = (fase === 'fin') ? 'inline-flex' : 'none';
+    }
+
+    // Mostrar votos de revancha
+    const infoRev = document.getElementById('info-revancha');
+    if (infoRev){
+      if (fase === 'fin'){
+        const votos = new Set(st.votos_revancha || []);
+        const jugadores = st.jugadores || {};
+        const si = [], no = [];
+        Object.entries(jugadores).forEach(([uid, j])=>{
+          (votos.has(Number(uid)) ? si : no).push(j.username);
+        });
+        infoRev.style.display = 'block';
+        infoRev.innerHTML = `
+          <div><strong>Revancha</strong></div>
+          <div>Si: ${si.join(', ') || 'ninguno'}</div>
+          <div>Pendiente/No: ${no.join(', ') || 'ninguno'}</div>
+        `;
+      } else {
+        infoRev.style.display = 'none';
+        infoRev.textContent = '';
+      }
+    }
   }
 
   function startCountdown(st){
@@ -249,7 +298,17 @@ Blackjack (multijugador)
     socket.emit('join_sala_blackjack', { sala_id: salaId });
   });
 
-  socket.on('error_blackjack', (e) => alert(e.msg || 'Error'));
+  socket.on('error_blackjack', (e) => {
+    const msg = e && e.msg ? e.msg : 'Error';
+    alert(msg);
+    if (e && Array.isArray(e.faltan_apostar)){
+      const aviso = document.getElementById('aviso-apuestas');
+      if (aviso){
+        aviso.style.display = 'block';
+        aviso.textContent = msg;
+      }
+    }
+  });
 
   socket.on('estado_blackjack', (st) => {
     lastState = st;
@@ -268,6 +327,10 @@ Blackjack (multijugador)
     }
   });
 
+  socket.on('blackjack_redirect_dashboard', () => {
+    window.location.href = "{{ url_for('dashboard.home') }}";
+  });
+
   // ====== Botones ======
   document.getElementById('btnApostar').onclick = () => {
     const cantidad = parseFloat(document.getElementById('apuesta').value || '0');
@@ -282,8 +345,11 @@ Blackjack (multijugador)
   document.getElementById('btnStand').onclick = () => {
     socket.emit('stand_blackjack', { sala_id: salaId });
   };
-  document.getElementById('btnRevancha').onclick = () => {
+  document.getElementById('btnRevanchaYes').onclick = () => {
     socket.emit('voto_revancha', { sala_id: salaId });
+  };
+  document.getElementById('btnRevanchaNo').onclick = () => {
+    socket.emit('rechazar_revancha', { sala_id: salaId });
   };
 </script>
 
@@ -303,4 +369,3 @@ Blackjack (multijugador)
 <script src="{{ url_for('static', filename='js/balance.js') }}"></script>
 
 {% endblock %}
-
