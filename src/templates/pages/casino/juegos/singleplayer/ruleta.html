@@ -321,13 +321,42 @@ function pickChipColor(v){ if(CHIP_COLORS.has(v)) return CHIP_COLORS.get(v);
   if(v<50)return'#ffd54f'; if(v<100)return'#4fc3f7'; if(v<200)return'#81c784'; if(v<500)return'#ba68c8'; if(v<1000)return'#ff8a65'; return'#e57373';
 }
 function styleChips(){ document.querySelectorAll('.chip').forEach(ch=>{ const v=+ch.dataset.value||0; ch.style.background=pickChipColor(v); ch.style.color='#000'; }); }
+function registerChip(chip){
+  if(!chip) return;
+  chip.addEventListener('click',()=>{ lastChipValue=Number(chip.dataset.value); flash(`Chip activa: ${centsToEuro(lastChipValue)}`); });
+}
 styleChips();
 
 const chipsWrap=document.getElementById('chips'); let droppedSomewhere=false; let lastChipValue=50;
 chipsWrap.addEventListener('dragstart', e=>{ const t=e.target.closest('.chip'); if(!t) return; droppedSomewhere=false; e.dataTransfer.setData('chip', t.dataset.value); });
 document.body.addEventListener('dragend', ()=>{ if(!droppedSomewhere) flash('Ficha no colocada'); });
 document.body.addEventListener('dragend', ()=>{ clearPreview(); });
-document.querySelectorAll('.chip').forEach(ch=>ch.addEventListener('click',()=>{ lastChipValue=Number(ch.dataset.value); flash(`Chip activa: ${centsToEuro(lastChipValue)}`); }));
+document.querySelectorAll('.chip').forEach(registerChip);
+
+const customChipInput=document.getElementById('customChip');
+const addChipButton=document.getElementById('addChip');
+function createCustomChip(amount){
+  const chip=document.createElement('div');
+  chip.className='chip custom-chip';
+  chip.draggable=true;
+  chip.dataset.value=String(amount);
+  chip.textContent=centsToEuro(amount);
+  chipsWrap.appendChild(chip);
+  registerChip(chip);
+  styleChips();
+  lastChipValue=amount;
+}
+if(addChipButton){
+  addChipButton.addEventListener('click',()=>{
+    if(!customChipInput) return;
+    let amount = Number(customChipInput.value);
+    if(!Number.isFinite(amount)){ flash('Introduce un valor válido'); return; }
+    amount = Math.round(amount);
+    if(amount < 20){ flash('La ficha mínima es 20¢'); return; }
+    createCustomChip(amount);
+    flash(`Ficha personalizada de ${centsToEuro(amount)} lista para usar`);
+  });
+}
 
 /* ================== EXTERIORES Y ESPECIALES ================== */
 document.querySelectorAll('[data-out]').forEach(btn=>{

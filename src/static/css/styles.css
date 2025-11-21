@@ -344,6 +344,47 @@ h6 {
   border-color: var(--neon-cyan);
 }
 
+/* Reaprovechar botones neon en páginas legacy */
+.btn-neon {
+  background: var(--gradient-cyber);
+  color: #050511;
+  border: none;
+  box-shadow: var(--glow-cyan-button);
+}
+
+.btn-neon:hover {
+  background: var(--gradient-sunset);
+  color: #050511;
+  box-shadow: var(--glow-multi-button);
+}
+
+.ruleta-legacy .btn-neon {
+  background: var(--gradient-cyber) !important;
+  color: #050511 !important;
+  border: none !important;
+  box-shadow: var(--glow-cyan-button) !important;
+}
+
+.ruleta-legacy .btn-neon:hover {
+  background: var(--gradient-sunset) !important;
+  color: #050511 !important;
+  box-shadow: var(--glow-multi-button) !important;
+}
+
+.btn-neon-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-light);
+  box-shadow: none;
+}
+
+.ruleta-legacy .btn-neon-secondary {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: var(--text-light) !important;
+  box-shadow: none !important;
+}
+
 .btn-success:hover {
   background: linear-gradient(135deg, #5cf7ff, #31ff38);
   color: black;
@@ -677,6 +718,13 @@ html {
   align-items: flex-start;
 }
 
+.ruleta-grid-multi {
+  display: grid;
+  grid-template-columns: minmax(360px, 440px) minmax(620px, 1fr) minmax(260px, 320px);
+  gap: clamp(1.1rem, 1.6vw, 2rem);
+  align-items: flex-start;
+}
+
 .ruleta-panel-table {
   min-width: 0;
   width: 100%;
@@ -766,7 +814,8 @@ html {
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   overflow-x: auto;
-  min-width: 1100px;
+  min-width: 1200px;
+  max-width: 100%;
 }
 
 .ruleta-ui .cell {
@@ -780,6 +829,9 @@ html {
   user-select: none;
   font-size: 1.5rem;
   font-weight: 900;
+  white-space: nowrap;
+  word-break: keep-all;
+  writing-mode: horizontal-tb;
 }
 
 .ruleta-ui .cell.zero {
@@ -891,6 +943,92 @@ html {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.chat-row {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.chat-row input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+}
+
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 260px;
+}
+
+.players-list {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.75rem;
+  max-height: 180px;
+  overflow: auto;
+  font-size: 0.9rem;
+}
+
+.stats-panel .stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stats-panel .stat-row:last-child {
+  border-bottom: none;
+}
+
+.recent-bets {
+  max-height: 140px;
+  overflow: auto;
+}
+
+.color-swatch {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.5);
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.color-picker {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.color-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.color-btn.selected {
+  border-color: white;
+  box-shadow: 0 0 8px rgba(255,255,255,0.5);
+}
+
+.color-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ruleta-grid-multi > .side-panel {
+  grid-column: 3;
+}
+
 .ruleta-note {
   letter-spacing: 0.08em;
 }
@@ -914,6 +1052,14 @@ html {
     grid-template-columns: 1fr;
   }
 
+  .ruleta-grid-multi {
+    grid-template-columns: 1fr;
+  }
+
+  .ruleta-grid-multi > .side-panel {
+    grid-column: 1;
+  }
+
   .ruleta-breakout {
     width: 100%;
     margin-left: 0;
@@ -922,5 +1068,15 @@ html {
 
   .ruleta-ui .table {
     min-width: 900px;
+  }
+}
+
+@media (max-width: 1400px) {
+  .ruleta-grid-multi {
+    grid-template-columns: minmax(340px, 420px) minmax(540px, 1fr);
+  }
+
+  .ruleta-grid-multi > .side-panel {
+    grid-column: 1 / -1;
   }
 }

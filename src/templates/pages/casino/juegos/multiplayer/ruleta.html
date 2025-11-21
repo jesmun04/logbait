@@ -4,6 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ruleta Multijugador 🎯</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
   <style>
     :root{
       --felt:#1a2240; --felt-dark:#151b34; --gold:#e0b14a; --cream:#f3efe2; --shadow:0 6px 18px rgba(0,0,0,.22);
@@ -17,13 +23,99 @@
     .panel{background:linear-gradient(180deg, var(--felt), var(--felt-dark)); border:2px solid rgba(255,255,255,.12); border-radius:18px; padding:14px; box-shadow:var(--shadow)}
     .wheel-wrap{display:grid; place-items:center}
     .controls{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; align-items:center; justify-content:center}
-    .btn{appearance:none; border:none; padding:10px 14px; border-radius:12px; background:var(--gold); color:#1a1a1a; font-weight:700; cursor:pointer; box-shadow:var(--shadow)}
-    .btn.secondary{background:#e5e7ff; color:#10121f}
+    /* Forzar estilo de botones igual que la ruleta individual */
+    .ruleta-legacy .btn,
+    .ruleta-legacy button[type="button"],
+    .ruleta-legacy button[type="submit"],
+    .ruleta-legacy button[type="reset"],
+    .ruleta-legacy input[type="button"],
+    .ruleta-legacy input[type="submit"],
+    .ruleta-legacy input[type="reset"]{
+      appearance:none;
+      border:none !important;
+      padding:10px 14px;
+      border-radius:12px;
+      background:var(--gradient-cyber) !important;
+      color:#050511 !important;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:var(--glow-cyan-button);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      background-image:none !important;
+      text-transform:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      line-height:1.1;
+    }
+    .ruleta-legacy .btn.secondary,
+    .ruleta-legacy button.secondary,
+    .ruleta-legacy input.secondary[type="button"],
+    .ruleta-legacy input.secondary[type="submit"],
+    .ruleta-legacy input.secondary[type="reset"]{
+      background:rgba(255,255,255,0.08) !important;
+      color:var(--text-light) !important;
+      border:1px solid rgba(255,255,255,0.2) !important;
+      box-shadow:none;
+    }
+    .ruleta-legacy .btn:disabled,
+    .ruleta-legacy button:disabled,
+    .ruleta-legacy .btn.disabled,
+    .ruleta-legacy button.disabled,
+    .ruleta-legacy input[type="button"]:disabled,
+    .ruleta-legacy input[type="submit"]:disabled,
+    .ruleta-legacy input[type="reset"]:disabled{
+      opacity:0.65;
+      cursor: not-allowed;
+      background:var(--gradient-cyber) !important;
+      color:#050511 !important;
+      box-shadow:none;
+    }
+    .ruleta-legacy .btn:hover,
+    .ruleta-legacy button:hover,
+    .ruleta-legacy input[type="button"]:hover,
+    .ruleta-legacy input[type="submit"]:hover,
+    .ruleta-legacy input[type="reset"]:hover{
+      transform:translateY(-1px);
+      box-shadow:0 8px 20px rgba(0,0,0,0.35);
+    }
+    .ruleta-legacy .btn:active,
+    .ruleta-legacy button:active,
+    .ruleta-legacy input[type="button"]:active,
+    .ruleta-legacy input[type="submit"]:active,
+    .ruleta-legacy input[type="reset"]:active{
+      transform:translateY(0);
+    }
+
+    /* Refuerzo sobre clases Bootstrap para que siempre usen neon, sin depender de :hover */
+    .ruleta-legacy .btn.btn-primary,
+    .ruleta-legacy .btn-primary,
+    .ruleta-legacy .btn.btn-outline-primary,
+    .ruleta-legacy .btn-outline-primary {
+      background: var(--gradient-cyber) !important;
+      color: #050511 !important;
+      border: none !important;
+      box-shadow: var(--glow-cyan-button) !important;
+    }
+
+    .ruleta-legacy .btn.btn-primary:hover,
+    .ruleta-legacy .btn-primary:hover,
+    .ruleta-legacy .btn.btn-outline-primary:hover,
+    .ruleta-legacy .btn-outline-primary:hover {
+      background: var(--gradient-sunset) !important;
+      color: #050511 !important;
+      box-shadow: var(--glow-multi-button) !important;
+    }
   .wheel-wrap svg{ width:100%; height:auto; display:block; max-width:460px; }
   /* Ensure SVG groups use the SVG transform box so transform-origin is accurate */
   #ballGroup{ transform-box: fill-box; transform-origin: 50% 50%; }
     .table{display:grid; grid-template-columns: 90px repeat(12, 1fr) 140px 140px; gap:5px; padding:10px; background:var(--felt); border-radius:14px; border:1px solid rgba(255,255,255,.15)}
-    .cell{position:relative; background:var(--tile); border:1px solid rgba(0,0,0,.35); color:#fafafa; text-align:center; padding:22px 8px; border-radius:10px; user-select:none; font-size:28px; font-weight:900}
+    .cell{
+      position:relative; background:var(--tile); border:1px solid rgba(0,0,0,.35); color:#fafafa; text-align:center;
+      padding:22px 8px; border-radius:10px; user-select:none; font-size:28px; font-weight:900;
+      writing-mode: horizontal-tb; white-space: nowrap; line-height: 1.1;
+    }
     .cell.zero{grid-row: 1 / span 3; background:#1d6f3e; display:flex; align-items:center; justify-content:center}
     .cell.red{background:#9e1f24} .cell.black{background:#0b0b0b}
     .cell.preview{ outline:3px solid rgba(255,215,0,0.85); box-shadow:0 6px 18px rgba(255,215,0,0.12) }
@@ -52,9 +144,29 @@
     .color-btn{width:30px; height:30px; border-radius:50%; border:2px solid transparent; cursor:pointer;}
     .color-btn.selected{border-color:white; box-shadow:0 0 8px rgba(255,255,255,0.5);}
     .color-btn:disabled{opacity:0.4; cursor:not-allowed;}
+
+    /* Neon buttons para igualar estética base */
+    .btn-neon{
+      background: var(--gradient-cyber) !important;
+      color: #050511 !important;
+      border: none !important;
+      box-shadow: var(--glow-cyan-button) !important;
+    }
+    .btn-neon:hover{
+      background: var(--gradient-sunset) !important;
+      color: #050511 !important;
+      box-shadow: var(--glow-multi-button);
+      transform: translateY(-1px);
+    }
+    .btn-neon-secondary{
+      background: rgba(255,255,255,0.08) !important;
+      border: 1px solid rgba(255,255,255,0.2) !important;
+      color: var(--text-light) !important;
+      box-shadow: none !important;
+    }
   </style>
 </head>
-<body data-mode="bet">
+<body class="ruleta-legacy" data-mode="bet">
   <header>
     <div style="font-weight:800; font-size:18px">🎯 {{ sala.nombre }}</div>
     <div style="display:flex; gap:10px; align-items:center;">
@@ -84,12 +196,12 @@
         </g>
       </svg>
       <div class="controls">
-        <button id="spinBtn" class="btn">Girar</button>
-        <button id="confirmBtn" class="btn">Confirmar apuesta</button>
-        <button id="undoBtn" class="btn secondary">Deshacer</button>
-        <button id="clearBtn" class="btn secondary">Borrar</button>
-        <button id="dupBtn" class="btn">Doblar jugada</button>
-        <button id="repeatBtn" class="btn">Última jugada</button>
+        <button id="spinBtn" class="btn btn-primary btn-neon">Girar</button>
+        <button id="confirmBtn" class="btn btn-primary btn-neon">Confirmar apuesta</button>
+        <button id="undoBtn" class="btn btn-outline-primary btn-neon-secondary">Deshacer</button>
+        <button id="clearBtn" class="btn btn-outline-primary btn-neon-secondary">Borrar</button>
+        <button id="dupBtn" class="btn btn-primary btn-neon">Doblar jugada</button>
+        <button id="repeatBtn" class="btn btn-primary btn-neon">Última jugada</button>
       </div>
       <div style="text-align:center; margin-top:8px;"><span class="pill">Tiempo: <b id="spinTimer">—</b></span></div>
     </section>
@@ -105,9 +217,9 @@
       </div>
 
       <div style="display:flex; gap:8px; margin:8px 0;">
-        <button class="btn" id="voisinsBtn">Vecinos 0</button>
-        <button class="btn" id="tiersBtn">Tiers</button>
-        <button class="btn" id="orphBtn">Huérfanos</button>
+        <button class="btn btn-primary btn-neon" id="voisinsBtn">Vecinos 0</button>
+        <button class="btn btn-primary btn-neon" id="tiersBtn">Tiers</button>
+        <button class="btn btn-primary btn-neon" id="orphBtn">Huérfanos</button>
       </div>
 
       <div class="table" id="layout"></div>
@@ -115,12 +227,12 @@
       <div class="group">
         <h3 style="margin:6px 6px 10px;">Apuestas exteriores</h3>
         <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px;">
-          <button class="btn" data-out="red">Rojo</button>
-          <button class="btn" data-out="black">Negro</button>
-          <button class="btn" data-out="even">Par</button>
-          <button class="btn" data-out="odd">Impar</button>
-          <button class="btn" data-out="low">1–18</button>
-          <button class="btn" data-out="high">19–36</button>
+          <button class="btn btn-primary btn-neon" data-out="red">Rojo</button>
+          <button class="btn btn-primary btn-neon" data-out="black">Negro</button>
+          <button class="btn btn-primary btn-neon" data-out="even">Par</button>
+          <button class="btn btn-primary btn-neon" data-out="odd">Impar</button>
+          <button class="btn btn-primary btn-neon" data-out="low">1–18</button>
+          <button class="btn btn-primary btn-neon" data-out="high">19–36</button>
         </div>
       </div>
 
@@ -470,23 +582,23 @@ function ensureBadge(el){
 }
 function renderStack(container, chips, key){
   container.innerHTML='';
-  const maxShow=6; const show=chips.slice(-maxShow); const baseOffset=3;
-  show.forEach((v,i)=>{
-    const c=document.createElement('div'); c.className='mini-chip';
-    // support chip entries that may include owner color: {amount: 100, color: '#ff0'} or raw numeric values
-    const amount = (typeof v === 'object' && v.amount !== undefined) ? v.amount : v;
-    const ownerColor = (typeof v === 'object' && v.color) ? v.color : null;
-    c.style.background = ownerColor || pickChipColor(amount);
-    c.style.transform=`translate(${-i*baseOffset}px, ${-i*baseOffset}px)`;
-    c.draggable=true; c.dataset.move = JSON.stringify({key, amount:v});
-    c.addEventListener('dragstart', (e)=>{ e.dataTransfer.setData('chip_move', c.dataset.move); e.dataTransfer.effectAllowed='move'; });
-    container.appendChild(c);
-  });
-  if(chips.length>maxShow){
-    const more=document.createElement('div'); more.className='mini-chip';
-    more.style.background='#fff'; more.style.transform=`translate(${-maxShow*baseOffset}px, ${-maxShow*baseOffset}px)`; more.style.fontSize='9px';
-    more.textContent='+'+(chips.length-maxShow); container.appendChild(more);
-  }
+  // Mostrar solo la ficha más reciente con su color y el total de esa jugada
+  const last = chips[chips.length-1];
+  const amount = (typeof last === 'object' && last.amount !== undefined) ? last.amount : last;
+  const ownerColor = (typeof last === 'object' && last.color) ? last.color : pickChipColor(amount);
+
+  const c=document.createElement('div'); c.className='mini-chip';
+  c.style.background = ownerColor;
+  c.style.transform='translate(0px, 0px)';
+  c.textContent = centsToEuro(amount);
+  c.style.minWidth = '56px';
+  c.style.padding = '4px 6px';
+  c.style.color = '#000';
+  c.style.textAlign = 'center';
+  c.style.fontSize = '11px';
+  c.draggable=true; c.dataset.move = JSON.stringify({key, amount:last});
+  c.addEventListener('dragstart', (e)=>{ e.dataTransfer.setData('chip_move', c.dataset.move); e.dataTransfer.effectAllowed='move'; });
+  container.appendChild(c);
 }
 function anchorElForBet(b){
   if(b.type==='straight'&&b.set.size===1){ return indexToCell[[...b.set][0]]; }
@@ -1014,12 +1126,43 @@ function init(){
   log("🎲 Bienvenido a la ruleta multijugador");
 }
 
-// Asegura que la inicialización ocurre siempre
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  init();
-}
+  // Asegura que la inicialización ocurre siempre
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // Forzar estilo de botones (fallback si el CSS del head no se aplica por cache/bootstrap)
+  function applyLegacyButtons(){
+    document.querySelectorAll('.ruleta-legacy button, .ruleta-legacy input[type="button"], .ruleta-legacy input[type="submit"], .ruleta-legacy input[type="reset"]').forEach(btn=>{
+      const isSecondary = btn.classList.contains('secondary');
+      const isDisabled = btn.disabled;
+      btn.style.border = isSecondary ? '1px solid rgba(255,255,255,0.2)' : 'none';
+      btn.style.borderRadius = '12px';
+      btn.style.padding = '10px 14px';
+      btn.style.background = isSecondary ? 'rgba(255,255,255,0.08)' : 'var(--gradient-cyber)';
+      btn.style.color = isSecondary ? 'var(--text-light)' : '#050511';
+      btn.style.fontWeight = '700';
+      btn.style.boxShadow = isSecondary ? 'none' : 'var(--glow-cyan-button)';
+      btn.style.display = 'inline-flex';
+      btn.style.alignItems = 'center';
+      btn.style.justifyContent = 'center';
+      btn.style.gap = '6px';
+      btn.style.lineHeight = '1.1';
+      if(isDisabled){
+        btn.style.opacity = '0.65';
+        btn.style.cursor = 'not-allowed';
+      } else {
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+      }
+    });
+  }
+  applyLegacyButtons();
+  // mantener estilo neon siempre
+  const observer = new MutationObserver(applyLegacyButtons);
+  observer.observe(document.body, { childList: true, subtree: true });
 </script>
 </body>
 </html>
