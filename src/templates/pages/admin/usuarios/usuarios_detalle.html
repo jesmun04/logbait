@@ -1,7 +1,7 @@
 {% extends "pages/admin/base.html" %}
 
 {% block title %}
-Usuario: {{ usuario.username }}
+Usuario: {{ user.username }}
 {% endblock %}
 
 {% block content %}
@@ -9,7 +9,7 @@ Usuario: {{ usuario.username }}
     <div class="col-12">
         <div class="d-flex flex-sm-row flex-column gap-4 align-items-center justify-content-between">
             <div>
-                <h2>👤 Detalles del Usuario: {{ usuario.username }}</h2>
+                <h2>👤 Detalles del Usuario: {{ user.username }}</h2>
                 <p class="text-muted mb-0">Información completa y estadísticas</p>
             </div>
             <div class="d-flex flex-column gap-2">
@@ -24,112 +24,40 @@ Usuario: {{ usuario.username }}
 <div class="row g-4 mt-4">
     <!-- Información Básica -->
     <div class="col-lg-6">
-        <div class="card h-100">
+        <div class="card h-100 animated-translateY">
             <div class="card-header">
                 📝 Información Básica
             </div>
             <div class="card-body">
-                <p><strong>ID:</strong> {{ usuario.id }}</p>
-                <p><strong>Usuario:</strong> {{ usuario.username }}</p>
-                <p><strong>Email:</strong> {{ usuario.email }}</p>
-                <p><strong>Fecha Registro:</strong> {{ usuario.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                <p><strong>ID:</strong> {{ user.id }}</p>
+                <p><strong>Usuario:</strong> {{ user.username }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Fecha Registro:</strong> {{ user.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
             </div>
         </div>
     </div>
         
     <div class="col-lg-6">
-        <div class="card h-100">
+        <div class="card h-100 animated-translateY">
             <div class="card-header">
                 💰 Información Financiera
             </div>
             <div class="card-body">
                 <p><strong>Balance Actual:</strong> 
-                    <span class="{% if usuario.balance >= 0 %}positive{% else %}negative{% endif %}">
-                        ${{ "%.2f"|format(usuario.balance) }}
+                    <span class="{% if user.balance >= 0 %}positive{% else %}negative{% endif %}">
+                        ${{ "%.2f"|format(user.balance) }}
                     </span>
                 </p>
                 <p><strong>Estado:</strong> 
-                    <span class="badge {% if usuario.balance >= 0 %}badge-success{% else %}badge-danger{% endif %}">
-                        {{ "Positivo" if usuario.balance >= 0 else "Negativo" }}
+                    <span class="badge {% if user.balance >= 0 %}badge-success{% else %}badge-danger{% endif %}">
+                        {{ "Positivo" if user.balance >= 0 else "Negativo" }}
                     </span>
                 </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Estadísticas por Juego -->
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                📊 Estadísticas por Juego
-            </div>
-            <div class="card-body">
-                <div class="stats-grid">
-                    {% for stat in stats %}
-                    <div class="stat-item">
-                        <h4>{{ stat.juego.upper() }}</h4>
-                        <div class="stat-number">{{ stat.partidas_jugadas }}</div>
-                        <p>Partidas Jugadas</p>
-                        <div class="stat-number {% if stat.partidas_ganadas > 0 %}positive{% endif %}">
-                            {{ stat.partidas_ganadas }}
-                        </div>
-                        <p>Partidas Ganadas</p>
-                        <div class="stat-number {% if stat.ganancia_total >= 0 %}positive{% else %}negative{% endif %}">
-                            ${{ "%.2f"|format(stat.ganancia_total) }}
-                        </div>
-                        <p>Ganancia Total</p>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Historial de Apuestas -->
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                📈 Historial Completo de Apuestas ({{ apuestas|length }} total)
-            </div>
-            <div class="card-body">
-                {% if apuestas %}
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Juego</th>
-                            <th>Cantidad</th>
-                            <th>Resultado</th>
-                            <th>Ganancia</th>
-                            <th>Balance Neto</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for apuesta in apuestas %}
-                        <tr>
-                            <td>{{ apuesta.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
-                            <td>{{ apuesta.juego }}</td>
-                            <td>${{ "%.2f"|format(apuesta.cantidad) }}</td>
-                            <td>
-                                <span class="badge {% if apuesta.resultado == 'ganada' %}badge-success{% elif apuesta.resultado == 'perdida' %}badge-danger{% else %}badge-warning{% endif %}">
-                                    {{ apuesta.resultado }}
-                                </span>
-                            </td>
-                            <td class="{% if apuesta.ganancia > 0 %}positive{% else %}negative{% endif %}">
-                                ${{ "%.2f"|format(apuesta.ganancia) }}
-                            </td>
-                            <td class="{% if (apuesta.ganancia - apuesta.cantidad) >= 0 %}positive{% else %}negative{% endif %}">
-                                ${{ "%.2f"|format(apuesta.ganancia - apuesta.cantidad) }}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p style="text-align: center; padding: 20px; color: #ccc;">No hay apuestas registradas para este usuario.</p>
-                {% endif %}
             </div>
         </div>
     </div>
 </div>
+
+{% include "partials/estadisticas.html" %}
+
 {% endblock %}

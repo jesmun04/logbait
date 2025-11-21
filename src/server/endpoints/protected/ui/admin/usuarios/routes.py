@@ -209,12 +209,13 @@ def detalle_usuario(user_id):
             .all()
         
         return render_template('pages/admin/usuarios/usuarios_detalle.html',
-                             usuario=usuario,
-                             estadisticas=estadisticas,
-                             apuestas_recientes=apuestas_recientes,
+                             user=usuario,
+                             stats=estadisticas,
+                             apuestas=apuestas_recientes,
                              salas_creadas=salas_creadas,
                              salas_unidas=salas_unidas,
-                             now=datetime.now())
+                             now=datetime.now(),
+                             admin_page=True)
                              
     except Exception as e:
         flash(f'Error al cargar el detalle del usuario: {str(e)}', 'error')
