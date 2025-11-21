@@ -1,29 +1,28 @@
-<!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Blackjack Logbait — Standalone</title>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&display=swap" rel="stylesheet">
+{% extends "pages/casino/base.html" %}
+
+{% block title %}
+Blackjack (individual)
+{% endblock %}
+
+{% block content %}
 <style>
 :root{
   --casino-green:#0b3d2e;
   --casino-green-dark:#082b20;
-  --casino-gold:#d4af37;
-  --casino-gold-soft:#b8942c;
+  --casino-gold:var(--neon-cyan);
+  --casino-gold-soft:#00aeca;
   --neon-cyan:#00f3ff;
   --neon-green:#2ecc71;
   --neon-red:#ff5a5a;
   --neon-pink:#ff5af1;
   --neon-purple:#9b59b6;
-  --gradient-cyber: linear-gradient(135deg,#00f3ff,#ff5af1);
+  --gradient-cyber: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
   --border-radius-cyber: 12px;
 }
 *{box-sizing:border-box}
 body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
 .container{max-width:1100px;margin:30px auto;padding:0 16px}
-.card{background:linear-gradient(180deg,#0f1417 0%, #0b1113 100%);border:1px solid rgba(212,175,55,.18);box-shadow:0 0 0 1px rgba(212,175,55,.15), 0 8px 30px rgba(0,0,0,.4);border-radius:14px}
+.card{background:linear-gradient(180deg,#0f1417 0%, #0b1113 100%);border:1px solid rgba(0,243,255,.22);box-shadow:0 0 0 1px rgba(0,243,255,.18), 0 8px 30px rgba(0,0,0,.4);border-radius:14px}
 .card .card-body{padding:16px}
 .text-cyan{color:var(--casino-gold)!important}
 .border-cyan{border-color:var(--casino-gold)!important}
@@ -51,7 +50,8 @@ body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe 
 .topbar-right{flex:1;justify-content:flex-end;flex-wrap:wrap;min-width:260px}
 
 .help-pill{cursor:pointer;border:1px solid var(--casino-gold);color:var(--casino-gold);padding:4px 10px;border-radius:999px;font-weight:700;transition:all .15s}
-.help-pill:hover{background:rgba(212,175,55,.08)}
+.help-pill{background:rgba(0,243,255,.08);}
+.help-pill:hover{background:rgba(0,243,255,.16);box-shadow:0 0 10px rgba(0,243,255,.35)}
 
 /* Modal simple */
 .help-modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:9999}
@@ -63,25 +63,31 @@ body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe 
 
 /* Inputs y botones */
 .input-group{display:flex;align-items:stretch}
-.input-group-text{display:flex;align-items:center;justify-content:center;padding:0 10px;border:1px solid var(--casino-gold);border-right:none;background:#0b1113;color:var(--casino-gold)}
-.form-control{flex:1;padding:10px;border:1px solid var(--casino-gold);border-left:none;color:#fff;background:#0b1113;border-radius:0 8px 8px 0;outline:none}
+.input-group-text{display:flex;align-items:center;justify-content:center;padding:0 14px;border:1px solid var(--casino-gold);border-right:none;background:#0b1113;color:var(--casino-gold);font-weight:800;border-radius:10px 0 0 10px}
+.form-control{flex:1;min-width:140px;padding:12px;border:1px solid var(--casino-gold);border-left:none;color:#fff;background:#0b1113;border-radius:0 10px 10px 0;outline:none;font-weight:700}
+.apuesta-chips{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch;margin-top:8px}
+.bet-chip{border:1px solid var(--casino-gold);color:var(--casino-gold);background:rgba(212,175,55,.08);border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer;min-width:56px;text-align:center;transition:all .15s;box-shadow:0 0 0 1px rgba(212,175,55,.12)}
+.bet-chip:hover{background:rgba(212,175,55,.14);box-shadow:0 0 10px rgba(212,175,55,.35)}
 .form-label{display:block;margin-bottom:6px}
-.btn{display:inline-block;cursor:pointer;border:1px solid transparent;background:#3498db;color:#fff;border-radius:10px;padding:10px 14px;font-weight:800}
+.btn{display:inline-block;cursor:pointer;border:1px solid var(--casino-gold-soft);background:var(--casino-gold);color:#0b1113;border-radius:10px;padding:10px 14px;font-weight:800;box-shadow:0 0 0 1px rgba(212,175,55,.15)}
 .btn:disabled{opacity:.55;pointer-events:none}
-.btn-success{background:var(--casino-gold);border-color:var(--casino-gold-soft);color:#111}
+.btn:hover{filter:brightness(1.05);box-shadow:0 0 10px rgba(0,243,255,.45)}
+.btn-success{background:var(--casino-gold);border-color:var(--casino-gold-soft);color:#021018}
 .btn-success:hover{filter:brightness(1.1);box-shadow:0 0 10px rgba(212,175,55,.6)}
-
-.btn-outline-cyan{
-  border:1px solid var(--casino-gold);color:var(--casino-gold);background:transparent;width:32px;height:32px;border-radius:50%;
-  display:inline-flex;align-items:center;justify-content:center;margin-left:10px;font-weight:700
-}
-.btn-outline-cyan:hover{background:rgba(212,175,55,.15)}
 
 .btn-action-green{background:#2ecc71;border-color:#27ae60;color:#0b1113}
 .btn-action-red{background:#e74c3c;border-color:#c0392b;color:#0b1113}
 .btn-global{background:#3498db;border-color:#2980b9;color:#fff}
 .btn-global.exit{background:#111;border-color:#fff}
 .btn.small{padding:8px 10px;font-size:.9rem}
+.btn-cta{
+  background:var(--gradient-cyber);
+  border:1px solid var(--neon-cyan);
+  color:#041018;
+  font-weight:800;
+  box-shadow:0 0 12px rgba(0,243,255,.35);
+}
+.btn-cta:hover{filter:brightness(1.06);box-shadow:0 0 18px rgba(0,243,255,.55)}
 
 /* Mesa */
 .holo-table {
@@ -169,9 +175,8 @@ body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe 
   .topbar-center{width:100%;order:3;justify-content:center}
 }
 </style>
-</head>
-<body>
-  <div class="container">
+
+<div class="container">
     <div class="card">
       <div class="card-body">
         <!-- TOPBAR -->
@@ -190,11 +195,10 @@ body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe 
             <div class="estado" id="estado-sistema">EN ESPERA</div>
           </div>
           <div class="topbar-right">
-            <a href="{{ url_for('dashboard.home') }}" class="help-pill" style="background:#00c3ff; color:#000; font-weight:700; white-space: nowrap;">
+            <a href="{{ url_for('dashboard.home') }}" class="btn btn-cta" style="white-space: nowrap;">
               <i class="fas fa-home me-1"></i> MEN&Uacute; PRINCIPAL
             </a>
-            <a class="btn" style="border:1px solid #d4af37;padding:8px 12px;border-radius:8px;color:#d4af37;text-decoration:none"
-               href="/salas-espera?juego=blackjack">
+            <a class="btn btn-cta" href="/salas-espera?juego=blackjack" style="white-space: nowrap;">
               Modo Multijugador (crear/unirse a sala)
             </a>
             <div class="help-pill" id="open-help" style="white-space: nowrap;">
@@ -280,15 +284,17 @@ body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe 
             <div class="col" style="flex:1;min-width:260px">
               <label for="cantidad" class="form-label">APUESTA</label>
               <div class="input-group">
-                <span class="input-group-text">€</span>
+                <span class="input-group-text">&euro;</span>
                 <input type="number" class="form-control" id="cantidad" min="1" step="1" value="10">
-                <button class="btn btn-outline-cyan" onclick="apuestaRapida(25)">25</button>
-                <button class="btn btn-outline-cyan" onclick="apuestaRapida(50)">50</button>
-                <button class="btn btn-outline-cyan" onclick="apuestaRapida(100)">100</button>
+              </div>
+              <div class="apuesta-chips">
+                <button class="bet-chip" onclick="apuestaRapida(25)">25</button>
+                <button class="bet-chip" onclick="apuestaRapida(50)">50</button>
+                <button class="bet-chip" onclick="apuestaRapida(100)">100</button>
               </div>
             </div>
             <div class="col" style="flex:1;min-width:260px;display:flex;align-items:end">
-              <button class="btn btn-success w-100" style="width:100%" onclick="iniciarBlackjack()" id="btn-iniciar">INICIAR SIMULACIÓN</button>
+              <button class="btn btn-success w-100" style="width:100%" onclick="iniciarBlackjack()" id="btn-iniciar">INICIAR SIMULACION</button>
             </div>
           </div>
         </div>
@@ -350,7 +356,7 @@ body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe 
             </div>
             <div class="stat-item">
               <div class="stat-label">SALDO ACTUAL</div>
-              <div class="stat-value">€<span id="stat-saldo">500.00</span></div>
+              <div class="stat-value">&euro;<span id="stat-saldo">500.00</span></div>
             </div>
           </div>
         </div>
@@ -365,7 +371,9 @@ body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe 
     <button class="btn btn-global small" id="btn-reiniciar-misma" onclick="reiniciarMismaApuesta()" disabled>REINICIAR (MISMA APUESTA)</button>
     <button class="btn btn-global exit small" onclick="salirDelJuego()">SALIR</button>
   </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
 // ================== CONFIG ==================
 const DEALER_STAND_SOFT_17 = true;   // crupier se planta en 17 suave
@@ -607,7 +615,7 @@ function mostrarResultadoUI({tipo, delta, detalle}){
       </div>
     </div>`;
     
-  setEstado('ANÁLISIS COMPLETADO','#ff8c1a');
+  setEstado('SIMULACION ACTIVA','#ff8c1a');
   document.getElementById('btn-reiniciar-misma').disabled=false;
   actualizarMarcadores();
 }
@@ -625,7 +633,7 @@ function iniciarBlackjack(){
   document.getElementById('btn-reiniciar-misma').disabled=true;
   seguroTomado=false; costoSeguro=0;
   indiceManoActual=0; manosJugador=[]; manoDealer=[];
-  apuestaBase=cantidad; juegoActivo=true; setEstado('SIMULACIÓN ACTIVA','var(--neon-green)');
+  apuestaBase=cantidad; juegoActivo=true; setEstado('SIMULACION ACTIVA','var(--neon-green)');
 
   // Cobrar apuesta inicial (stake) del saldo
   balance -= apuestaBase;
@@ -951,8 +959,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   help.addEventListener('click', (e)=>{ if(e.target===help) help.style.display='none'; });
 });
 </script>
-</body>
-</html>
+{% endblock %}
+
+
+
 
 
 
