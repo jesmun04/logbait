@@ -30,11 +30,25 @@ body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe 
 .text-gradient{background:linear-gradient(90deg,var(--casino-gold),#fff);-webkit-background-clip:text;background-clip:text;color:transparent}
 
 /* Topbar */
-.topbar{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 14px 6px;border-bottom:1px dashed rgba(212,175,55,.25);position:sticky;top:0;background:rgba(18,25,27,.8);backdrop-filter:blur(4px);z-index:10}
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:10px 14px 6px;
+  border-bottom:1px dashed rgba(212,175,55,.25);
+  position:sticky;top:0;
+  background:rgba(18,25,27,.8);
+  backdrop-filter:blur(4px);
+  z-index:10
+}
+.topbar-left,.topbar-center,.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-left{flex:1;min-width:220px;flex-wrap:wrap}
 .topbar-left small, .topbar-right small{opacity:.85;color:#c7c7c7}
 .topbar-left .money{font-weight:800;font-size:0.95rem}
-.topbar-center{position:absolute;left:50%;transform:translateX(-50%);top:10px;text-align:center}
+.topbar-center{flex:1;justify-content:center;text-align:center;min-width:200px}
 .topbar-center .estado{font-weight:900;letter-spacing:1px;font-size:1.05rem;color:#ff8c1a}
+.topbar-right{flex:1;justify-content:flex-end;flex-wrap:wrap;min-width:260px}
 
 .help-pill{cursor:pointer;border:1px solid var(--casino-gold);color:var(--casino-gold);padding:4px 10px;border-radius:999px;font-weight:700;transition:all .15s}
 .help-pill:hover{background:rgba(212,175,55,.08)}
@@ -150,6 +164,9 @@ body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe 
   .carta-holo{width:88px;height:128px}
   #controles-juego{position:static;justify-content:center;margin-top:10px}
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .topbar{flex-direction:column;align-items:flex-start}
+  .topbar-right{width:100%;justify-content:flex-start}
+  .topbar-center{width:100%;order:3;justify-content:center}
 }
 </style>
 </head>
@@ -160,37 +177,30 @@ body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe 
         <!-- TOPBAR -->
         <div class="topbar">
           <div class="topbar-left">
-            <small>SALDO</small>
-            <div class="money">€<span id="balance">0.00</span></div>
-            <small>ÚLTIMO RESULTADO</small>
-            <div class="last" id="ultimo-resultado">€0.00</div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:140px">
+              <small>SALDO</small>
+              <div class="money">&euro;<span id="balance">0.00</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:140px">
+              <small>&Uacute;LTIMO RESULTADO</small>
+              <div class="last" id="ultimo-resultado">&euro;0.00</div>
+            </div>
           </div>
           <div class="topbar-center">
             <div class="estado" id="estado-sistema">EN ESPERA</div>
           </div>
-         <div class="topbar-right" style="display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px; width: 100%; margin-right: 10px;">
-  <!-- Botón de menú principal -->
-  <a href="{{ url_for('dashboard.home') }}" class="help-pill"
-     style="background:#00c3ff; color:#000; font-weight:700; white-space: nowrap;">
-    <i class="fas fa-home me-1"></i> MENÚ PRINCIPAL
-  </a>
-  <!-- Botón de multijugador -->
-  <div style="margin: 16px 0">
-  <a class="btn" style="border:1px solid #d4af37;padding:8px 12px;border-radius:8px;color:#d4af37;text-decoration:none"
-     href="/salas-espera?juego=blackjack">
-    🔗 Modo Multijugador (crear/unirse a sala)
-  </a>
-</div>
-
-  <!-- Botón de ayuda -->
-  <div class="help-pill" id="open-help" style="white-space: nowrap;">
-    AYUDA
-  </div>
-</div>
-
-
-
-
+          <div class="topbar-right">
+            <a href="{{ url_for('dashboard.home') }}" class="help-pill" style="background:#00c3ff; color:#000; font-weight:700; white-space: nowrap;">
+              <i class="fas fa-home me-1"></i> MEN&Uacute; PRINCIPAL
+            </a>
+            <a class="btn" style="border:1px solid #d4af37;padding:8px 12px;border-radius:8px;color:#d4af37;text-decoration:none"
+               href="/salas-espera?juego=blackjack">
+              Modo Multijugador (crear/unirse a sala)
+            </a>
+            <div class="help-pill" id="open-help" style="white-space: nowrap;">
+              AYUDA
+            </div>
+          </div>
         </div>
 
         <!-- MODAL AYUDA -->
@@ -943,3 +953,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 </body>
 </html>
+
+
+
