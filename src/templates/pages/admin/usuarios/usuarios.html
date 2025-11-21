@@ -605,11 +605,6 @@ function saveNewPassword() {
         return;
     }
 
-    if (nuevaPassword.length < 6) {
-        showAlert('⚠️ Error: La contraseña debe tener al menos 6 caracteres', 'danger');
-        return;
-    }
-
     if (nuevaPassword !== confirmarPassword) {
         showAlert('⚠️ Error: Las contraseñas no coinciden', 'danger');
         return;
