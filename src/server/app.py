@@ -5,18 +5,39 @@ from flask_socketio import SocketIO
 from models import db, User
 from endpoints import register_blueprints
 from utils.flatpage_helpers import markdown_renderer, get_headings
+import os
 
 app = Flask(__name__,
             template_folder='../templates',
             static_folder='../static')
 
-# Configuración básica
-app.config['SECRET_KEY'] = 'clave-secreta-casino-educativo-2024'
+# CONFIGURACIÓN MEJORADA
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'clave-secreta-casino-educativo-2024')
 app.config["FLATPAGES_ROOT"] = "../flatpages"
 app.config["FLATPAGES_EXTENSION"] = ".md"
 app.config['FLATPAGES_HTML_RENDERER'] = markdown_renderer
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///casino.db'
+
+# CONFIGURACIÓN DE BASE DE DATOS MEJORADA PARA PSYCOPG3
+if os.environ.get('DATABASE_URL'):
+    database_url = os.environ.get('DATABASE_URL')
+    # Asegurar que use el formato postgresql://
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql+psycopg://', 1)
+    else:
+        # Si ya es postgresql://, cambiar a postgresql+psycopg://
+        database_url = database_url.replace('postgresql://', 'postgresql+psycopg://', 1)
+    
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    print("🚀 Usando PostgreSQL con psycopg3 (Render)")
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///casino.db'
+    print("💻 Usando SQLite (Local)")
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_recycle': 300,
+    'pool_pre_ping': True
+}
 
 # Registrar el helper en el entorno Jinja
 app.jinja_env.globals["get_headings"] = get_headings
@@ -26,7 +47,15 @@ db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-socketio = SocketIO(app, cors_allowed_origins="*")
+
+# SOCKETIO SIMPLIFICADO
+is_production = os.environ.get('DATABASE_URL') is not None
+
+socketio = SocketIO(app, 
+                   cors_allowed_origins="*",
+                   async_mode=None,  # Dejar que SocketIO decida automáticamente
+                   logger=True,
+                   engineio_logger=is_production)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -61,8 +90,24 @@ with app.app_context():
     try:
         db.create_all()
         print("✅ Base de datos inicializada")
+        
+        # Crear usuario demo solo en local
+        if not os.environ.get('DATABASE_URL') and not User.query.filter_by(username='demo').first():
+            demo_user = User(username='demo', email='demo@casino.com')
+            demo_user.set_password('demo123')
+            db.session.add(demo_user)
+            db.session.commit()
+            print("✅ Usuario demo creado (usuario: demo, contraseña: demo123)")
+            
     except Exception as e:
         print(f"❌ Error inicializando base de datos: {e}")
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    
+    socketio.run(
+        app, 
+        port=port, 
+        debug=not is_production,
+        allow_unsafe_werkzeug=True
+    )
