@@ -6,81 +6,113 @@ Blackjack (multijugador)
 
 {% block content %}
 <style>
-  /* ======= Estilo cartas y mesa (ligero, sin colisionar con vuestro CSS) ======= */
-  .bj-mesa {
-    background: radial-gradient(1200px 600px at 50% 0%, rgba(46, 255, 177, .08), transparent 60%);
-    border: 1px solid rgba(255,255,255,.08);
-    border-radius: 16px;
-    padding: 20px;
-  }
-  .bj-row { display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; }
-  .bj-dealer { margin-bottom: 22px; }
-  .bj-dealer h5, .bj-jugador h6 { margin: 0 0 8px 0; letter-spacing: .5px; }
-  .bj-jugador {
-    min-width: 260px;
-    padding: 12px;
-    border-radius: 14px;
-    background: rgba(255,255,255,.03);
-    border: 1px solid rgba(255,255,255,.06);
-    position: relative;
-  }
-  .bj-jugador.turno {
-    outline: 2px solid #ffd54f;
-    box-shadow: 0 0 0 4px rgba(255, 213, 79, .2) inset;
-  }
-  .bj-badges { display: flex; gap: 8px; align-items: center; }
-  .bj-badge { padding: 2px 8px; border-radius: 999px; font-size: .78rem; opacity: .9; }
-  .bj-badge.turno { background: #ffd54f; color: #1a1a1a; }
-  .bj-badge.estado { background: rgba(255,255,255,.08); }
-  .bj-info { font-size: .9rem; opacity: .85; }
-  .bj-cartas { display: flex; gap: 8px; flex-wrap: wrap; }
-  .bj-carta {
-    width: 54px; height: 76px; border-radius: 10px;
-    background: linear-gradient(180deg, #fff, #f6f6f6);
-    border: 1px solid #e6e6e6; color: #111;
-    display: grid; place-items: center; font-weight: 700; font-size: 1rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,.18);
-  }
-  .bj-carta.roja { color: #b71c1c; }
-  .bj-carta.back {
-    background: linear-gradient(135deg, #3a2a69, #22163f);
-    border-color: #2b1f4e; color: transparent;
-    box-shadow: 0 4px 12px rgba(0,0,0,.28) inset, 0 2px 10px rgba(0,0,0,.2);
-  }
-  .bj-total { font-weight: 700; }
-  .bj-sep { height: 12px; }
-  .bj-controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-  .bj-timer { color: #ff5a5f; font-weight: 700; }
+:root{
+  --casino-green:#0b3d2e;
+  --casino-green-dark:#082b20;
+  --casino-gold:var(--neon-cyan);
+  --casino-gold-soft:#00aeca;
+  --neon-cyan:#00f3ff;
+  --neon-green:#2ecc71;
+  --neon-red:#ff5a5a;
+  --neon-pink:#ff5af1;
+  --neon-purple:#9b59b6;
+  --gradient-cyber: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+  --border-radius-cyber: 12px;
+}
+*{box-sizing:border-box}
+.card{background:linear-gradient(180deg,#0f1417 0%, #0b1113 100%);border:1px solid rgba(0,243,255,.18);box-shadow:0 0 0 1px rgba(0,243,255,.15), 0 8px 30px rgba(0,0,0,.4);border-radius:14px}
+.card .card-body{padding:16px}
+
+/* Mesa holo (mismo estilo que individual) */
+.holo-table{
+  background: linear-gradient(135deg, rgba(0, 243, 255, 0.05), rgba(255, 0, 255, 0.05));
+  border: 2px solid var(--neon-cyan);
+  border-radius: var(--border-radius-cyber);
+  padding: 26px 18px 120px;
+  position: relative;
+  overflow:hidden;
+}
+.holo-table::before{
+  content:'';
+  position:absolute;inset:0;
+  background:
+    linear-gradient(90deg, transparent 95%, rgba(0, 243, 255, 0.1) 100%),
+    linear-gradient(0deg, transparent 95%, rgba(0, 243, 255, 0.1) 100%);
+  background-size:50px 50px;
+  pointer-events:none;
+}
+.mesa-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+  gap:14px;
+}
+.player-section{
+  background:rgba(11,17,19,.65);
+  border:1px solid rgba(0,243,255,.18);
+  border-radius:12px;
+  padding:12px;
+  box-shadow:0 6px 24px rgba(0,0,0,.4);
+}
+.player-section.turno{
+  outline:2px solid var(--neon-cyan);
+  box-shadow:0 0 0 4px rgba(0,243,255,.2);
+}
+.player-header{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;
+}
+.player-header h5,.player-header h6{margin:0;font-size:1rem;letter-spacing:.6px;color:#e7e7e7}
+.puntos-display{font-family:'Orbitron',monospace;font-size:.85rem;font-weight:700;padding:6px 10px;border:1px solid var(--neon-cyan);color:var(--neon-cyan);background:rgba(0,243,255,.08);border-radius:8px}
+.cartas-container-holo{display:flex;gap:10px;flex-wrap:wrap;min-height:120px;align-items:center}
+.carta-holo{width:96px;height:136px;position:relative;transition:all .3s ease;perspective:1000px}
+.carta-contenido{width:100%;height:100%;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;display:flex;flex-direction:column;justify-content:space-between;padding:12px;position:relative;z-index:2;box-shadow:0 0 20px rgba(0,243,255,.3);border:2px solid var(--neon-cyan)}
+.carta-borde-holo{position:absolute;inset:-4px;border:2px solid var(--neon-cyan);border-radius:16px;transition:all .3s ease;z-index:1}
+.carta-pattern{position:absolute;inset:0;background:
+  radial-gradient(circle at 30% 30%, rgba(0,243,255,.1) 0%, transparent 50%),
+  radial-gradient(circle at 70% 70%, rgba(255,0,255,.1) 0%, transparent 50%);border-radius:12px;z-index:1}
+.carta-valor{font-size:1.3em;font-weight:800;font-family:'Orbitron',monospace;color:var(--neon-cyan);text-shadow:0 0 10px currentColor}
+.carta-palo{font-size:2.2em;text-align:center;text-shadow:0 0 15px currentColor}
+.carta-corner{position:absolute;bottom:8px;right:8px;font-size:.95em;font-weight:700;color:var(--neon-cyan)}
+.carta-oculta .carta-contenido{background:linear-gradient(135deg,#2a1a2e,#26213e);border-color:var(--neon-purple)}
+.carta-secreta{display:flex;align-items:center;justify-content:center;height:100%;font-size:2em;color:var(--neon-purple)}
+.player-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.9rem;opacity:.9}
+.badge-estado{padding:3px 8px;border-radius:999px;font-weight:700;font-size:.8rem;border:1px solid rgba(0,243,255,.4);color:var(--neon-cyan);background:rgba(0,243,255,.1)}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+.top-actions input{min-width:120px;}
+
+@media (max-width:768px){
+  .carta-holo{width:84px;height:118px}
+  .puntos-display{font-size:.8rem}
+}
 </style>
 
 <div class="container py-4">
-  <h2>Blackjack Multijugador — Sala {{ sala.id }}</h2>
-
-  <!-- Código de sala -->
-  <div class="mb-3 p-3 border rounded">
-    <div><strong>Código de sala:</strong> {{ sala.id }}</div>
-    <div class="small text-muted">Comparte el código. Desde "Salas de espera" podéis crear/unirse.</div>
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="d-flex justify-content-between flex-wrap gap-2 align-items-center">
+        <div>
+          <h3 class="mb-1">Blackjack Multijugador – Sala {{ sala.id }}</h3>
+          <div class="text-muted small">Comparte este c\u00f3digo para que se unan desde &quot;Salas de espera&quot;.</div>
+        </div>
+        <div class="puntos-display">C\u00f3digo: {{ sala.id }}</div>
+      </div>
+    </div>
   </div>
 
-  <!-- Controles -->
-  <div class="bj-controls mb-3">
-    <input id="apuesta" type="number" min="1" step="1" placeholder="Apuesta"
-           class="form-control" style="max-width:160px;">
-    <button id="btnApostar" class="btn btn-primary btn-sm">APOSTAR</button>
+  <div class="top-actions">
+    <input id="apuesta" type="number" min="1" step="1" placeholder="Apuesta" class="form-control" style="max-width:160px;">
+    <button id="btnApostar" class="btn btn-cta btn-sm">APOSTAR</button>
     <button id="btnIniciar" class="btn btn-success btn-sm">INICIAR</button>
-    <button id="btnHit" class="btn btn-outline-primary btn-sm" disabled>PEDIR</button>
-    <button id="btnStand" class="btn btn-outline-secondary btn-sm" disabled>PLANTARSE</button>
+    <button id="btnHit" class="btn btn-action-green btn-sm" disabled>PEDIR</button>
+    <button id="btnStand" class="btn btn-action-red btn-sm" disabled>PLANTARSE</button>
     <button id="btnRevancha" class="btn btn-warning btn-sm" style="display:none;">Jugar otra (votar)</button>
-    <span id="contador" class="bj-timer ms-2"></span>
+    <span id="contador" class="puntos-display" style="border-color:rgba(0,243,255,.35);background:rgba(0,243,255,.08);color:#ff8c1a;"></span>
   </div>
 
-  <!-- Mesa -->
-  <div class="bj-mesa">
-    <div id="dealer" class="bj-dealer"></div>
-    <div id="jugadores" class="bj-row"></div>
+  <div class="holo-table">
+    <div id="dealer"></div>
+    <div class="mesa-grid" id="jugadores"></div>
   </div>
 
-  <!-- Debug opcional -->
   <details class="mt-3">
     <summary>Debug JSON</summary>
     <pre id="estado" class="bg-light p-3" style="max-height:420px;overflow:auto;"></pre>
@@ -95,102 +127,97 @@ Blackjack (multijugador)
 
   let lastState = null, timerHandle = null;
 
-  // ===== Helpers cartas =====
-  function isRoja(s) { return s === '♥' || s === '♦'; }
-  function cartaHTML(c, faceUp=true){
-    if (!faceUp) return `<div class="bj-carta back">🂠</div>`;
-    if (!Array.isArray(c)) return `<div class="bj-carta">?</div>`;
-    const [r,s] = c;
-    const roja = isRoja(s) ? 'roja' : '';
-    return `<div class="bj-carta ${roja}">${r}${s}</div>`;
+  // ===== Helpers de cartas en estilo holo =====
+  function isRoja(s){ return s === '♥' || s === '♦'; }
+  function renderCarta(carta, oculta=false){
+    const card = document.createElement('div');
+    card.className = 'carta-holo';
+    if(oculta){
+      card.classList.add('carta-oculta');
+      card.innerHTML = `
+        <div class="carta-pattern"></div>
+        <div class="carta-contenido"><div class="carta-secreta">?</div></div>
+        <div class="carta-borde-holo"></div>`;
+    }else{
+      const valor = Array.isArray(carta) ? carta[0] : '?';
+      const palo  = Array.isArray(carta) ? carta[1] : '?';
+      const colorClass = isRoja(palo)? 'text-danger':'text-cyan';
+      card.innerHTML = `
+        <div class="carta-pattern"></div>
+        <div class="carta-contenido">
+          <div class="carta-valor">${valor}</div>
+          <div class="carta-palo ${colorClass}">${palo}</div>
+          <div class="carta-corner">${valor}</div>
+        </div>
+        <div class="carta-borde-holo"></div>`;
+    }
+    return card;
   }
-  function manoHTML(mano, faceUpAll=true){
-    if (!mano || mano.length === 0) return `<div class="bj-carta back" style="opacity:.3">🂠</div>`;
-    return mano.map(c => cartaHTML(c, faceUpAll)).join('');
-  }
-
-  // ===== Layout dinámico 1–4 jugadores =====
-  function layoutSlots(ids){
-    // devuelve arrays de columnas por fila para una vista de "mesa inferior" (jugadores abajo)
-    // Dealer se pinta aparte arriba centro.
-    if (ids.length <= 1) return [ids];                // [ [P1] ]
-    if (ids.length === 2) return [[ids[0], ids[1]]];  // [ [P1, P2] ]
-    if (ids.length === 3) return [[ids[0]], [ids[1], ids[2]]]; // P1 centro, P2-P3 lados
-    return [[ids[0], ids[1], ids[2], ids[3]]];        // 4 en fila
+  function renderMano(container, mano, ocultarSegunda=false){
+    container.innerHTML = '';
+    if(!mano || mano.length===0){
+      container.appendChild(renderCarta(null,true));
+      return;
+    }
+    mano.forEach((carta,idx)=>{
+      const ocultar = ocultarSegunda && idx===1;
+      container.appendChild(renderCarta(carta, ocultar));
+    });
   }
 
   function render(st){
-    // Debug
     document.getElementById('estado').textContent = JSON.stringify(st, null, 2);
 
-    // Dealer (oculto segunda carta en fase "turnos" para parecerse al individual)
+    // Dealer
     const dealerEl = document.getElementById('dealer');
     const dealerHand = st.dealer || [];
     const fase = st.fase;
-    let dealerCardsHTML = '';
-    if (fase === 'turnos' && dealerHand.length >= 2){
-      // 1ª descubierta, 2ª tapada
-      dealerCardsHTML = cartaHTML(dealerHand[0], true) + cartaHTML(dealerHand[1], false) +
-                        dealerHand.slice(2).map(c => cartaHTML(c,true)).join('');
-    } else {
-      dealerCardsHTML = manoHTML(dealerHand, true);
-    }
-    const dealerTotal = (fase === 'crupier' || fase === 'fin') ? (st.dealer_total ?? '') : '??';
+    const ocultar = (fase === 'turnos' && dealerHand.length>=2);
+
     dealerEl.innerHTML = `
-      <div class="bj-jugador" style="max-width:960px; margin:0 auto;">
-        <div class="d-flex justify-content-between">
-          <h5>Crupier</h5>
-          <div class="bj-info">Total: <span class="bj-total">${dealerTotal}</span></div>
+      <div class="player-section">
+        <div class="player-header">
+          <h5>CRUPIER</h5>
+          <div class="puntos-display">Total: <span id="dealer-total"></span></div>
         </div>
-        <div class="bj-cartas mt-2">${dealerCardsHTML}</div>
-      </div>
-    `;
+        <div class="cartas-container-holo" id="dealer-cards"></div>
+      </div>`;
+    renderMano(document.getElementById('dealer-cards'), dealerHand, ocultar);
+    document.getElementById('dealer-total').textContent =
+      (fase === 'crupier' || fase === 'fin') ? (st.dealer_total ?? '') : '??';
 
     // Jugadores
     const cont = document.getElementById('jugadores');
     cont.innerHTML = '';
     const orden = st.orden_turnos || [];
-    const filas = layoutSlots(orden);
     const turno = st.turno_actual;
 
-    filas.forEach(rowIds => {
-      const row = document.createElement('div');
-      row.className = 'bj-row';
-      rowIds.forEach(uid => {
-        const j = st.jugadores[String(uid)];
-        if (!j) return;
-        const esTurno = (st.fase === 'turnos' && turno === uid);
-        const cartasHTML = manoHTML(j.mano, true);
-        const total = j.total ?? '-';
-        const badgeTurno = esTurno ? `<span class="bj-badge turno">Turno</span>` : '';
-        const estado = j.estado || '';
-        row.insertAdjacentHTML('beforeend', `
-          <div class="bj-jugador ${esTurno ? 'turno' : ''}">
-            <div class="d-flex justify-content-between align-items-center">
-              <h6>${j.username}</h6>
-              <div class="bj-badges">
-                ${badgeTurno}
-                <span class="bj-badge estado">${estado}</span>
-              </div>
-            </div>
-            <div class="bj-info mt-1">Apuesta: <strong>${j.apuesta}</strong> · Saldo: ${j.balance}</div>
-            <div class="bj-sep"></div>
-            <div class="bj-cartas">${cartasHTML}</div>
-            <div class="bj-sep"></div>
-            <div class="bj-info">Total: <span class="bj-total">${total}</span></div>
-          </div>
-        `);
-      });
-      cont.appendChild(row);
+    orden.forEach(uid=>{
+      const j = st.jugadores[String(uid)];
+      if(!j) return;
+      const wrap = document.createElement('div');
+      wrap.className = 'player-section' + ((fase==='turnos' && turno===uid)?' turno':'');
+      wrap.innerHTML = `
+        <div class="player-header">
+          <h6>${j.username}</h6>
+          <div class="badge-estado">${j.estado || ''}</div>
+        </div>
+        <div class="player-meta">
+          <span>Apuesta: <strong>${j.apuesta ?? 0}</strong></span>
+          <span>Saldo: ${j.balance ?? 0}</span>
+        </div>
+        <div class="cartas-container-holo mt-2" id="mano-${uid}"></div>
+        <div class="player-meta mt-2">
+          <span>Total: <strong>${j.total ?? '-'}</strong></span>
+        </div>`;
+      cont.appendChild(wrap);
+      renderMano(document.getElementById(`mano-${uid}`), j.mano, false);
     });
 
-    // Habilitar/deshabilitar acciones según mi turno
-    const esMiTurno = (st.fase === 'turnos' && turno === myId);
+    const esMiTurno = (fase === 'turnos' && turno === myId);
     document.getElementById('btnHit').disabled   = !esMiTurno;
     document.getElementById('btnStand').disabled = !esMiTurno;
-
-    // Botón Revancha visible en fin
-    document.getElementById('btnRevancha').style.display = (st.fase === 'fin') ? 'inline-block' : 'none';
+    document.getElementById('btnRevancha').style.display = (fase === 'fin') ? 'inline-block' : 'none';
   }
 
   function startCountdown(st){
@@ -207,9 +234,6 @@ Blackjack (multijugador)
       if (secs <= 0){
         clearInterval(timerHandle);
         timerHandle = null;
-
-        // 🔹 AUTO-PLANTARSE CUANDO SE AGOTA EL TIEMPO 🔹
-        // Solo si sigue siendo mi turno en esta fase de turnos.
         if (st.fase === 'turnos' && st.turno_actual === myId) {
           socket.emit('stand_blackjack', { sala_id: salaId });
         }
@@ -232,7 +256,6 @@ Blackjack (multijugador)
     render(st);
     startCountdown(st);
 
-    // === Actualiza el saldo del header en tiempo real ===
     const meId = "{{ user.id }}";
     if (st.jugadores && st.jugadores[meId] && typeof window.updateHeaderBalance === 'function') {
       window.updateHeaderBalance(st.jugadores[meId].balance);
@@ -280,5 +303,4 @@ Blackjack (multijugador)
 <script src="{{ url_for('static', filename='js/balance.js') }}"></script>
 
 {% endblock %}
-
 
