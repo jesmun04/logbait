@@ -54,7 +54,7 @@ def home():
             'poker': ['poker', 'poker_multijugador'],
             'tragaperras': ['tragaperras', 'slots'],
             'caballos': ['caballos'],
-            'ruleta': ['ruleta']
+            'ruleta': ['ruleta'],
         }
         
         juegos_stats = {}

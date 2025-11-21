@@ -1,0 +1,659 @@
+{% extends "pages/casino/base.html" %}
+
+{% block title %}
+Quiniela
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-xl-12">
+        <div class="card game-card">
+            <div class="card-header">
+                <i class="fas fa-futbol me-2"></i>
+                Quiniela Deportiva - Múltiples Ligas
+            </div>
+            <div class="card-body">
+                <!-- Panel de Control -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="digital-display text-center mb-3">
+                            <div class="text-small text-uppercase" style="color: var(--neon-green);">
+                                <i class="fas fa-coins me-2"></i>BALANCE ACTUAL
+                            </div>
+                            <div class="h3 mb-0 text-gradient fw-bold">
+                                $<span id="balance">{{ "%.2f"|format(current_user.balance) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="digital-display text-center mb-3">
+                            <div class="text-small text-uppercase" style="color: var(--neon-cyan);">
+                                <i class="fas fa-trophy me-2"></i>ÚLTIMA GANANCIA
+                            </div>
+                            <div class="h3 mb-0 text-gradient fw-bold" id="ultima-ganancia">
+                                $0.00
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="digital-display text-center mb-3">
+                            <div class="text-small text-uppercase" style="color: var(--neon-pink);">
+                                <i class="fas fa-flag me-2"></i>LIGA ACTUAL
+                            </div>
+                            <div class="h4 mb-0 text-gradient fw-bold" id="liga-actual">
+                                Selecciona Liga
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selector de Liga y Configuración -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-cogs me-2"></i>CONFIGURACIÓN DE QUINIELA
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="select-liga" class="form-label">
+                                    <i class="fas fa-trophy me-2"></i>SELECCIONAR LIGA
+                                </label>
+                                <select class="form-select" id="select-liga">
+                                    <option value="">Cargando ligas...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="num-partidos" class="form-label">
+                                    <i class="fas fa-list-ol me-2"></i>NÚMERO DE PARTIDOS
+                                </label>
+                                <select class="form-select" id="num-partidos">
+                                    <option value="10">10 Partidos</option>
+                                    <option value="15" selected>15 Partidos</option>
+                                    <option value="20">20 Partidos</option>
+                                    <option value="25">25 Partidos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button class="btn btn-primary w-100" onclick="generarPartidos()" id="btn-generar">
+                                    <i class="fas fa-sync-alt me-2"></i>Generar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controles de Apuesta -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label for="cantidad" class="form-label">
+                            <i class="fas fa-money-bill-wave me-2"></i>CANTIDAD A APOSTAR
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-cyan text-cyan">
+                                <i class="fas fa-dollar-sign"></i>
+                            </span>
+                            <input type="number" class="form-control" id="cantidad" 
+                                   min="1" max="{{ current_user.balance }}" step="1" value="10">
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <button class="btn btn-success btn-lg w-100" onclick="jugarQuiniela()" id="btn-jugar" disabled>
+                            <i class="fas fa-play me-2"></i>JUGAR QUINIELA
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Panel de Partidos -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>
+                            <i class="fas fa-list-ol me-2"></i>PARTIDOS DE LA JORNADA
+                        </span>
+                        <span class="badge bg-cyan" id="contador-partidos">0 partidos generados</span>
+                    </div>
+                    <div class="card-body">
+                        <div id="partidos-container" class="row g-3">
+                            <div class="col-12 text-center py-5">
+                                <div class="text-muted">
+                                    <i class="fas fa-futbol fa-3x mb-3"></i>
+                                    <h5>Selecciona una liga y genera partidos para comenzar</h5>
+                                    <p>Elige entre múltiples ligas internacionales</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resultados -->
+                <div id="resultado" class="text-center"></div>
+
+                <!-- Tabla de Premios -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <i class="fas fa-award me-2"></i>TABLA DE PREMIOS
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Aciertos</th>
+                                        <th>Premio</th>
+                                        <th>Probabilidad Aprox.</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-premios-body">
+                                    <!-- Se generará dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let partidosActuales = [];
+let ligaActual = '';
+let numPartidos = 15;
+
+// Cargar ligas disponibles al iniciar
+function cargarLigas() {
+    fetch('/api/quiniela/ligas')
+        .then(response => response.json())
+        .then(data => {
+            const selectLiga = document.getElementById('select-liga');
+            selectLiga.innerHTML = '<option value="">Selecciona una liga</option>';
+            
+            data.ligas.forEach(liga => {
+                selectLiga.innerHTML += `
+                    <option value="${liga.id}">${liga.nombre} (${liga.equipos_count} equipos)</option>
+                `;
+            });
+        })
+        .catch(error => {
+            console.error('Error cargando ligas:', error);
+        });
+}
+
+// Generar partidos para la liga seleccionada
+function generarPartidos() {
+    const ligaId = document.getElementById('select-liga').value;
+    numPartidos = parseInt(document.getElementById('num-partidos').value);
+    
+    if (!ligaId) {
+        mostrarResultado('Selecciona una liga primero', 'info');
+        return;
+    }
+    
+    const btnGenerar = document.getElementById('btn-generar');
+    btnGenerar.disabled = true;
+    btnGenerar.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generando...';
+    
+    fetch('/api/quiniela/generar-partidos', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            liga: ligaId,
+            partidos: numPartidos
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            mostrarResultado(data.error, 'danger');
+            return;
+        }
+        
+        partidosActuales = data.partidos;
+        ligaActual = data.liga;
+        
+        document.getElementById('liga-actual').textContent = data.liga;
+        document.getElementById('contador-partidos').textContent = `${data.total_partidos} partidos`;
+        document.getElementById('btn-jugar').disabled = false;
+        
+        mostrarPartidos(data.partidos);
+        actualizarTablaPremios(data.total_partidos);
+        
+        btnGenerar.disabled = false;
+        btnGenerar.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Regenerar';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarResultado('Error generando partidos', 'danger');
+        btnGenerar.disabled = false;
+        btnGenerar.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Generar';
+    });
+}
+
+// Mostrar partidos en la interfaz
+function mostrarPartidos(partidos) {
+    const container = document.getElementById('partidos-container');
+    container.innerHTML = '';
+    
+    partidos.forEach((partido, index) => {
+        const partidoHTML = `
+            <div class="col-md-6 col-lg-4">
+                <div class="card partido-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="card-title mb-0">Partido ${index + 1}</h6>
+                            <small class="text-muted">${ligaActual}</small>
+                        </div>
+                        <div class="equipos mb-3">
+                            <div class="equipo-local text-center mb-2 p-2 rounded" style="background: rgba(0, 243, 255, 0.1);">
+                                <small class="text-cyan">Local</small><br>
+                                <strong>${partido.local}</strong>
+                            </div>
+                            <div class="vs-text text-center my-2">
+                                <span class="badge bg-dark">VS</span>
+                            </div>
+                            <div class="equipo-visitante text-center p-2 rounded" style="background: rgba(255, 0, 255, 0.1);">
+                                <small class="text-pink">Visitante</small><br>
+                                <strong>${partido.visitante}</strong>
+                            </div>
+                        </div>
+                        <div class="pronostico-buttons">
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="pronostico-${index}" id="local-${index}" value="1" autocomplete="off">
+                                <label class="btn btn-outline-success" for="local-${index}">1 (Local)</label>
+                                
+                                <input type="radio" class="btn-check" name="pronostico-${index}" id="empate-${index}" value="X" autocomplete="off">
+                                <label class="btn btn-outline-warning" for="empate-${index}">X (Empate)</label>
+                                
+                                <input type="radio" class="btn-check" name="pronostico-${index}" id="visitante-${index}" value="2" autocomplete="off">
+                                <label class="btn btn-outline-info" for="visitante-${index}">2 (Visitante)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.innerHTML += partidoHTML;
+    });
+}
+
+// Actualizar tabla de premios según número de partidos
+function actualizarTablaPremios(totalPartidos) {
+    const tablaBody = document.getElementById('tabla-premios-body');
+    tablaBody.innerHTML = '';
+    
+    const premiosConfig = [
+        { aciertos: totalPartidos, multiplicador: 50, probabilidad: '~0.000006%' },
+        { aciertos: totalPartidos - 1, multiplicador: 20, probabilidad: '~0.0004%' },
+        { aciertos: totalPartidos - 2, multiplicador: 10, probabilidad: '~0.003%' },
+        { aciertos: totalPartidos - 3, multiplicador: 5, probabilidad: '~0.02%' },
+        { aciertos: totalPartidos - 4, multiplicador: 3, probabilidad: '~0.1%' },
+        { aciertos: totalPartidos - 5, multiplicador: 2, probabilidad: '~0.6%' }
+    ];
+    
+    premiosConfig.forEach(premio => {
+        if (premio.aciertos >= totalPartidos - 5) {
+            const fila = `
+                <tr>
+                    <td><strong>${premio.aciertos}/${totalPartidos}</strong></td>
+                    <td class="text-success fw-bold">${premio.multiplicador}x</td>
+                    <td class="text-muted">${premio.probabilidad}</td>
+                </tr>
+            `;
+            tablaBody.innerHTML += fila;
+        }
+    });
+}
+
+function jugarQuiniela() {
+    const cantidad = parseFloat(document.getElementById('cantidad').value);
+    const balance = parseFloat('{{ current_user.balance }}');
+    const btnJugar = document.getElementById('btn-jugar');
+    
+    if (!cantidad || cantidad <= 0) {
+        mostrarResultado('Ingresa una cantidad válida', 'info');
+        return;
+    }
+    
+    if (cantidad > balance) {
+        mostrarResultado('Fondos insuficientes', 'info');
+        return;
+    }
+    
+    if (partidosActuales.length === 0) {
+        mostrarResultado('Primero genera los partidos', 'info');
+        return;
+    }
+    
+    // Recoger pronósticos
+    const pronosticos = [];
+    for (let i = 0; i < partidosActuales.length; i++) {
+        const selected = document.querySelector(`input[name="pronostico-${i}"]:checked`);
+        if (!selected) {
+            mostrarResultado('Debes seleccionar un pronóstico para todos los partidos', 'info');
+            return;
+        }
+        pronosticos.push(selected.value);
+    }
+    
+    btnJugar.disabled = true;
+    btnJugar.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>PROCESANDO...';
+    document.getElementById('resultado').innerHTML = '';
+    
+    // Restar apuesta del balance temporalmente
+    const balanceActual = parseFloat(document.getElementById('balance').textContent);
+    document.getElementById('balance').textContent = (balanceActual - cantidad).toFixed(2);
+    
+    // Simular procesamiento con animación
+    setTimeout(() => {
+        enviarApuestaQuiniela(pronosticos, cantidad);
+    }, 1500);
+}
+
+function enviarApuestaQuiniela(pronosticos, cantidad) {
+    fetch('/api/quiniela/apostar', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            cantidad: cantidad,
+            pronosticos: pronosticos,
+            partidos: partidosActuales
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            mostrarResultado(data.error, 'danger');
+            // Revertir cambio temporal del balance
+            const balanceActual = parseFloat(document.getElementById('balance').textContent);
+            document.getElementById('balance').textContent = (balanceActual + cantidad).toFixed(2);
+            return;
+        }
+        
+        // Actualizar balance
+        document.getElementById('balance').textContent = data.nuevo_balance.toFixed(2);
+        document.getElementById('ultima-ganancia').textContent = '$' + data.ganancia.toFixed(2);
+        
+        // Mostrar resultados
+        mostrarResultadosQuiniela(data, pronosticos);
+        
+        document.getElementById('btn-jugar').disabled = false;
+        document.getElementById('btn-jugar').innerHTML = '<i class="fas fa-play me-2"></i>JUGAR QUINIELA';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarResultado('Error de conexión', 'danger');
+        // Revertir cambio temporal del balance
+        const balanceActual = parseFloat(document.getElementById('balance').textContent);
+        document.getElementById('balance').textContent = (balanceActual + cantidad).toFixed(2);
+        
+        document.getElementById('btn-jugar').disabled = false;
+        document.getElementById('btn-jugar').innerHTML = '<i class="fas fa-play me-2"></i>JUGAR QUINIELA';
+    });
+}
+
+function mostrarResultadosQuiniela(data, pronosticos) {
+    const resultadoDiv = document.getElementById('resultado');
+    const aciertos = data.aciertos;
+    const total = data.total_partidos;
+    const ganancia = data.ganancia;
+    const resultadosReales = data.resultados_reales;
+    
+    let mensaje = '';
+    let tipo = 'info';
+    
+    if (aciertos === total) {
+        mensaje = `¡PLENO AL ${total}! 🎉 ¡INCREÍBLE!`;
+        tipo = 'success';
+        crearConfeti();
+    } else if (aciertos >= total - 1) {
+        mensaje = `¡EXCELENTE! ${aciertos}/${total} aciertos`;
+        tipo = 'success';
+    } else if (aciertos >= total - 3) {
+        mensaje = `¡MUY BIEN! ${aciertos}/${total} aciertos`;
+        tipo = 'warning';
+    } else if (aciertos >= total - 5) {
+        mensaje = `${aciertos}/${total} aciertos`;
+        tipo = 'info';
+    } else {
+        mensaje = `${aciertos}/${total} aciertos - Mejor suerte la próxima vez`;
+        tipo = 'danger';
+    }
+    
+    // Mostrar comparativa de resultados
+    let comparativaHTML = `
+        <div class="mt-4">
+            <h5 class="mb-3">📊 Detalle de Resultados - ${ligaActual}</h5>
+            <div class="table-responsive">
+                <table class="table table-dark table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th>Partido</th>
+                            <th>Local vs Visitante</th>
+                            <th>Tu pronóstico</th>
+                            <th>Resultado real</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+    
+    for (let i = 0; i < total; i++) {
+        const acerto = pronosticos[i] === resultadosReales[i];
+        const partido = partidosActuales[i];
+        const iconoPronostico = pronosticos[i] === '1' ? '🏠' : (pronosticos[i] === 'X' ? '⚖️' : '✈️');
+        const iconoReal = resultadosReales[i] === '1' ? '🏠' : (resultadosReales[i] === 'X' ? '⚖️' : '✈️');
+        
+        comparativaHTML += `
+            <tr class="${acerto ? 'table-success' : 'table-danger'}">
+                <td><strong>${i + 1}</strong></td>
+                <td>
+                    <small>${partido.local}</small><br>
+                    <strong>vs</strong><br>
+                    <small>${partido.visitante}</small>
+                </td>
+                <td><strong>${iconoPronostico} ${pronosticos[i]}</strong></td>
+                <td><strong>${iconoReal} ${resultadosReales[i]}</strong></td>
+                <td>${acerto ? '✅ Acierto' : '❌ Fallo'}</td>
+            </tr>
+        `;
+    }
+    
+    comparativaHTML += '</tbody></table></div></div>';
+    
+    resultadoDiv.innerHTML = `
+        <div class="alert alert-${tipo}">
+            <h4>${mensaje}</h4>
+            <p class="fw-bold fs-5">Ganancia: $${ganancia.toFixed(2)}</p>
+            ${comparativaHTML}
+        </div>
+    `;
+}
+
+function crearConfeti() {
+    const confettiContainer = document.createElement('div');
+    confettiContainer.style.position = 'fixed';
+    confettiContainer.style.top = '0';
+    confettiContainer.style.left = '0';
+    confettiContainer.style.width = '100%';
+    confettiContainer.style.height = '100%';
+    confettiContainer.style.pointerEvents = 'none';
+    confettiContainer.style.zIndex = '9999';
+    
+    document.body.appendChild(confettiContainer);
+    
+    const confettiTypes = ['🎉', '🎊', '⭐', '🏆', '💰', '⚽', '🥇', '💎', '🏅', '👑'];
+    
+    for (let i = 0; i < 250; i++) {
+        const confetti = document.createElement('div');
+        confetti.innerHTML = confettiTypes[Math.floor(Math.random() * confettiTypes.length)];
+        confetti.style.position = 'absolute';
+        confetti.style.fontSize = (Math.random() * 20 + 15) + 'px';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.opacity = '0.8';
+        confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
+        confetti.style.animationDelay = (Math.random() * 1) + 's';
+        
+        confettiContainer.appendChild(confetti);
+    }
+    
+    setTimeout(() => {
+        if (confettiContainer.parentNode) {
+            document.body.removeChild(confettiContainer);
+        }
+    }, 4000);
+}
+
+function mostrarResultado(mensaje, tipo) {
+    const resultadoDiv = document.getElementById('resultado');
+    let clase = 'alert-info';
+    let icono = '<i class="fas fa-info-circle me-2"></i>';
+    
+    if (tipo === 'success') {
+        clase = 'alert-success';
+        icono = '<i class="fas fa-check-circle me-2"></i>';
+    } else if (tipo === 'danger') {
+        clase = 'alert-danger';
+        icono = '<i class="fas fa-exclamation-circle me-2"></i>';
+    } else if (tipo === 'warning') {
+        clase = 'alert-warning';
+        icono = '<i class="fas fa-exclamation-triangle me-2"></i>';
+    }
+    
+    resultadoDiv.innerHTML = `
+        <div class="alert ${clase}">
+            ${icono}<strong>${mensaje}</strong>
+        </div>
+    `;
+}
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    cargarLigas();
+    
+    // Asegurar que el input de cantidad tenga valores válidos
+    const cantidadInput = document.getElementById('cantidad');
+    cantidadInput.addEventListener('change', function() {
+        const max = parseFloat('{{ current_user.balance }}');
+        const value = parseFloat(this.value);
+        
+        if (value < 1) this.value = 1;
+        if (value > max) this.value = max;
+    });
+    
+    // Cambiar número de partidos
+    document.getElementById('num-partidos').addEventListener('change', function() {
+        if (partidosActuales.length > 0) {
+            generarPartidos(); // Regenerar con nuevo número
+        }
+    });
+});
+</script>
+
+<style>
+.partido-card {
+    background: rgba(20, 20, 40, 0.8);
+    border: 1px solid var(--neon-cyan);
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.partido-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--neon-pink);
+    box-shadow: var(--glow-pink);
+}
+
+.equipos {
+    font-size: 0.85rem;
+}
+
+.vs-text {
+    font-weight: bold;
+    color: var(--neon-cyan);
+}
+
+.pronostico-buttons .btn {
+    border-radius: 8px !important;
+    font-weight: 800;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.5rem;
+}
+
+.pronostico-buttons .btn-outline-success:hover {
+    background: var(--neon-green);
+    color: black;
+}
+
+.pronostico-buttons .btn-outline-warning:hover {
+    background: var(--neon-orange);
+    color: black;
+}
+
+.pronostico-buttons .btn-outline-info:hover {
+    background: var(--neon-cyan);
+    color: black;
+}
+
+.btn-check:checked + .btn-outline-success {
+    background: var(--neon-green);
+    color: black;
+    border-color: var(--neon-green);
+}
+
+.btn-check:checked + .btn-outline-warning {
+    background: var(--neon-orange);
+    color: black;
+    border-color: var(--neon-orange);
+}
+
+.btn-check:checked + .btn-outline-info {
+    background: var(--neon-cyan);
+    color: black;
+    border-color: var(--neon-cyan);
+}
+
+/* ANIMACIÓN DE CONFETI */
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(-100px) rotate(0deg) translateX(0px);
+        opacity: 1;
+    }
+    70% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg) translateX(calc((var(--random-x) - 0.5) * 200px));
+        opacity: 0;
+    }
+}
+
+/* Badges personalizados */
+.bg-cyan {
+    background: var(--gradient-cyber) !important;
+    color: black;
+    font-weight: 800;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+    .partido-card {
+        margin-bottom: 1rem;
+    }
+    
+    .equipos {
+        font-size: 0.8rem;
+    }
+    
+    .pronostico-buttons .btn {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.4rem;
+    }
+}
+</style>
+{% endblock %}
