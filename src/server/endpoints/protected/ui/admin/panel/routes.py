@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, flash, redirect, url_for
 from flask_login import login_required, current_user
 from models import db, User, Apuesta, Estadistica
-from sqlalchemy import text
+from sqlalchemy import text, func
 from ..utils import require_admin
 
 bp = Blueprint('admin_panel', __name__)
@@ -14,9 +14,9 @@ def home():
     try:
         total_usuarios = User.query.count()
         total_apuestas = Apuesta.query.count()
-        total_balance = db.session.execute(text("SELECT SUM(balance) FROM user")).scalar() or 0
-        total_apostado = db.session.execute(text("SELECT SUM(cantidad) FROM apuesta")).scalar() or 0
-        total_ganado = db.session.execute(text("SELECT SUM(ganancia) FROM apuesta")).scalar() or 0
+        total_balance = db.session.query(func.sum(User.balance)).scalar() or 0
+        total_apostado = db.session.query(func.sum(Apuesta.cantidad)).scalar() or 0
+        total_ganado = db.session.query(func.sum(Apuesta.ganancia)).scalar() or 0
         
         # Calcular métricas de rendimiento
         house_edge = (total_apostado - total_ganado) / total_apostado if total_apostado > 0 else 0

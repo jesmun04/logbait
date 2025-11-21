@@ -15,9 +15,9 @@ def home():
         # Estadísticas básicas
         total_usuarios = User.query.count()
         total_apuestas = Apuesta.query.count()
-        total_balance = db.session.execute(text("SELECT SUM(balance) FROM user")).scalar() or 0
-        total_apostado = db.session.execute(text("SELECT SUM(cantidad) FROM apuesta")).scalar() or 0
-        total_ganado = db.session.execute(text("SELECT SUM(ganancia) FROM apuesta")).scalar() or 0
+        total_balance = db.session.query(func.sum(User.balance)).scalar() or 0
+        total_apostado = db.session.query(func.sum(Apuesta.cantidad)).scalar() or 0
+        total_ganado = db.session.query(func.sum(Apuesta.ganancia)).scalar() or 0
         
         print(f"DEBUG: total_apuestas={total_apuestas}, total_apostado={total_apostado}")
 
