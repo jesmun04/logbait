@@ -7,96 +7,61 @@ Carrera de caballos
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-10">
-        <div class="card">
+        <div class="card hover-card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4>🏇 Carrera de Caballos</h4>
-                <!-- Botón HELP añadido aquí -->
-                <button class="btn btn-info btn-sm" onclick="mostrarAyuda()">
+                <h4 class="mb-0">🏇 Carrera de Caballos</h4>
+                <!-- Botón HELP con estilo cyber -->
+                <button class="btn btn-info btn-sm" onclick="mostrarAyuda()" style="background: var(--gradient-cyber); border: none;">
                     ❓ HELP
                 </button>
             </div>
             <div class="card-body">
+                <!-- Balance con estilo digital -->
                 <div class="text-center mb-4">
-                    <h5>Balance: $<span id="balance">{{ "%.2f"|format(current_user.balance) }}</span></h5>
+                    <div class="digital-display d-inline-block p-3">
+                        <div class="text-small text-uppercase">
+                            <i class="fas fa-coins me-2"></i>BALANCE ACTUAL
+                        </div>
+                        <div class="h2 mb-0 balance-positive">
+                            $<span id="balance">{{ "%.2f"|format(current_user.balance) }}</span>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- Información de caballos -->
+                <!-- Información de caballos con cards mejoradas -->
                 <div class="row mb-4">
                     <div class="col-12">
-                        <h5>Información de los Caballos</h5>
+                        <h5 class="text-cyan mb-3">🏇 INFORMACIÓN DE LOS CABALLOS</h5>
                         <div class="row">
+                            {% for caballo in [
+                                {"id": 1, "nombre": "Relámpago", "velocidad": 85, "resistencia": 70, "multiplicador": 1.5, "emoji": "🐎", "color": "primary"},
+                                {"id": 2, "nombre": "Trueno", "velocidad": 75, "resistencia": 80, "multiplicador": 2.0, "emoji": "🐴", "color": "success"},
+                                {"id": 3, "nombre": "Centella", "velocidad": 65, "resistencia": 85, "multiplicador": 3.0, "emoji": "🏇", "color": "danger"},
+                                {"id": 4, "nombre": "Azabache", "velocidad": 45, "resistencia": 95, "multiplicador": 6.0, "emoji": "🎠", "color": "warning"}
+                            ] %}
                             <div class="col-md-3 mb-3">
-                                <div class="card h-100">
+                                <div class="card h-100 translucent-card">
                                     <div class="card-body text-center">
-                                        <h5>🐎 Relámpago</h5>
-                                        <div class="progress mb-2">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: 85%"></div>
+                                        <h5 class="text-{{ caballo.color }}">{{ caballo.emoji }} {{ caballo.nombre }}</h5>
+                                        <div class="progress mb-2" style="height: 8px;">
+                                            <div class="progress-bar bg-{{ caballo.color }}" role="progressbar" 
+                                                 style="width: {{ caballo.velocidad }}%"></div>
                                         </div>
-                                        <small>Velocidad: 85%</small>
-                                        <div class="progress mb-2">
-                                            <div class="progress-bar bg-info" role="progressbar" style="width: 70%"></div>
+                                        <small>Velocidad: {{ caballo.velocidad }}%</small>
+                                        <div class="progress mb-2" style="height: 8px;">
+                                            <div class="progress-bar bg-info" role="progressbar" 
+                                                 style="width: {{ caballo.resistencia }}%"></div>
                                         </div>
-                                        <small>Resistencia: 70%</small>
+                                        <small>Resistencia: {{ caballo.resistencia }}%</small>
                                         <div class="mt-2">
-                                            <span class="badge bg-secondary">Multiplicador: 1.5x</span>
+                                            <span class="badge" style="background: var(--gradient-matrix); color: black;">
+                                                Multiplicador: {{ caballo.multiplicador }}x
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-body text-center">
-                                        <h5>🐴 Trueno</h5>
-                                        <div class="progress mb-2">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: 75%"></div>
-                                        </div>
-                                        <small>Velocidad: 75%</small>
-                                        <div class="progress mb-2">
-                                            <div class="progress-bar bg-info" role="progressbar" style="width: 80%"></div>
-                                        </div>
-                                        <small>Resistencia: 80%</small>
-                                        <div class="mt-2">
-                                            <span class="badge bg-secondary">Multiplicador: 2x</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-body text-center">
-                                        <h5>🏇 Centella</h5>
-                                        <div class="progress mb-2">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: 65%"></div>
-                                        </div>
-                                        <small>Velocidad: 65%</small>
-                                        <div class="progress mb-2">
-                                            <div class="progress-bar bg-info" role="progressbar" style="width: 85%"></div>
-                                        </div>
-                                        <small>Resistencia: 85%</small>
-                                        <div class="mt-2">
-                                            <span class="badge bg-secondary">Multiplicador: 3x</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="card h-100">
-                                    <div class="card-body text-center">
-                                        <h5>🎠 Azabache</h5>
-                                        <div class="progress mb-2">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: 45%"></div>
-                                        </div>
-                                        <small>Velocidad: 45%</small>
-                                        <div class="progress mb-2">
-                                            <div class="progress-bar bg-info" role="progressbar" style="width: 95%"></div>
-                                        </div>
-                                        <small>Resistencia: 95%</small>
-                                        <div class="mt-2">
-                                            <span class="badge bg-secondary">Multiplicador: 6x</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -104,61 +69,62 @@ Carrera de caballos
                 <!-- Selección de apuesta -->
                 <div class="row mb-4">
                     <div class="col-md-4">
-                        <label for="cantidad" class="form-label">Cantidad a apostar:</label>
-                        <input type="number" class="form-control" id="cantidad" min="1" max="{{ current_user.balance }}" step="1" value="10">
+                        <label for="cantidad" class="form-label text-cyan">
+                            <i class="fas fa-money-bill-wave me-2"></i>Cantidad a apostar:
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark text-light">
+                                <i class="fas fa-dollar-sign"></i>
+                            </span>
+                            <input type="number" class="form-control" id="cantidad" 
+                                   min="1" max="{{ current_user.balance }}" step="1" value="10">
+                        </div>
                     </div>
                     <div class="col-md-8">
-                        <label class="form-label">Selecciona un caballo:</label>
+                        <label class="form-label text-cyan">
+                            <i class="fas fa-horse me-2"></i>Selecciona un caballo:
+                        </label>
                         <div class="d-flex gap-2 flex-wrap">
-                            <button class="btn btn-outline-primary caballo-btn" onclick="seleccionarCaballo(1)">
-                                🐎 Relámpago (1.5x)
+                            {% for caballo in [
+                                {"id": 1, "nombre": "Relámpago", "multiplicador": 1.5, "emoji": "🐎", "color": "primary"},
+                                {"id": 2, "nombre": "Trueno", "multiplicador": 2.0, "emoji": "🐴", "color": "success"},
+                                {"id": 3, "nombre": "Centella", "multiplicador": 3.0, "emoji": "🏇", "color": "danger"},
+                                {"id": 4, "nombre": "Azabache", "multiplicador": 6.0, "emoji": "🎠", "color": "warning"}
+                            ] %}
+                            <button class="btn btn-outline-{{ caballo.color }} caballo-btn" 
+                                    onclick="seleccionarCaballo({{ caballo.id }})">
+                                {{ caballo.emoji }} {{ caballo.nombre }} ({{ caballo.multiplicador }}x)
                             </button>
-                            <button class="btn btn-outline-success caballo-btn" onclick="seleccionarCaballo(2)">
-                                🐴 Trueno (2x)
-                            </button>
-                            <button class="btn btn-outline-danger caballo-btn" onclick="seleccionarCaballo(3)">
-                                🏇 Centella (3x)
-                            </button>
-                            <button class="btn btn-outline-warning caballo-btn" onclick="seleccionarCaballo(4)">
-                                🎠 Azabache (6x)
-                            </button>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
 
-                <!-- Pista de carrera -->
+                <!-- Pista de carrera mejorada -->
                 <div class="pista-carrera mb-4">
                     <div class="meta"></div>
-                    <div class="carril" id="carril1">
-                        <div class="caballo" id="caballo1">🐎</div>
-                        <div class="numero">1</div>
+                    {% for i in range(1, 5) %}
+                    <div class="carril" id="carril{{ i }}">
+                        <div class="caballo" id="caballo{{ i }}">
+                            {{ ["🐎", "🐴", "🏇", "🎠"][i-1] }}
+                        </div>
+                        <div class="numero">{{ i }}</div>
                     </div>
-                    <div class="carril" id="carril2">
-                        <div class="caballo" id="caballo2">🐴</div>
-                        <div class="numero">2</div>
-                    </div>
-                    <div class="carril" id="carril3">
-                        <div class="caballo" id="caballo3">🏇</div>
-                        <div class="numero">3</div>
-                    </div>
-                    <div class="carril" id="carril4">
-                        <div class="caballo" id="caballo4">🎠</div>
-                        <div class="numero">4</div>
-                    </div>
+                    {% endfor %}
                 </div>
 
                 <!-- Controles -->
                 <div class="text-center">
                     <button class="btn btn-primary btn-lg me-2" onclick="iniciarCarrera()" id="btn-carrera">
-                        🏁 Iniciar Carrera
+                        <i class="fas fa-flag-checkered me-2"></i>🏁 Iniciar Carrera
                     </button>
-                    <button class="btn btn-secondary btn-lg" onclick="reiniciarCarrera()">
-                        🔄 Reiniciar
+                    <button class="btn btn-outline-primary btn-lg" onclick="reiniciarCarrera()">
+                        <i class="fas fa-redo me-2"></i>🔄 Reiniciar
                     </button>
                 </div>
 
                 <!-- Información de apuesta -->
-                <div id="info-apuesta" class="text-center mt-3 fw-bold"></div>
+                <div id="info-apuesta" class="text-center mt-3 fw-bold text-cyan"></div>
                 
                 <div id="resultado" class="mt-4"></div>
             </div>
@@ -166,37 +132,47 @@ Carrera de caballos
     </div>
 </div>
 
-<!-- Modal de Ayuda -->
+<!-- Modal de Ayuda con estilo cyber -->
 <div class="modal fade" id="modalAyuda" tabindex="-1" aria-labelledby="modalAyudaLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalAyudaLabel">🏇 Ayuda - Carrera de Caballos</h5>
+                <h5 class="modal-title text-cyan" id="modalAyudaLabel">
+                    <i class="fas fa-horse me-2"></i>Ayuda - Carrera de Caballos
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h6>Descripción del juego “Carrera de Caballos”</h6>
-                <p>Comenzarás viendo tu balance actual y una sección con información de los cuatro caballos disponibles —Relámpago, Trueno, Centella y Azabache—, cada uno con su velocidad, resistencia y multiplicador de ganancia.</p>
+                <h6 class="text-pink">Descripción del juego "Carrera de Caballos"</h6>
+                <p class="modal-description">
+                    Comenzarás viendo tu balance actual y una sección con información de los cuatro caballos disponibles —Relámpago, Trueno, Centella y Azabache—, cada uno con su velocidad, resistencia y multiplicador de ganancia.
+                </p>
                 
-                <h6>A continuación sigue estos pasos:</h6>
-                <ol>
+                <h6 class="text-pink">A continuación sigue estos pasos:</h6>
+                <ol class="modal-description">
                     <li><strong>Elige la cantidad a apostar</strong> (limitada por tu saldo).</li>
                     <li><strong>Selecciona un caballo</strong> al que deseas apostar.</li>
-                    <li><strong>Pulsa “Iniciar carrera”</strong> para comenzar la simulación.</li>
+                    <li><strong>Pulsa "Iniciar carrera"</strong> para comenzar la simulación.</li>
                 </ol>
                 
-                <p>Una vez comience la carrera, los caballos avanzarán visualmente por una pista, con movimiento aleatorio ajustado según su velocidad y resistencia. El primero en llegar a la meta se declarará ganador.</p>
+                <p class="modal-description">
+                    Una vez comience la carrera, los caballos avanzarán visualmente por una pista, con movimiento aleatorio ajustado según su velocidad y resistencia. El primero en llegar a la meta se declarará ganador.
+                </p>
                 
-                <h6>Al finalizar:</h6>
-                <ul>
+                <h6 class="text-pink">Al finalizar:</h6>
+                <ul class="modal-description">
                     <li>Si <strong>apostaste por el caballo ganador</strong>, se calcula tu ganancia multiplicando la apuesta por el multiplicador del caballo.</li>
                     <li>Si <strong>perdiste</strong> (verás como esto no ocurre), se resta la cantidad apostada.</li>
                 </ul>
                 
-                <p>Siempre que quieras, podrás reiniciar la carrera para volver a jugar.</p>
+                <p class="modal-description">
+                    Siempre que quieras, podrás reiniciar la carrera para volver a jugar.
+                </p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+                <button type="button class="btn btn-primary" data-bs-dismiss="modal">
+                    <i class="fas fa-check me-2"></i>Entendido
+                </button>
             </div>
         </div>
     </div>
@@ -208,60 +184,29 @@ Carrera de caballos
 let caballoSeleccionado = null;
 let carreraEnCurso = false;
 
-// Configuración de caballos con probabilidades y multiplicadores
 const caballos = {
-    1: { 
-        nombre: "Relámpago", 
-        multiplicador: 1.5, 
-        velocidad: 0.85, 
-        resistencia: 0.70,
-        emoji: "🐎"
-    },
-    2: { 
-        nombre: "Trueno", 
-        multiplicador: 2.0, 
-        velocidad: 0.75, 
-        resistencia: 0.80,
-        emoji: "🐴"
-    },
-    3: { 
-        nombre: "Centella", 
-        multiplicador: 3.0, 
-        velocidad: 0.65, 
-        resistencia: 0.85,
-        emoji: "🏇"
-    },
-    4: { 
-        nombre: "Azabache", 
-        multiplicador: 6.0, 
-        velocidad: 0.45, 
-        resistencia: 0.95,
-        emoji: "🎠"
-    }
+    1: { nombre: "Relámpago", multiplicador: 1.5, velocidad: 0.85, resistencia: 0.70, emoji: "🐎", color: "primary" },
+    2: { nombre: "Trueno", multiplicador: 2.0, velocidad: 0.75, resistencia: 0.80, emoji: "🐴", color: "success" },
+    3: { nombre: "Centella", multiplicador: 3.0, velocidad: 0.65, resistencia: 0.85, emoji: "🏇", color: "danger" },
+    4: { nombre: "Azabache", multiplicador: 6.0, velocidad: 0.45, resistencia: 0.95, emoji: "🎠", color: "warning" }
 };
 
-// Función para mostrar el modal de ayuda
 function mostrarAyuda() {
-    const modal = new bootstrap.Modal(document.getElementById('modalAyuda'));
-    modal.show();
+    new bootstrap.Modal(document.getElementById('modalAyuda')).show();
 }
 
-// Calcular probabilidades basadas en características
 function calcularProbabilidades() {
-    // Calcular puntuación total de cada caballo
     const puntuaciones = {};
-    let totalPuntuaciones = 0;
+    let total = 0;
     
     for (let i = 1; i <= 4; i++) {
-        // La puntuación se basa en velocidad y resistencia
         puntuaciones[i] = caballos[i].velocidad * 0.7 + caballos[i].resistencia * 0.3;
-        totalPuntuaciones += puntuaciones[i];
+        total += puntuaciones[i];
     }
     
-    // Calcular probabilidades
     const probabilidades = {};
     for (let i = 1; i <= 4; i++) {
-        probabilidades[i] = puntuaciones[i] / totalPuntuaciones;
+        probabilidades[i] = puntuaciones[i] / total;
     }
     
     return probabilidades;
@@ -270,20 +215,23 @@ function calcularProbabilidades() {
 function seleccionarCaballo(numero) {
     if (carreraEnCurso) return;
     
+    if (caballoSeleccionado === numero) {
+        document.querySelectorAll('.caballo-btn, .caballo').forEach(el => el.classList.remove('caballo-seleccionado'));
+        caballoSeleccionado = null;
+        document.getElementById('info-apuesta').innerHTML = '';
+        return;
+    }
+    
     caballoSeleccionado = numero;
-    
-    // Resetear todos los botones
-    document.querySelectorAll('.caballo-btn').forEach(btn => {
-        btn.classList.remove('btn-primary', 'btn-success', 'btn-danger', 'btn-warning');
-        btn.classList.add('btn-outline-primary', 'btn-outline-success', 'btn-outline-danger', 'btn-outline-warning');
-    });
-    
-    // Resaltar seleccionado
-    const btnSeleccionado = document.querySelector(`.caballo-btn:nth-child(${numero})`);
-    btnSeleccionado.className = btnSeleccionado.className.replace('btn-outline-', 'btn-');
+    document.querySelectorAll('.caballo-btn, .caballo').forEach(el => el.classList.remove('caballo-seleccionado'));
+    document.querySelector(`.caballo-btn:nth-child(${numero})`).classList.add('caballo-seleccionado');
+    document.querySelector(`#carril${numero} .caballo`).classList.add('caballo-seleccionado');
     
     document.getElementById('info-apuesta').innerHTML = `
-        Apuestas por: ${caballos[numero].nombre} (Multiplicador: ${caballos[numero].multiplicador}x)
+        <div class="alert alert-info text-center">
+            <i class="fas fa-horse me-2"></i>
+            Apuestas por: <strong>${caballos[numero].nombre}</strong> (${caballos[numero].multiplicador}x)
+        </div>
     `;
 }
 
@@ -291,47 +239,37 @@ function iniciarCarrera() {
     const cantidad = parseFloat(document.getElementById('cantidad').value);
     const balance = parseFloat('{{ current_user.balance }}');
     
-    if (!caballoSeleccionado) {
-        alert('Selecciona un caballo primero');
-        return;
-    }
-    
-    if (!cantidad || cantidad <= 0) {
-        alert('Ingresa una cantidad válida');
-        return;
-    }
-    
-    if (cantidad > balance) {
-        alert('Fondos insuficientes');
-        return;
-    }
-    
+    if (!caballoSeleccionado) return mostrarAlerta('Selecciona un caballo primero');
+    if (!cantidad || cantidad <= 0) return mostrarAlerta('Ingresa una cantidad válida');
+    if (cantidad > balance) return mostrarAlerta('Fondos insuficientes');
     if (carreraEnCurso) return;
     
     carreraEnCurso = true;
     document.getElementById('btn-carrera').disabled = true;
     document.getElementById('resultado').innerHTML = '';
     
-    // Resetear posiciones
     for (let i = 1; i <= 4; i++) {
         document.getElementById(`caballo${i}`).style.left = '0px';
-        document.getElementById(`caballo${i}`).style.animation = 'none';
     }
     
-    // Calcular velocidades basadas en probabilidades
     const probabilidades = calcularProbabilidades();
     const velocidades = {};
     
     for (let i = 1; i <= 4; i++) {
-        // Velocidad base + aleatoriedad controlada por probabilidades
         const baseSpeed = 2 + (caballos[i].velocidad * 3);
-        const randomFactor = 0.5 + Math.random() * 1.5; // Factor aleatorio
-        const probabilidadFactor = 0.8 + (probabilidades[i] * 0.4); // Factor basado en probabilidad
-        
-        velocidades[i] = baseSpeed * randomFactor * probabilidadFactor;
+        velocidades[i] = baseSpeed * (0.5 + Math.random() * 1.5) * (0.8 + (probabilidades[i] * 0.4));
     }
     
     correrCarrera(velocidades, cantidad);
+}
+
+function mostrarAlerta(mensaje) {
+    const alerta = `<div class="alert alert-warning alert-dismissible fade show text-center">
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>`;
+    document.querySelector('.card-body').insertAdjacentHTML('afterbegin', alerta);
+    setTimeout(() => document.querySelector('.alert')?.remove(), 3000);
 }
 
 function correrCarrera(velocidades, cantidad) {
@@ -345,16 +283,11 @@ function correrCarrera(velocidades, cantidad) {
         for (let i = 1; i <= 4; i++) {
             if (posiciones[i] < meta) {
                 todosLlegaron = false;
-                
-                // Añadir un pequeño elemento aleatorio para hacer la carrera más emocionante
-                const variacion = Math.random() * 2;
-                posiciones[i] += velocidades[i] + variacion;
+                posiciones[i] += velocidades[i] + Math.random() * 2;
                 
                 if (posiciones[i] >= meta) {
                     posiciones[i] = meta;
-                    if (!ganador) {
-                        ganador = i;
-                    }
+                    if (!ganador) ganador = i;
                 }
                 
                 document.getElementById(`caballo${i}`).style.left = posiciones[i] + 'px';
@@ -372,27 +305,30 @@ function finalizarCarrera(ganador, cantidad) {
     const gano = ganador === caballoSeleccionado;
     const multiplicador = caballos[caballoSeleccionado].multiplicador;
     const ganancia = gano ? cantidad * multiplicador : 0;
-    const resultado = gano ? 'ganada' : 'perdida';
 
-    // Sistema de mensajes motivacionales
-    checkMotivationalMessage(resultado);
+    checkMotivationalMessage(gano ? 'ganada' : 'perdida');
+    
+    // Deseleccionar y resetear
+    document.querySelectorAll('.caballo-btn, .caballo').forEach(el => el.classList.remove('caballo-seleccionado'));
+    caballoSeleccionado = null;
     
     // Resaltar ganador
-    document.getElementById(`caballo${ganador}`).style.animation = 'pulse 1s infinite';
+    document.getElementById(`caballo${ganador}`).classList.add('caballo-ganador');
     
+    // Resultado centrado
     document.getElementById('resultado').innerHTML = `
-        <div class="alert ${gano ? 'alert-success' : 'alert-danger'} text-center">
-            <h4>${gano ? '¡GANASTE! 🎉' : 'Perdiste 😞'}</h4>
-            <p>Ganador: ${caballos[ganador].nombre} ${caballos[ganador].emoji}</p>
-            ${gano ? 
-                `<p class="fw-bold">Ganancia: $${ganancia.toFixed(2)} (${multiplicador}x)</p>` : 
-                `<p class="fw-bold">Perdiste: $${cantidad.toFixed(2)}</p>`
-            }
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="alert ${gano ? 'alert-success' : 'alert-danger'} text-center">
+                    <h4 class="mb-3">${gano ? '¡GANASTE! 🎉' : 'Perdiste 😞'}</h4>
+                    <p class="mb-2">Ganador: ${caballos[ganador].nombre} ${caballos[ganador].emoji}</p>
+                    <p class="fw-bold mb-0 fs-5">${gano ? `Ganancia: $${ganancia.toFixed(2)} (${multiplicador}x)` : `Perdiste: $${cantidad.toFixed(2)}`}</p>
+                </div>
+            </div>
         </div>
     `;
     
-    // Enviar resultado al servidor para actualizar el saldo
-    enviarResultadoCaballos(resultado, cantidad, ganancia, caballoSeleccionado, ganador);
+    enviarResultadoCaballos(gano ? 'ganada' : 'perdida', cantidad, ganancia, caballoSeleccionado, ganador);
     
     carreraEnCurso = false;
     document.getElementById('btn-carrera').disabled = false;
@@ -402,15 +338,12 @@ function reiniciarCarrera() {
     caballoSeleccionado = null;
     carreraEnCurso = false;
     
-    document.querySelectorAll('.caballo-btn').forEach(btn => {
-        btn.classList.remove('btn-primary', 'btn-success', 'btn-danger', 'btn-warning');
-        btn.classList.add('btn-outline-primary', 'btn-outline-success', 'btn-outline-danger', 'btn-outline-warning');
+    document.querySelectorAll('.caballo-btn, .caballo').forEach(el => {
+        el.classList.remove('caballo-seleccionado', 'caballo-ganador');
     });
-    
-    for (let i = 1; i <= 4; i++) {
-        document.getElementById(`caballo${i}`).style.left = '0px';
-        document.getElementById(`caballo${i}`).style.animation = 'none';
-    }
+    document.querySelectorAll('.caballo').forEach(caballo => {
+        caballo.style.left = '0px';
+    });
     
     document.getElementById('info-apuesta').innerHTML = '';
     document.getElementById('resultado').innerHTML = '';
@@ -424,71 +357,39 @@ function enviarResultadoCaballos(resultado, cantidad, ganancia, caballoApostado,
             'Content-Type': 'application/json',
             'X-CSRFToken': getCSRFToken()
         },
-        body: JSON.stringify({
-            cantidad: cantidad,
-            resultado: resultado,
-            ganancia: ganancia,
-            caballo_apostado: caballoApostado,
-            caballo_ganador: caballoGanador
-        })
+        body: JSON.stringify({ cantidad, resultado, ganancia, caballo_apostado: caballoApostado, caballo_ganador: caballoGanador })
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Error en la respuesta del servidor');
-        }
-        return response.json();
-    })
+    .then(res => res.json())
     .then(data => {
-        if (data.error) {
-            alert('Error: ' + data.error);
-            return;
-        }
-        // Actualizar el balance en la interfaz
+        if (data.error) return mostrarAlerta('Error: ' + data.error);
         document.getElementById('balance').textContent = data.nuevo_balance.toFixed(2);
-        // Actualizar el máximo permitido en el input de apuesta
         document.getElementById('cantidad').max = data.nuevo_balance;
     })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error al procesar la apuesta. Inténtalo de nuevo.');
-    });
+    .catch(() => mostrarAlerta('Error al procesar la apuesta'));
 }
 
-// Función para obtener el token CSRF (necesario para Flask/WTF)
 function getCSRFToken() {
-    const metaTag = document.querySelector('meta[name="csrf-token"]');
-    if (metaTag) {
-        return metaTag.getAttribute('content');
-    }
-    // Alternativa: buscar en forms
-    const csrfInput = document.querySelector('input[name="csrf_token"]');
-    if (csrfInput) {
-        return csrfInput.value;
-    }
-    return '';
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+           document.querySelector('input[name="csrf_token"]')?.value || '';
 }
 
-// Actualizar el máximo del input de apuesta cuando cambie el balance
 document.getElementById('cantidad').addEventListener('input', function() {
     const balance = parseFloat(document.getElementById('balance').textContent);
-    const cantidad = parseFloat(this.value);
-    
-    if (cantidad > balance) {
-        this.value = balance;
-    }
+    if (parseFloat(this.value) > balance) this.value = balance;
 });
 </script>
 
 <style>
+/* Solo estilos específicos de la carrera - el resto usa tus estilos globales */
 .pista-carrera {
-    background: linear-gradient(45deg, #228B22, #32CD32);
-    border: 4px solid #8B4513;
-    border-radius: 10px;
+    background: linear-gradient(45deg, var(--deep-space), var(--dark-space));
+    border: 2px solid var(--neon-cyan);
+    border-radius: var(--border-radius-card);
     padding: 20px;
     position: relative;
     height: 300px;
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: var(--shadow-hologram);
 }
 
 .meta {
@@ -496,17 +397,17 @@ document.getElementById('cantidad').addEventListener('input', function() {
     right: 0;
     top: 0;
     bottom: 0;
-    width: 4px;
-    background: red;
+    width: 6px;
+    background: var(--neon-green);
     z-index: 2;
-    box-shadow: -2px 0 5px rgba(255,0,0,0.5);
+    box-shadow: var(--glow-green);
 }
 
 .carril {
     position: relative;
     height: 60px;
     margin: 10px 0;
-    border-bottom: 2px dashed white;
+    border-bottom: 2px dashed var(--neon-cyan);
     display: flex;
     align-items: center;
 }
@@ -523,61 +424,73 @@ document.getElementById('cantidad').addEventListener('input', function() {
 .numero {
     position: absolute;
     left: 10px;
-    background: white;
+    background: var(--gradient-cyber);
     border-radius: 50%;
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     z-index: 2;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    color: white;
 }
 
 .caballo-btn {
     flex: 1;
     min-width: 120px;
     font-weight: bold;
-    transition: all 0.3s ease;
 }
 
-.caballo-btn:hover {
+/* Efectos de selección usando tus variables */
+.caballo-seleccionado {
+    animation: seleccionadoPulse 1.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 15px currentColor) drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+}
+
+.caballo-btn.caballo-seleccionado {
+    animation: botonSeleccionado 2s ease-in-out infinite;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: var(--glow-multi-button) !important;
 }
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+.caballo-ganador {
+    animation: ganadorPulse 1s infinite, glowWin 2s ease-in-out infinite;
 }
 
-.btn-primary {
-    background: linear-gradient(45deg, #007bff, #0056b3);
-    border: none;
+/* Animaciones minimalistas */
+@keyframes seleccionadoPulse {
+    0%, 100% { 
+        transform: scale(1);
+        text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+    }
+    50% { 
+        transform: scale(1.15);
+        text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+    }
 }
 
-.btn-warning {
-    background: linear-gradient(45deg, #ffc107, #e0a800);
-    border: none;
+@keyframes botonSeleccionado {
+    0%, 100% { 
+        box-shadow: var(--glow-multi-button);
+    }
+    50% { 
+        box-shadow: 0 0 30px var(--neon-cyan), 0 0 40px var(--neon-pink);
+    }
 }
 
-.progress {
-    height: 8px;
+@keyframes ganadorPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
 }
 
-/* Estilos para el botón HELP */
-.btn-info {
-    background: linear-gradient(45deg, #17a2b8, #138496);
-    border: none;
-    font-weight: bold;
-}
-
-.btn-info:hover {
-    background: linear-gradient(45deg, #138496, #117a8b);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+@keyframes glowWin {
+    0%, 100% { 
+        text-shadow: 0 0 10px gold, 0 0 20px orange;
+    }
+    50% { 
+        text-shadow: 0 0 20px gold, 0 0 40px orange;
+    }
 }
 </style>
 {% endblock %}
