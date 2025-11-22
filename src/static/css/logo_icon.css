@@ -1,0 +1,23 @@
+.logo-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em; /* Intentar alinear a la línea base del texto */
+
+    /* Gradient or color like text */
+    background: white;
+    color: transparent;
+
+    /* Make the SVG shape the visible area */
+    mask-image: url("/static/svg/icon.svg");
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    background-clip: content-box;
+
+    -webkit-mask-image: url("/static/svg/icon.svg");
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-background-clip: content-box;
+}

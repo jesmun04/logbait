@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %} - {% block platform_name %}{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='svg/icon.svg') }}">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" rel="stylesheet">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/logo_icon.css') }}" rel="stylesheet">
 </head>
 <body class="d-flex flex-column min-vh-100">
     <!-- Navbar Futurista -->
@@ -50,7 +55,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <h5 class="text-gradient mb-3">
-                        <i class="fas fa-brain me-2"></i>LogBait Casa de Apuestas Online
+                        <span class="logo-icon me-2" style="background: var(--neon-cyan);"></span>LogBait Casa de Apuestas Online
                     </h5>
                     <p class="text-muted mb-0" style="line-height: 1.6;">
                         Plataforma educativa para el estudio de probabilidades 

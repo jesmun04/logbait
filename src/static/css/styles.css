@@ -155,6 +155,10 @@ h6 {
   text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
 }
 
+#brandIcon {
+  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 150%);
+}
+
 .navbar-nav .nav-link {
   font-family: var(--font-family-body);
   color: #b0b0ff !important;
