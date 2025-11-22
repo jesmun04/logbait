@@ -72,7 +72,7 @@ Usuario: {{ user.username }}
     <div class="col-xl-4 col-md-8 col-12">
         <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="fs-2">👥</div>
+                <div class="fs-2">✉️</div>
                 <h6 class="mb-2">Correo electrónico</h6>
                 <span class="font-monospace data-email fs-5">{{ user.email }}</span>
             </div>
@@ -81,7 +81,7 @@ Usuario: {{ user.username }}
     <div class="col-xl-2 col-md-4 col-6">
         <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="fs-2">👥</div>
+                <div class="fs-2">📌</div>
                 <h6 class="mb-2">ID</h6>
                 <span class="text-cyan fw-bold fs-5">#{{ user.id }}</span>
             </div>
@@ -90,7 +90,7 @@ Usuario: {{ user.username }}
     <div class="col-xl-2 col-md-4 col-6">
         <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="fs-2">👥</div>
+                <div class="fs-2">💵</div>
                 <h6 class="mb-2">Balance</h6>
                 <span class="data-balance fs-5 {% if user.balance > 0 %}balance-positive{% elif user.balance < 0 %}balance-negative{% else %}balance-neutral{% endif %}">
                     ${{ "%.2f"|format(user.balance) }}
@@ -101,7 +101,7 @@ Usuario: {{ user.username }}
     <div class="col-xl-2 col-md-4 col-6">
         <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="fs-2">👥</div>
+                <div class="fs-2">📅</div>
                 <h6 class="mb-2">Fecha de registro</h6>
                 <div class="fs-5" title="{{ user.created_at.strftime('%d/%m/%Y %H:%M:%S') }}">
                     <span>{{ user.created_at.strftime('%d/%m/%Y') }}</span>
@@ -113,7 +113,7 @@ Usuario: {{ user.username }}
     <div class="col-xl-2 col-md-4 col-6">
         <div class="card animated-rotate h-100">
             <div class="card-body text-center p-2">
-                <div class="fs-2">👥</div>
+                <div class="fs-2">🕓</div>
                 <h6 class="mb-2">Estado</h6>
                 {% set days_since_registration = (now - user.created_at).days %}
                 <span class="badge rounded-pill fs-6 {% if days_since_registration <= 7 %}text-bg-info
