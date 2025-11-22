@@ -423,7 +423,11 @@ function mostrarResultadosQuiniela(data, pronosticos) {
         mensaje = `${aciertos}/${total} aciertos - Mejor suerte la próxima vez`;
         tipo = 'danger';
     }
-    
+    if (tipo === 'danger' || tipo === 'warning') {
+        checkMotivationalMessage('perdida');
+    } else {
+        checkMotivationalMessage('ganada');
+    }
     // Mostrar comparativa de resultados
     let comparativaHTML = `
         <div class="mt-4">

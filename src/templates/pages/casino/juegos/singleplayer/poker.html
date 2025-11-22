@@ -327,6 +327,10 @@ function determinarMano(mano) {
 
 function finalizarPoker(resultado) {
     const ganancia = apuestaPoker * resultado.multiplicador;
+    const gano = ganancia > 0;
+    
+    // Sistema de mensajes motivacionales
+    checkMotivationalMessage(gano ? 'ganada' : 'perdida');
     
     document.getElementById('estado-juego').textContent = `${resultado.icono} ${resultado.tipo} ${resultado.icono}`;
     

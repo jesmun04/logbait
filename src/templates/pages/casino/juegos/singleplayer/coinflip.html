@@ -301,6 +301,8 @@ function ejecutarResultado(resultado, cantidad) {
 }
 
 function mostrarResultado(gano, resultado, cantidad, ganancia) {
+  // Sistema de mensajes motivacionales
+  checkMotivationalMessage(gano ? 'ganada' : 'perdida');
   const div = document.getElementById('resultado');
   div.innerHTML = gano
     ? `<div class="alert alert-success text-center">

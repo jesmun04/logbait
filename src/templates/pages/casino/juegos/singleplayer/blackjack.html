@@ -851,6 +851,9 @@ function resolverResultadoGlobal(){
   }
 
   const tipoSalida = wins>losses ? 'ganada' : (losses>wins ? 'perdida' : 'empate');
+
+  // Sistema de mensajes motivacionales
+  checkMotivationalMessage(tipoSalida);
   
   // ACTUALIZAR ESTADÍSTICAS
   estadisticas.partidasJugadas++;

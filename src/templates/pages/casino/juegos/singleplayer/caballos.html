@@ -373,6 +373,9 @@ function finalizarCarrera(ganador, cantidad) {
     const multiplicador = caballos[caballoSeleccionado].multiplicador;
     const ganancia = gano ? cantidad * multiplicador : 0;
     const resultado = gano ? 'ganada' : 'perdida';
+
+    // Sistema de mensajes motivacionales
+    checkMotivationalMessage(resultado);
     
     // Resaltar ganador
     document.getElementById(`caballo${ganador}`).style.animation = 'pulse 1s infinite';

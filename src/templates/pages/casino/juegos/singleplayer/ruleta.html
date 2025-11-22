@@ -563,6 +563,10 @@ document.getElementById('spinBtn').onclick = async () => {
     else log(`<b>Sale ${resultNumber}</b>`);
   }catch(e){ /* no-fatal */ }
 
+  // Sistema de mensajes motivacionales - determinar si ganó o perdió
+  const apuestaTotal = placedBetsSnapshot.reduce((sum, bet) => sum + bet.amount, 0);
+  const resultado = (spinResp.balance > bank) ? 'ganada' : 'perdida';
+  checkMotivationalMessage(resultado);
   // Limpieza local (las apuestas ya han sido procesadas por el servidor)
   lastBets = cloneBets(bets);
   bets = [];

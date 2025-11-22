@@ -234,6 +234,7 @@ function generarResultadoConProbabilidades() {
 }
 
 function mostrarResultadoFinal(resultados, cantidad) {
+    
     // Actualizar visualmente los rodillos con el resultado final
     document.getElementById('rodillo1').innerHTML = `<div class="simbolo-container"><div class="simbolo">${resultados[0]}</div></div>`;
     document.getElementById('rodillo2').innerHTML = `<div class="simbolo-container"><div class="simbolo">${resultados[1]}</div></div>`;
@@ -243,6 +244,7 @@ function mostrarResultadoFinal(resultados, cantidad) {
     const premio = calcularPremio(resultados, cantidad);
     const gano = premio > 0;
     
+    checkMotivationalMessage(gano ? 'ganada' : 'perdida');
     // Efectos visuales para ganador
     if (gano) {
         document.querySelector('.tragaperras-container').classList.add('win-animation');

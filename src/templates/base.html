@@ -85,11 +85,18 @@
     <script src="{{ url_for('static', filename='js/tooltip.js') }}"></script>
     <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
 
+    <!-- Sistema de Motivación Modular -->
+    <link href="{{ url_for('static', filename='css/motivational_modal.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/motivational_messages.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/motivational_system.js') }}"></script>
+
+
     {% if realtime_required %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
     {% endif %}
 
     {% block base_scripts %}{% endblock %}
     {% block scripts %}{% endblock %}
+    
 </body>
 </html>
