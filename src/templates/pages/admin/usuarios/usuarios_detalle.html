@@ -9,7 +9,12 @@ Usuario: {{ user.username }}
     <div class="col-12">
         <div class="d-flex flex-sm-row flex-column gap-4 align-items-center justify-content-between">
             <div>
-                <h2>👤 Detalles del Usuario: {{ user.username }}</h2>
+                <h2>
+                    👤 Detalles del Usuario: {{ user.username }}
+                    {% if user.username == current_user.username %}
+                    <span class="badge text-bg-primary ms-2 fs-5">TÚ</span>
+                    {% endif %}
+                </h2>
                 <p class="text-muted mb-0">Información completa y estadísticas</p>
             </div>
             <div class="d-flex flex-column gap-2">
@@ -21,42 +26,113 @@ Usuario: {{ user.username }}
     </div>
 </div>
 
-<div class="row g-4 mt-4">
-    <!-- Información Básica -->
-    <div class="col-lg-6">
-        <div class="card h-100 animated-translateY">
-            <div class="card-header">
-                📝 Información Básica
-            </div>
-            <div class="card-body">
-                <p><strong>ID:</strong> {{ user.id }}</p>
-                <p><strong>Usuario:</strong> {{ user.username }}</p>
-                <p><strong>Email:</strong> {{ user.email }}</p>
-                <p><strong>Fecha Registro:</strong> {{ user.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+<div class="row g-3 mt-3">
+    <div class="col-12">
+        <div class="card translucent-card animated-translateY">
+            <div class="card-body text-center">
+                <div class="d-flex flex-md-row flex-column gap-3 justify-content-md-between align-items-md-center">
+                    <h5 class="mb-1">Acciones de usuario</h5>
+                    {% if user.username != current_user.username %}
+                    <div class="d-flex flex-md-row flex-column flex-md-wrap gap-2 align-items-md-center">
+                        <button class="btn btn-outline-primary"
+                                onclick="openEditUserModal({
+                                    id: {{ user.id }},
+                                    username: '{{ user.username }}',
+                                    email: '{{ user.email }}',
+                                    balance: {{ user.balance }}
+                                })">
+                            <i class="fa-solid fa-user-pen me-1"></i>Editar datos
+                        </button>
+                        <button class="btn btn-outline-primary"
+                                onclick="openPasswordModal({
+                                    id: {{ user.id }},
+                                    username: '{{ user.username }}'
+                                })">
+                            <i class="fa-solid fa-key me-1"></i>Cambiar contraseña
+                        </button>
+                        <button class="btn btn-danger"
+                                onclick="openDeleteUserModal({
+                                    id: {{ user.id }},
+                                    username: '{{ user.username }}'
+                                })">
+                            <i class="fa-solid fa-trash me-1"></i>Eliminar
+                        </button>
+                    </div>
+                    {% else %}
+                    <small class="text-muted">
+                        Accede a <a href="{{ url_for('perfil.home') }}">Perfil</a> en el casino para realizar acciones sobre tu propio usuario.
+                    </small>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
-        
-    <div class="col-lg-6">
-        <div class="card h-100 animated-translateY">
-            <div class="card-header">
-                💰 Información Financiera
+
+    <!-- Tarjetas de Resumen -->
+    <div class="col-xl-4 col-md-8 col-12">
+        <div class="card animated-rotate h-100">
+            <div class="card-body text-center p-2">
+                <div class="fs-2">👥</div>
+                <h6 class="mb-2">Correo electrónico</h6>
+                <span class="font-monospace data-email fs-5">{{ user.email }}</span>
             </div>
-            <div class="card-body">
-                <p><strong>Balance Actual:</strong> 
-                    <span class="{% if user.balance >= 0 %}positive{% else %}negative{% endif %}">
-                        ${{ "%.2f"|format(user.balance) }}
-                    </span>
-                </p>
-                <p><strong>Estado:</strong> 
-                    <span class="badge {% if user.balance >= 0 %}badge-success{% else %}badge-danger{% endif %}">
-                        {{ "Positivo" if user.balance >= 0 else "Negativo" }}
-                    </span>
-                </p>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="card animated-rotate h-100">
+            <div class="card-body text-center p-2">
+                <div class="fs-2">👥</div>
+                <h6 class="mb-2">ID</h6>
+                <span class="text-cyan fw-bold fs-5">#{{ user.id }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="card animated-rotate h-100">
+            <div class="card-body text-center p-2">
+                <div class="fs-2">👥</div>
+                <h6 class="mb-2">Balance</h6>
+                <span class="data-balance fs-5 {% if user.balance > 0 %}balance-positive{% elif user.balance < 0 %}balance-negative{% else %}balance-neutral{% endif %}">
+                    ${{ "%.2f"|format(user.balance) }}
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="card animated-rotate h-100">
+            <div class="card-body text-center p-2">
+                <div class="fs-2">👥</div>
+                <h6 class="mb-2">Fecha de registro</h6>
+                <div class="fs-5" title="{{ user.created_at.strftime('%d/%m/%Y %H:%M:%S') }}">
+                    <span>{{ user.created_at.strftime('%d/%m/%Y') }}</span>
+                    <small class="text-muted">{{ user.created_at.strftime('%H:%M') }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="card animated-rotate h-100">
+            <div class="card-body text-center p-2">
+                <div class="fs-2">👥</div>
+                <h6 class="mb-2">Estado</h6>
+                {% set days_since_registration = (now - user.created_at).days %}
+                <span class="badge rounded-pill fs-6 {% if days_since_registration <= 7 %}text-bg-info
+                        {% elif days_since_registration <= 30 %}text-bg-success
+                        {% else %}text-bg-warning{% endif %}">
+                    {% if days_since_registration <= 7 %}
+                    Nuevo
+                    {% elif days_since_registration <= 30 %}
+                    Activo
+                    {% else %}
+                    Inactivo
+                    {% endif %}
+                </span>
             </div>
         </div>
     </div>
 </div>
+
+{% include "partials/acciones_usuario.html" %}
 
 {% include "partials/estadisticas.html" %}
 

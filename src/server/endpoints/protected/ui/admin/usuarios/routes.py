@@ -56,7 +56,7 @@ def editar_usuario(user_id):
         # Validar que no se esté editando a sí mismo para ciertos campos
         if usuario.id == current_user.id:
             flash('No puedes modificar tu propio usuario desde aquí', 'info')
-            return redirect(url_for('admin_usuarios.home'))
+            return redirect(request.referrer or url_for('admin_usuarios.home'))
         
         # Campos editables
         if 'username' in data and data['username']:
@@ -64,7 +64,7 @@ def editar_usuario(user_id):
             existing_user = User.query.filter(User.username == data['username'], User.id != user_id).first()
             if existing_user:
                 flash('El nombre de usuario ya está en uso', 'info')
-                return redirect(url_for('admin_usuarios.home'))
+                return redirect(request.referrer or url_for('admin_usuarios.home'))
             usuario.username = data['username']
         
         if 'email' in data and data['email']:
@@ -72,7 +72,7 @@ def editar_usuario(user_id):
             existing_email = User.query.filter(User.email == data['email'], User.id != user_id).first()
             if existing_email:
                 flash('El email ya está en uso', 'info')
-                return redirect(url_for('admin_usuarios.home'))
+                return redirect(request.referrer or url_for('admin_usuarios.home'))
             usuario.email = data['email']
         
         if 'balance' in data:
@@ -82,19 +82,19 @@ def editar_usuario(user_id):
                     usuario.balance = nuevo_balance
                 else:
                     flash('El balance no puede ser negativo', 'info')
-                    return redirect(url_for('admin_usuarios.home'))
+                    return redirect(request.referrer or url_for('admin_usuarios.home'))
             except ValueError:
                 return jsonify({'success': False, 'message': 'Balance inválido'})
         
         db.session.commit()
         
         flash('Usuario actualizado correctamente', 'info')
-        return redirect(url_for('admin_usuarios.home'))
+        return redirect(request.referrer or url_for('admin_usuarios.home'))
         
     except Exception as e:
         db.session.rollback()
         flash(f'Error al actualizar usuario: {str(e)}', 'info')
-        return redirect(url_for('admin_usuarios.home'))
+        return redirect(request.referrer or url_for('admin_usuarios.home'))
     
 @bp.route('/admin/usuarios/<int:user_id>/cambiar-password', methods=['POST'])
 @login_required
@@ -108,7 +108,7 @@ def cambiar_password_usuario(user_id):
         # Prevenir auto-cambio de contraseña desde admin
         if usuario.id == current_user.id:
             flash('No puedes cambiar tu propia contraseña desde aquí. Usa la opción de perfil.', 'info')
-            return redirect(url_for('admin_usuarios.home'))
+            return redirect(request.referrer or url_for('admin_usuarios.home'))
         
         if 'password' in data and data['password']:
             nueva_password = data['password'].strip()
@@ -118,10 +118,10 @@ def cambiar_password_usuario(user_id):
             db.session.commit()
             
             flash('Contraseña actualizada correctamente', 'info')
-            return redirect(url_for('admin_usuarios.home'))
+            return redirect(request.referrer or url_for('admin_usuarios.home'))
         else:
             flash('La nueva contraseña es requerida', 'info')
-            return redirect(url_for('admin_usuarios.home'))
+            return redirect(request.referrer or url_for('admin_usuarios.home'))
         
     except Exception as e:
         db.session.rollback()
@@ -171,7 +171,7 @@ def eliminar_usuario(user_id):
     except Exception as e:
         db.session.rollback()
         flash(f'Error al eliminar usuario: {str(e)}', 'info')
-        return redirect(url_for('admin_usuarios.home'))
+        return redirect(request.referrer or url_for('admin_usuarios.home'))
 
 @bp.route('/admin/usuarios/<int:user_id>/detalle')
 @login_required
