@@ -4,6 +4,7 @@
   --neon-pink: #ff00ff;
   --neon-purple: #8a2be2;
   --neon-orange: #ff6b35;
+  --neon-yellow: #ffff00;
   --neon-green: #00ff88;
   --neon-grey: #91b7ce;
   --matrix-green: #00ff41;
@@ -25,8 +26,9 @@
   --glow-purple-button: 0 2px 20px var(--neon-purple);
   --glow-green-button: 0 2px 20px var(--neon-green);
   --glow-orange-button: 0 2px 20px var(--neon-orange);
+  --glow-yellow-button: 0 2px 20px var(--neon-yellow);
   --glow-grey-button: 0 2px 20px var(--text-light);
-  --glow-multi-button: 0 2px 10px var(--neon-cyan), 0 2px 20px var(--neon-pink);
+  --glow-multi-button: 0 2px 15px var(--neon-pink), 0 2px 20px var(--neon-cyan);
   --border-radius-button: 10px;
   --border-radius-card: 25px;
 
@@ -305,7 +307,8 @@ h6 {
   letter-spacing: 1px;
   transition: all 0.4s ease;
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-  border: solid 1px transparent;
+  border: none;
+  outline-color: transparent;
 }
 
 .btn-primary {
@@ -318,6 +321,11 @@ h6 {
   color: black;
 }
 
+.btn-warning {
+  background: linear-gradient(135deg, var(--neon-orange), var(--neon-yellow));
+  color: black;
+}
+
 .btn-danger {
   background: linear-gradient(135deg, #ff1573, #d00000);
   color: white;
@@ -325,7 +333,7 @@ h6 {
 
 .btn-outline-primary, .page-link, .page-item.disabled .page-link {
   background: none;
-  border-color: var(--neon-cyan);
+  border: solid 1px var(--neon-cyan);
   color: var(--neon-cyan);
   box-shadow: none;
 }
@@ -338,7 +346,7 @@ h6 {
   background: var(--gradient-sunset);
   color: white;
   box-shadow: var(--glow-multi-button);
-  border-color: var(--neon-purple);
+  outline: solid 1px var(--neon-purple);
 }
 
 .btn-outline-primary:hover, .page-link:hover, .page-link:focus {
@@ -349,17 +357,26 @@ h6 {
 }
 
 .btn-success:hover {
-  background: linear-gradient(135deg, #5cf7ff, #31ff38);
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-green));
   color: black;
   box-shadow: var(--glow-green-button);
-  border-color: var(--neon-green);
+  filter: brightness(110%);
+  outline: solid 1px var(--neon-green);
+}
+
+.btn-warning:hover {
+  background: linear-gradient(135deg, var(--neon-yellow), var(--neon-orange));
+  color: black;
+  box-shadow: var(--glow-yellow-button);
+  filter: brightness(110%);
+  outline: solid 1px var(--neon-yellow);
 }
 
 .btn-danger:hover {
   background: linear-gradient(135deg, #ff500b, #ff0798);
   color: black;
   box-shadow: var(--glow-orange-button);
-  border-color: var(--neon-orange);
+  outline: solid 1px var(--neon-orange);
 }
 
 /* === PAGINACIÓN === */
