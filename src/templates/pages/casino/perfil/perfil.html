@@ -96,29 +96,42 @@ Perfil
             </div>
             <div class="card-body">
                 <div class="row g-3">
-                    {% for stat in stats %}
-                    <div class="col-md-4 col-lg-2">
-                        <div class="stat-item text-center">
-                            <div class="mb-2" style="font-size: 2rem;">
-                                {% if stat.juego == 'blackjack' %}🎲 
-                                {% elif stat.juego == 'poker' %}🃏 
-                                {% elif stat.juego == 'coinflip' %}🪙
-                                {% elif stat.juego == 'tragaperras' %}🎰
-                                {% elif stat.juego == 'caballos' %}🏇
-                                {% endif %}
-                            </div>
-                            <div class="stat-value small">
-                                {{ stat.partidas_jugadas }}
-                            </div>
-                            <div class="stat-label">
-                                {{ stat.juego|title }}
-                            </div>
-                            <div class="text-small {% if stat.ganancia_total >= 0 %}text-success{% else %}text-danger{% endif %}">
-                                ${{ "%.2f"|format(stat.ganancia_total) }}
+                    {% if stats %}
+                        {% for stat in stats %}
+                        {% set ganancia_neta = (stat.ganancia_total - stat.apuesta_total) %}
+                        <div class="col-md-4 col-lg-2">
+                            <div class="stat-item text-center">
+                                <div class="mb-2" style="font-size: 2rem;">
+                                    {% if stat.juego == 'blackjack' %}🎲 
+                                    {% elif stat.juego == 'poker' %}🃏 
+                                    {% elif stat.juego == 'coinflip' %}🪙
+                                    {% elif stat.juego == 'tragaperras' %}🎰
+                                    {% elif stat.juego == 'caballos' %}🏇
+                                    {% elif stat.juego == 'ruleta' %}🛞
+                                    {% elif stat.juego == 'quiniela' %}⚽
+                                    {% else %}🎮{% endif %}
+                                </div>
+                                <div class="stat-value fw-bold h5 text-white">
+                                    {{ stat.partidas_jugadas or 0 }}
+                                </div>
+                                <div class="stat-label text-uppercase small text-muted mb-1">
+                                    {{ stat.juego|replace('_', ' ')|title }}
+                                </div>
+                                <div class="text-small fw-bold {% if ganancia_neta >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                    ${{ "%.2f"|format(ganancia_neta) }}
+                                </div>
+                                <div class="text-xs text-muted mt-1">
+                                    Ganancia Neta
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12 text-center py-4">
+                            <p class="text-muted">No hay estadísticas disponibles todavía.</p>
+                            <p class="text-muted small">¡Juega algunas partidas para ver tus estadísticas aquí!</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
