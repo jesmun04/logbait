@@ -1,34 +1,32 @@
+{% if ingresos.items %}
 <div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Cantidad</th>
-                <th>Método</th>
-                <th>Descripción</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if ingresos.items %}
-                {% for ingreso in ingresos.items %}
-                <tr>
-                    <td><small>{{ ingreso.fecha.strftime('%d/%m/%Y %H:%M') }}</small></td>
-                    <td><span class="balance-positive">+${{ "%.2f"|format(ingreso.cantidad) }}</span></td>
-                    <td><span class="badge rounded-pill text-bg-info">{{ ingreso.metodo|title }}</span></td>
-                    <td><small class="text-muted">{{ ingreso.descripcion }}</small></td>
-                </tr>
-                {% endfor %}
-            {% else %}
-                <tr>
-                    <td colspan="4" class="text-center text-muted py-4">
-                        <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
-                        No hay ingresos registrados
-                    </td>
-                </tr>
-            {% endif %}
-        </tbody>
-    </table>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Cantidad</th>
+        <th>Método</th>
+        <th>Descripción</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ingreso in ingresos.items %}
+      <tr>
+        <td><small>{{ ingreso.fecha.strftime('%d/%m/%Y %H:%M') }}</small></td>
+        <td><span class="balance-positive">+${{ "%.2f"|format(ingreso.cantidad) }}</span></td>
+        <td><span class="badge rounded-pill text-bg-info">{{ ingreso.metodo|title }}</span></td>
+        <td><small class="text-muted">{{ ingreso.descripcion }}</small></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
+{% else %}
+<div class="text-center text-muted py-4">
+  <div class="fs-1">💵</div>
+  <h5 class="text-muted mt-3">No hay ingresos registrados</h5>
+</div>
+{% endif %}
 
 {% if ingresos and ingresos.pages > 1 %}
 <nav aria-label="Paginación de ingresos" class="mt-3">
