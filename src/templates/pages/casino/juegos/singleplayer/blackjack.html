@@ -400,6 +400,7 @@ const ENABLE_SPLIT = true;           // permitir 1 separación
 const DECKS = 6;                     // mazos
 // ================== ESTADO ==================
 let balance = 0; // se cargará desde el backend
+let balanceAntesRonda = 0; // para mostrar la variación real en "ÚLTIMO RESULTADO"
 // Cargar saldo real del usuario
 fetch('/api/balance')
   .then(r => r.json())
@@ -646,6 +647,8 @@ function iniciarBlackjack(){
   const cantidad = parseFloat(document.getElementById('cantidad').value||'0');
   if(!cantidad || cantidad<=0) return alert('INGRESA UNA CANTIDAD VÁLIDA');
   if(cantidad>balance) return alert('FONDOS INSUFICIENTES');
+
+  balanceAntesRonda = balance; // guardar saldo previo para mostrar el último resultado
 
   // Reset de ronda
   document.getElementById('resultado').innerHTML='';
@@ -941,10 +944,20 @@ function resolverResultadoGlobal(){
   });
 }
 
+function actualizarUltimoResultado(deltaReal){
+  const el = document.getElementById('ultimo-resultado');
+  if(!el) return;
+  const signo = deltaReal>0 ? '+' : (deltaReal<0 ? '-' : '');
+  el.textContent = `${signo}€${Math.abs(deltaReal).toFixed(2)}`;
+  el.style.color = deltaReal>0 ? 'var(--neon-green)' : (deltaReal<0 ? '#ff6b6b' : '#c7c7c7');
+}
+
 
 function finDeRonda(tipo, delta, detalle){
   juegoActivo=false;
   bloquearAcciones(true);
+  const deltaReal = balance - balanceAntesRonda;
+  actualizarUltimoResultado(deltaReal);
   mostrarResultadoUI({tipo, delta, detalle});
 }
 
