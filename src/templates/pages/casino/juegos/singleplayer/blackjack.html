@@ -11,22 +11,23 @@ Blackjack (individual)
   --casino-green-dark:#082b20;
   --casino-gold:var(--neon-cyan);
   --casino-gold-soft:#00aeca;
-  --neon-cyan:#00f3ff;
-  --neon-green:#2ecc71;
-  --neon-red:#ff5a5a;
-  --neon-pink:#ff5af1;
-  --neon-purple:#9b59b6;
-  --gradient-cyber: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
-  --border-radius-cyber: 12px;
+  --border-radius-cyber: var(--border-radius-button, 12px);
 }
 *{box-sizing:border-box}
-body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
-.container{max-width:1100px;margin:30px auto;padding:0 16px}
-.card{background:linear-gradient(180deg,#0f1417 0%, #0b1113 100%);border:1px solid rgba(0,243,255,.22);box-shadow:0 0 0 1px rgba(0,243,255,.18), 0 8px 30px rgba(0,0,0,.4);border-radius:14px}
-.card .card-body{padding:16px}
-.text-cyan{color:var(--casino-gold)!important}
-.border-cyan{border-color:var(--casino-gold)!important}
-.text-gradient{background:linear-gradient(90deg,var(--casino-gold),#fff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.blackjack-shell{
+  color:var(--text-light);
+  font-family: var(--font-family-body), 'Saira', sans-serif;
+}
+.blackjack-shell .card{
+  background: var(--gradient-dark);
+  border:1px solid rgba(0,243,255,.22);
+  box-shadow: var(--shadow-hologram);
+  border-radius: var(--border-radius-card);
+}
+.blackjack-shell .card .card-body{padding:16px}
+.blackjack-shell .text-cyan{color:var(--casino-gold)!important}
+.blackjack-shell .border-cyan{border-color:var(--casino-gold)!important}
+.blackjack-shell .text-gradient{background:linear-gradient(90deg,var(--casino-gold),#fff);-webkit-background-clip:text;background-clip:text;color:transparent}
 
 /* Topbar */
 .topbar{
@@ -69,25 +70,20 @@ body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe 
 .bet-chip{border:1px solid var(--casino-gold);color:var(--casino-gold);background:rgba(212,175,55,.08);border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer;min-width:56px;text-align:center;transition:all .15s;box-shadow:0 0 0 1px rgba(212,175,55,.12)}
 .bet-chip:hover{background:rgba(212,175,55,.14);box-shadow:0 0 10px rgba(212,175,55,.35)}
 .form-label{display:block;margin-bottom:6px}
-.btn{display:inline-block;cursor:pointer;border:1px solid var(--casino-gold-soft);background:var(--casino-gold);color:#0b1113;border-radius:10px;padding:10px 14px;font-weight:800;box-shadow:0 0 0 1px rgba(212,175,55,.15)}
-.btn:disabled{opacity:.55;pointer-events:none}
-.btn:hover{filter:brightness(1.05);box-shadow:0 0 10px rgba(0,243,255,.45)}
-.btn-success{background:var(--casino-gold);border-color:var(--casino-gold-soft);color:#021018}
-.btn-success:hover{filter:brightness(1.1);box-shadow:0 0 10px rgba(212,175,55,.6)}
-
-.btn-action-green{background:#2ecc71;border-color:#27ae60;color:#0b1113}
-.btn-action-red{background:#e74c3c;border-color:#c0392b;color:#0b1113}
-.btn-global{background:#3498db;border-color:#2980b9;color:#fff}
-.btn-global.exit{background:#111;border-color:#fff}
-.btn.small{padding:8px 10px;font-size:.9rem}
-.btn-cta{
+.blackjack-shell .btn{font-weight:800;letter-spacing:0.5px}
+.blackjack-shell .btn:disabled{opacity:.6;pointer-events:none}
+.blackjack-shell .btn-cta{
   background:var(--gradient-cyber);
   border:1px solid var(--neon-cyan);
   color:#041018;
-  font-weight:800;
-  box-shadow:0 0 12px rgba(0,243,255,.35);
+  box-shadow:var(--glow-cyan-button);
 }
-.btn-cta:hover{filter:brightness(1.06);box-shadow:0 0 18px rgba(0,243,255,.55)}
+.blackjack-shell .btn-cta:hover{filter:brightness(1.06);box-shadow:0 0 18px rgba(0,243,255,.55)}
+.blackjack-shell .btn-action-green{background:var(--gradient-matrix);border:1px solid var(--neon-green);color:#041018;box-shadow:var(--glow-green-button)}
+.blackjack-shell .btn-action-red{background:linear-gradient(135deg,#ff1573,#d00000);border:1px solid #ff500b;color:#fff;box-shadow:var(--glow-orange-button)}
+.blackjack-shell .btn-global{background:var(--gradient-cyber);border:1px solid var(--neon-cyan);color:#fff;box-shadow:var(--glow-cyan-button)}
+.blackjack-shell .btn-global.exit{background:transparent;border:1px solid rgba(255,255,255,.45);color:var(--text-light);box-shadow:none}
+.blackjack-shell .btn.small{padding:8px 10px;font-size:.9rem}
 
 /* Top-right navigation pills */
 .topbar .nav-btn{
@@ -196,7 +192,8 @@ body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe 
 }
 </style>
 
-<div class="container">
+<div class="blackjack-shell">
+  <div class="container">
     <div class="card">
       <div class="card-body">
         <!-- TOPBAR -->
@@ -392,6 +389,7 @@ body{background:#12191b;color:#e7e7e7;font-family:system-ui,-apple-system,Segoe 
     <button class="btn btn-global small" id="btn-reiniciar-misma" onclick="reiniciarMismaApuesta()" disabled>REINICIAR (MISMA APUESTA)</button>
     <button class="btn btn-global exit small" onclick="salirDelJuego()">SALIR</button>
   </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
