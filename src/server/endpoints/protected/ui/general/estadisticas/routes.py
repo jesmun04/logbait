@@ -4,11 +4,11 @@ from models import db, Apuesta, Estadistica, IngresoFondos
 
 bp = Blueprint('estadisticas', __name__)
 
-def obtener_pagina_transacciones(num_por_pagina):
+def obtener_pagina_transacciones(num_por_pagina, id_usuario):
     page = request.args.get("page", 1, type=int)
     
     ingresos_pag = IngresoFondos.query.filter_by(
-        user_id=current_user.id
+        user_id=id_usuario
     ).order_by(IngresoFondos.fecha.desc()).paginate(page=page, per_page=num_por_pagina, error_out=False)
 
     return ingresos_pag
@@ -20,7 +20,7 @@ def home():
     apuestas_recientes = Apuesta.query.filter_by(user_id=current_user.id).order_by(Apuesta.fecha.desc()).limit(10).all()
     
     # Obtener historial de ingresos de fondos con paginación
-    ingresos_pag = obtener_pagina_transacciones(8)
+    ingresos_pag = obtener_pagina_transacciones(8, current_user.id)
 
     total_ingresado = db.session.query(db.func.sum(IngresoFondos.cantidad))\
         .filter_by(user_id=current_user.id).scalar() or 0

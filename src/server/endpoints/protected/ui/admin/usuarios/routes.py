@@ -203,10 +203,10 @@ def detalle_usuario(user_id):
             .all()
 
         # Obtener historial de ingresos de fondos con paginación
-        ingresos_pag = obtener_pagina_transacciones(8)
+        ingresos_pag = obtener_pagina_transacciones(8, user_id)
 
         total_ingresado = db.session.query(db.func.sum(IngresoFondos.cantidad))\
-            .filter_by(user_id=current_user.id).scalar() or 0
+            .filter_by(user_id=user_id).scalar() or 0
 
         # Necesario para actualización automática de la lista de transacciones.
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":

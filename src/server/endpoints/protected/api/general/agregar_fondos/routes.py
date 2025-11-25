@@ -43,7 +43,7 @@ def agregar_fondos():
         total_transacciones = IngresoFondos.query.filter_by(user_id=current_user.id).count()
 
         # Obtener historial de ingresos de fondos con paginación
-        ingresos_pag = obtener_pagina_transacciones(8)
+        ingresos_pag = obtener_pagina_transacciones(8, current_user.id)
         html_tabla = render_template("partials/tabla_ingresos.html", ingresos=ingresos_pag)
         
         return jsonify({
