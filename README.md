@@ -1,12 +1,30 @@
-<div align="center">
-    <img src="assets/logo/logo.png" width="40%">
-    <h1>LogBait</h1>
-    <p>🎰 Plataforma de Apuestas Online</p>
-    <a href="https://logbait.pythonanywhere.com/">logbait.pythonanywhere.com</a>
-    <br>
-    <a href="https://logbait.onrender.com/">logbait.onrender.com</a>
-</div>
-<br>
+<p align="center">
+  <img src="assets/logo/logo.png" style="width: 40%; max-width: 350px;" width="350px">
+</p>
+
+<h1 align="center">
+  <img alt="LogBait" src="assets/logo/logo.svg" style="height: 1.1em; vertical-align: bottom;" height="20px">
+</h1>
+
+<p align="center">
+  Plataforma de Apuestas Online
+</p>
+
+<p align="center">
+  <a href="https://github.com/UCM-FDI-DISIA/proyectois1-thatwasepic/wiki">Ver Wiki</a>
+  ·
+  <a href="https://github.com/UCM-FDI-DISIA/proyectois1-thatwasepic/issues/new">Reportar bug</a>
+</p>
+
+<p align="center">
+  <em>Instancias activas:</em>
+  <br>
+  <a href="https://logbait.onrender.com/"><b>logbait.onrender.com</b></a>
+  <br>
+  <a href="https://logbait.pythonanywhere.com/"><b>logbait.pythonanywhere.com</b></a>
+</p>
+
+---
 
 **LogBait** es una plataforma web de apuestas desarrollada como proyecto académico.
 
