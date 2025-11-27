@@ -11,6 +11,7 @@
   --dark-space: #0a0a10;
   --deep-space: #141420;
   --text-light: #e0e0ff;
+  --text-grey: #9f9fb3;
   ;
 
   --gradient-cyber: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 50%, var(--neon-pink) 100%);
@@ -99,6 +100,12 @@ h4,
 h5,
 h6 {
   font-family: var(--font-family-title);
+}
+
+blockquote {
+  color: var(--text-grey);
+  padding-left: 1.5em;
+  border-left: solid 4px var(--neon-purple);
 }
 
 /* === ANIMACIÓN LIGERA === */
