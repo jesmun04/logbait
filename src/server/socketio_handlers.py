@@ -103,11 +103,18 @@ def register_socketio_handlers(socketio):
             print(f"❌ Sala {sala_id} no encontrada")
             emit('join_error', {'error': 'Sala no encontrada'})
             return
-            
+
+        usuario_sala = UsuarioSala.query.filter_by(usuario_id=current_user.id, sala_id=sala_id).first()
+
         if sala.estado != 'esperando':
-            print(f"❌ Sala {sala_id} no está en estado 'esperando'")
-            emit('join_error', {'error': 'La sala no está aceptando jugadores'})
-            return
+            if sala.estado == 'jugando':
+                if not usuario_sala:
+                    print(f"❌ El usuario {current_user.id} ha intentado unirse por primera vez a la sala {sala_id}, que no está en espera")
+                    emit('join_error', {'error': 'La sala no está aceptando jugadores'})
+                    return
+            else: # sala.estado == 'terminada'
+                print(f"❌ La sala {sala_id} está terminada")
+                return
         
         join_room(f'sala_{sala_id}')
         
