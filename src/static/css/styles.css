@@ -529,6 +529,13 @@ html {
   background-size: 20px 20px;
 }
 
+.fluid-content {
+  background: var(--gradient-dark);
+  border-style: solid;
+  border-color: var(--neon-cyan);
+  border-width: 1px 0;
+}
+
 .balance-positive, .balance-negative, .balance-neutral {
   font-weight: 800;
   font-family: var(--font-family-title), monospace;
