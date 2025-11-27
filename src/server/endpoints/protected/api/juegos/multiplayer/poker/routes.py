@@ -901,5 +901,5 @@ def vista_poker_multijugador(sala_id):
 
     return render_template(
         'pages/casino/juegos/multiplayer/poker.html',
-        sala=sala
+        sala=sala, multijugador=True, realtime_required=True
     )

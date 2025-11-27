@@ -1,153 +1,160 @@
-{% extends "pages/casino/base.html" %}
+{% extends "pages/casino/juegos/base.html" %}
 
 {% block title %}
 Póker (multijugador)
+{% endblock %}
+
+{% block game_title %}
+Póker
 {% endblock %}
 
 {% macro poker_role_label(role) -%}
   {%- if role == 'dealer' -%}D{%- elif role == 'small_blind' -%}SB{%- elif role == 'big_blind' -%}BB{%- endif -%}
 {%- endmacro %}
 
+{% set has_navbar_stats = true %}
+{% block game_navbar_stats %}
+<!-- Panel de información -->
+<div class="row">
+  <div class="col">
+    <div class="text-center">
+      <div class="small text-uppercase text-nowrap">
+        <i class="fas fa-coins me-1"></i>Balance inicial
+      </div>
+      <div class="h5 mb-0 stat-number fw-bold text-nowrap text-truncate">
+        $<span id="balance-inicial">{{ "%.2f"|format(current_user.balance) }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="d-flex justify-content-between align-items-center gap-2">
+      <div class="text-center">
+        <div class="small text-uppercase text-nowrap">
+          <i class="fas fa-trophy me-1"></i>Última ganancia
+        </div>
+        <div class="h5 mb-0 stat-number text-nowrap text-truncate" id="hud-table-amount">
+          $0.00
+        </div>
+      </div>
+      <button id="open-buyin" class="btn btn-outline-primary btn-sm text-nowrap" type="button">
+        <i class="fas fa-pencil"></i>
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content_fluid %}
+<div class="row poker-stage overflow-auto">
+  <div class="overflow-visible" style="padding-top: 8em;">
+    <div class="poker-table">
+      <div class="poker-table-inner">
+        <div class="poker-pot">
+          Bote total
+          <strong id="poker-pot-amount">0€</strong>
+          <small id="poker-current-bet">Apuesta a igualar: 0€</small>
+          <small id="poker-blinds-info">Ciegas: 0€ / 0€</small>
+        </div>
+        <div class="poker-community-label">Cartas comunitarias</div>
+        <div id="cartas-comunitarias" class="poker-community"></div>
+        <div id="mesa-jugadores" class="poker-player-ring"></div>
+      </div>
+    </div>
+
+    <div class="poker-hand-panel">
+      <div>
+        <div class="text-uppercase small text-muted mb-2">Tu mano</div>
+        <div id="tus-cartas" class="poker-hand"></div>
+      </div>
+      <div class="poker-hand-meta">
+        <div>Estado</div>
+        <span id="estado-partida-badge" class="badge">Esperando inicio…</span>
+        <small id="call-info" class="text-muted d-block mt-2">A igualar: 0€</small>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
 {% block content %}
-<div class="poker-wrapper container-xxl py-4">
-  <div id="buyin-overlay" class="buyin-overlay">
-    <div class="buyin-card">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h4 class="mb-0">Elige tu buy-in</h4>
-        <button id="buyin-close" class="btn ghost btn-sm" type="button">Cerrar</button>
+<div id="buyin-overlay" class="modal fade" aria-labelledby="modalGameTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Elige tu buy-in</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
-      <p class="mb-3 text-muted" style="font-size:0.9rem;">Arrancas con 0€ en mesa. Mueve fichas desde tu cuenta y podrás retirarlas cuando quieras.</p>
-      <div class="buyin-stats">
-        <div>
-          <span class="label">Cuenta</span>
-          <strong id="buyin-bank-label">0€</strong>
+      <div class="modal-body">
+        <p class="mb-3 text-muted" style="font-size:0.9rem;">Arrancas con 0€ en mesa. Mueve fichas desde tu cuenta y podrás retirarlas cuando quieras.</p>
+        <div class="buyin-stats">
+          <div>
+            <span class="label">Cuenta</span>
+            <strong id="buyin-bank-label">0€</strong>
+          </div>
+          <div>
+            <span class="label">En mesa</span>
+            <strong id="buyin-table-label">0€</strong>
+          </div>
         </div>
-        <div>
-          <span class="label">En mesa</span>
-          <strong id="buyin-table-label">0€</strong>
-        </div>
+        <label for="buyin-input" class="buyin-label">Cantidad a llevar</label>
+        <input id="buyin-input" type="number" min="0" step="0.01" class="buyin-input" />
+        <div id="buyin-error" class="buyin-error"></div>
       </div>
-      <label for="buyin-input" class="buyin-label">Cantidad a llevar</label>
-      <input id="buyin-input" type="number" min="0" step="0.01" class="buyin-input" />
-      <div id="buyin-error" class="buyin-error"></div>
-      <div class="buyin-actions">
-        <button id="buyin-apply" class="btn primary" type="button">Meter a la mesa</button>
-        <button id="buyin-withdraw" class="btn secondary btn-sm" type="button">Retirar cantidad</button>
-        <button id="buyin-max" class="btn accent btn-sm" type="button">Meter todo</button>
+      <div class="modal-footer">
+        <button id="buyin-apply" class="btn btn-success" type="button">Meter a la mesa</button>
+        <button id="buyin-withdraw" class="btn btn-warning btn-sm" type="button">Retirar cantidad</button>
+        <button id="buyin-max" class="btn btn-primary btn-sm" type="button">Meter todo</button>
         <button id="buyin-clear" class="btn ghost btn-sm" type="button">Retirar todo</button>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="poker-layout">
-    <!-- Zona principal -->
-    <section class="poker-stage">
-      <div class="poker-hud">
-        <div class="hud-pill">
-          <span>Sala #{{ sala.id }}</span>
-          <small>{{ sala.nombre }}</small>
-        </div>
-        <div class="hud-pill">
-          <span>Jugadores</span>
-          <small>{{ sala.jugadores_actuales }}/{{ sala.capacidad }}</small>
-        </div>
-        <div class="hud-pill hud-user">
-          <span>{{ current_user.username }}</span>
-          <small>Tú</small>
-        </div>
-        <div class="hud-pill hud-balance">
-          <span>Cuenta</span>
-          <small id="hud-bank">0€</small>
-        </div>
-        <div class="hud-pill hud-table">
-          <div class="d-flex justify-content-between align-items-center gap-2">
-            <div>
-              <span>Disponible</span>
-              <small id="hud-table-amount">0€</small>
-            </div>
-            <button id="open-buyin" class="btn ghost btn-sm" type="button">Ajustar</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="poker-table">
-        <div class="poker-table-inner">
-          <div class="poker-pot">
-            Bote total
-            <strong id="poker-pot-amount">0€</strong>
-            <small id="poker-current-bet">Apuesta a igualar: 0€</small>
-            <small id="poker-blinds-info">Ciegas: 0€ / 0€</small>
-          </div>
-          <div class="poker-community-label">Cartas comunitarias</div>
-          <div id="cartas-comunitarias" class="poker-community"></div>
-          <div id="mesa-jugadores" class="poker-player-ring"></div>
-        </div>
-      </div>
-
-      <div class="poker-hand-panel">
-        <div>
-          <div class="text-uppercase small text-muted mb-2">Tu mano</div>
-          <div id="tus-cartas" class="poker-hand"></div>
-        </div>
-        <div class="poker-hand-meta">
-          <div>Estado</div>
-          <span id="estado-partida-badge" class="badge">Esperando inicio…</span>
-          <small id="call-info" class="text-muted d-block mt-2">A igualar: 0€</small>
-        </div>
-      </div>
-
-      <div class="poker-actions">
+<!-- Lateral -->
+<div class="row mt-4">
+  <div class="col-12 mt-4">
+    <div class="card">
+      <div class="card-body">
         <div class="action-field">
           <label for="input-apuesta">Apuesta actual</label>
           <input id="input-apuesta" type="number" min="0" step="10" value="10">
         </div>
         <div class="action-buttons">
-          <button id="btn-iniciar" class="btn primary">
+          <button id="btn-iniciar" class="btn btn-success">
             <i class="fas fa-play me-1"></i> Empezar mano
           </button>
-          <button id="btn-call" class="btn accent">
+          <button id="btn-call" class="btn btn-primary">
             <i class="fas fa-coins me-1"></i> Call
           </button>
           <button id="btn-check" class="btn ghost">
             <i class="fas fa-hand-paper me-1"></i> Check
           </button>
-          <button id="btn-raise" class="btn secondary">
+          <button id="btn-raise" class="btn btn-warning">
             <i class="fas fa-level-up-alt me-1"></i> Raise
           </button>
-          <button id="btn-fold" class="btn danger ghost">
+          <button id="btn-fold" class="btn btn-danger">
             <i class="fas fa-flag-checkered me-1"></i> Fold
           </button>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- Lateral -->
-    <aside class="poker-sidebar">
-      <div class="poker-panel">
+  <div class="col-12 col-md-8 mt-4">
+    <div class="card">
+      <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
           <h5 class="mb-0">Jugadores</h5>
           <span class="text-muted small">Actualizado en tiempo real</span>
         </div>
         <div id="lista-jugadores" class="poker-player-list"></div>
       </div>
+    </div>
+  </div>
 
-      <div class="poker-panel">
-        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-          <h5 class="mb-0">Chat de mesa</h5>
-          <span class="text-muted small">Habla con la sala</span>
-        </div>
-        <div class="poker-chat-box">
-          <div id="poker-chat-messages" class="poker-chat-messages">
-            <div class="text-muted small">Sin mensajes</div>
-          </div>
-          <div class="poker-chat-input">
-            <input id="poker-chat-input" type="text" class="form-control form-control-sm" placeholder="Escribe un mensaje...">
-            <button id="poker-chat-send" class="btn accent">Enviar</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="poker-panel">
+  <div class="col-12 col-md-4 mt-4">
+    <div class="card">
+      <div class="card-body">
         <div class="d-flex align-items-center justify-content-between mb-3">
           <h5 class="mb-0">Eventos</h5>
           <span class="text-muted small">Mesa {{ sala.id }}</span>
@@ -156,17 +163,18 @@ Póker (multijugador)
           <div class="text-muted small">Esperando a que el creador de la sala inicie la mano…</div>
         </div>
       </div>
-    </aside>
+    </div>
   </div>
 </div>
+{% endblock %}
 
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+{% block scripts %}
 <script>
 // ======== Config básica ========
 const salaId = {{ sala.id }};
 const currentUserId = {{ current_user.id }};
 const isOwner = {{ 'true' if sala.creador_id == current_user.id else 'false' }};
-const socket = io();
+const socket = window.socket || io();
 const HAND_PHASES = new Set(['preflop', 'flop', 'turn', 'river']);
 const initialBankCents = parseInt("{{ ((current_user.balance or 0) * 100)|int }}", 10) || 0;
 const minBuyinCents = parseInt("{{ ((sala.apuesta_minima or 0) * 100)|int }}", 10) || 0;
@@ -188,11 +196,7 @@ const elMesa = {
   potAmount: document.getElementById('poker-pot-amount'),
   currentBet: document.getElementById('poker-current-bet'),
   potBlinds: document.getElementById('poker-blinds-info'),
-  chatMessages: document.getElementById('poker-chat-messages'),
-  chatInput: document.getElementById('poker-chat-input'),
-  chatSend: document.getElementById('poker-chat-send'),
   callInfo: document.getElementById('call-info'),
-  hudBank: document.getElementById('hud-bank'),
   hudTable: document.getElementById('hud-table-amount'),
   buyinOverlay: document.getElementById('buyin-overlay'),
   buyinInput: document.getElementById('buyin-input'),
@@ -207,6 +211,8 @@ const elMesa = {
   openBuyin: document.getElementById('open-buyin'),
   withdrawAll: document.getElementById('withdraw-all')
 };
+
+const buyinModal = new bootstrap.Modal(elMesa.buyinOverlay);
 
 // Desactivar botón iniciar si no es el creador
 if (!isOwner){
@@ -224,7 +230,7 @@ function addLog(msg){
 
 function formatCurrency(value){
   const num = Number(value || 0);
-  return `${num.toFixed(2)}€`;
+  return `$${num.toFixed(2)}`;
 }
 
 function formatCents(cents){
@@ -245,9 +251,6 @@ function setGlobalBalance(euros){
   if (nav){
     nav.textContent = val.toFixed(2);
     nav.dataset.balance = val;
-  }
-  if (elMesa.hudBank){
-    elMesa.hudBank.textContent = formatCurrency(val);
   }
 }
 // Sobrescribimos siempre para asegurarnos de que el header se actualiza como el HUD
@@ -309,7 +312,6 @@ function syncBuyinLabels(){
   elMesa.buyinBankLabel.textContent = formatCents(buyinState.bankCents);
   elMesa.buyinTableLabel.textContent = formatCents(buyinState.tableCents);
   const headerBalanceCents = Math.max(0, buyinState.bankCents);
-  if (elMesa.hudBank) elMesa.hudBank.textContent = formatCents(headerBalanceCents);
   if (elMesa.hudTable) elMesa.hudTable.textContent = formatCents(buyinState.bankCents);
   setGlobalBalance(headerBalanceCents / 100);
   if (elMesa.buyinInput && !buyinEditing){
@@ -320,9 +322,8 @@ function syncBuyinLabels(){
 }
 
 function toggleBuyinOverlay(show){
-  if (!elMesa.buyinOverlay) return;
-  elMesa.buyinOverlay.classList.toggle('visible', !!show);
-  if (show){
+  if (show) {
+    buyinModal.show();
     elMesa.buyinError.textContent = '';
     syncBuyinLabels();
     if (elMesa.buyinInput){
@@ -331,6 +332,9 @@ function toggleBuyinOverlay(show){
       elMesa.buyinInput.focus();
       updateBuyinButtonsState();
     }
+  }
+  else {
+    buyinModal.hide();
   }
 }
 
@@ -420,13 +424,6 @@ if (elMesa.buyinInput){
 }
 toggleBuyinOverlay(true);
 syncBuyinLabels();
-
-function sendChatMessage(){
-  const text = elMesa.chatInput.value.trim();
-  if (!text) return;
-  socket.emit('poker_chat_message', { sala_id: salaId, message: text });
-  elMesa.chatInput.value = '';
-}
 
 function renderCarta(carta, { mini=false, back=false } = {}){
   const div = document.createElement('div');
@@ -706,26 +703,8 @@ elMesa.btnRaise.addEventListener('click', () => {
 elMesa.btnFold.addEventListener('click', () => {
   postAccion('fold', {});
 });
-elMesa.chatSend.addEventListener('click', sendChatMessage);
-elMesa.chatInput.addEventListener('keydown', (ev) => {
-  if (ev.key === 'Enter' && !ev.shiftKey){
-    ev.preventDefault();
-    sendChatMessage();
-  }
-});
 
 // ====== Eventos Socket.IO ======
-socket.on('poker_chat_history', (mensajes = []) => {
-  if (!mensajes.length){
-    elMesa.chatMessages.innerHTML = '<div class="text-muted small">Sin mensajes</div>';
-    return;
-  }
-  elMesa.chatMessages.innerHTML = '';
-  mensajes.forEach(addChatMessage);
-});
-
-socket.on('poker_chat_message', addChatMessage);
-
 function describeWinningHand(winner){
   const mano = Array.isArray(winner.mano) ? winner.mano : [];
   const manoTexto = winner.mano_texto || 'Mejor mano';
@@ -806,10 +785,8 @@ setInterval(getEstado, 3000);
 }
 .poker-stage {
   background: radial-gradient(circle at 30% 20%, rgba(30, 255, 233, 0.1), rgba(9, 13, 39, 0.95));
-  border-radius: 22px;
-  border: 1px solid rgba(255,255,255,0.08);
-  padding: 1.5rem;
-  box-shadow: 0 20px 80px rgba(0,0,0,0.35);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 .poker-hud {
   display: flex;
@@ -1067,46 +1044,6 @@ setInterval(getEstado, 3000);
   gap: 0.75rem;
   justify-content: flex-end;
 }
-.btn {
-  padding: 0.75rem 1.4rem;
-  border-radius: 999px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  transition: transform .1s;
-}
-.btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-.btn.primary {
-  background: linear-gradient(135deg, #2ecc71, #27ae60);
-  color: #031108;
-}
-.btn.accent {
-  background: linear-gradient(135deg, #38d9ff, #1d66ff);
-  color: #031c2f;
-}
-.btn.secondary {
-  background: linear-gradient(135deg, #ffd369, #ff9635);
-  color: #3d1f00;
-}
-.btn.ghost {
-  background: transparent;
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.2);
-}
-.btn.danger {
-  border-color: rgba(255,87,87,0.5);
-  color: #ff8787;
-}
-.btn:not(:disabled):active {
-  transform: scale(0.97);
-}
-.btn.btn-sm {
-  padding: 0.35rem 0.8rem;
-  font-size: 0.85rem;
-}
 .poker-sidebar {
   display: flex;
   flex-direction: column;
@@ -1234,68 +1171,7 @@ setInterval(getEstado, 3000);
   flex-direction: column;
   gap: 0.75rem;
 }
-.poker-chat-messages {
-  max-height: 220px;
-  overflow-y: auto;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
-  padding: 0.75rem;
-  background: rgba(255,255,255,0.03);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.chat-row {
-  background: rgba(0,0,0,0.2);
-  border-radius: 8px;
-  padding: 0.4rem 0.6rem;
-}
-.chat-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.55);
-}
-.chat-user {
-  font-weight: 600;
-  color: #8df1ba;
-}
-.chat-message {
-  font-size: 0.85rem;
-  margin-top: 0.2rem;
-}
-.poker-chat-input {
-  display: flex;
-  gap: 0.5rem;
-}
-.poker-chat-input input {
-  flex: 1;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: #fff;
-}
 /* Buy-in overlay */
-.buyin-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(4, 6, 18, 0.8);
-  backdrop-filter: blur(4px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-.buyin-overlay.visible {
-  display: flex;
-}
-.buyin-card {
-  background: rgba(9, 12, 32, 0.95);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 18px;
-  padding: 1.25rem;
-  width: min(420px, 90vw);
-  box-shadow: 0 24px 80px rgba(0,0,0,0.45);
-}
 .buyin-stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

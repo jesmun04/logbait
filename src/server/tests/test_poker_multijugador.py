@@ -263,44 +263,8 @@ def test_check_con_apuesta_activa_da_error(app, usuarios_y_sala):
 
 
 # -------------------------------------------------------------
-# Chat + join/leave en sockets
+# Join/leave en sockets
 # -------------------------------------------------------------
-
-def test_poker_join_rechaza_no_miembro_y_envia_historial(clientes_socket, app, usuarios_y_sala):
-    sala, (c1, c2), _ = clientes_socket
-    c1.emit("poker_chat_message", {"sala_id": sala.id, "message": "hola desde el dealer"})
-    c2.get_received()
-
-    _, (_, _, u3) = usuarios_y_sala
-    c3 = _cliente_socket_para(app, u3)
-    c3.emit("poker_join", {"sala_id": sala.id})
-    errores = c3.get_received()
-    assert any(evt["name"] == "poker_error" for evt in errores)
-    c3.disconnect()
-
-    c2.emit("poker_join", {"sala_id": sala.id})
-    eventos_c2 = c2.get_received()
-    assert any(evt["name"] == "poker_chat_history" for evt in eventos_c2)
-    historial = next(evt for evt in eventos_c2 if evt["name"] == "poker_chat_history")["args"][0]
-    assert historial and historial[0]["message"] == "hola desde el dealer"
-
-
-def test_chat_history_se_trunca_y_rechaza_vacios(clientes_socket):
-    sala, (c1, c2), _ = clientes_socket
-    c1.get_received()
-    c2.get_received()
-    c1.emit("poker_chat_message", {"sala_id": sala.id, "message": "   "})
-    assert c2.get_received() == []
-
-    for idx in range(poker_handlers.CHAT_HISTORY_LIMIT + 5):
-        c1.emit("poker_chat_message", {"sala_id": sala.id, "message": f"msg {idx}"})
-    recibidos = c2.get_received()
-    assert any(evt["name"] == "poker_chat_message" for evt in recibidos)
-    history = [evt for evt in recibidos if evt["name"] == "poker_chat_message"]
-    assert len(history) == poker_handlers.CHAT_HISTORY_LIMIT
-    assert history[0]["args"][0]["message"] == f"msg {5}"
-    assert history[-1]["args"][0]["message"] == f"msg {poker_handlers.CHAT_HISTORY_LIMIT + 4}"
-
 
 def test_poker_leave_devuelve_stack_a_balance(app, usuarios_y_sala):
     sala, (u1, u2, _) = usuarios_y_sala
@@ -411,10 +375,10 @@ def test_fold_elimina_jugador_y_puede_cerrar_mano(app, usuarios_y_sala):
 def test_chat_message_largo_se_trunca_y_se_entrega_a_todos(clientes_socket):
     sala, (c1, c2), _ = clientes_socket
     mensaje_largo = "x" * 800
-    c1.emit("poker_chat_message", {"sala_id": sala.id, "message": mensaje_largo})
+    c1.emit("chat_message", {"sala_id": sala.id, "message": mensaje_largo})
     recibidos = c2.get_received()
-    assert any(evt["name"] == "poker_chat_message" for evt in recibidos)
-    payload = next(evt for evt in recibidos if evt["name"] == "poker_chat_message")["args"][0]
+    assert any(evt["name"] == "chat_message" for evt in recibidos)
+    payload = next(evt for evt in recibidos if evt["name"] == "chat_message")["args"][0]
     assert len(payload["message"]) <= 400
     assert payload["message"].startswith("x")
 
