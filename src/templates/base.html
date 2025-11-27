@@ -44,10 +44,8 @@
         {% endif %}
     {% endwith %}
 
-    <!-- Contenido Principal -->
-    <main class="container flex-fill my-5">
-        {% block content %}{% endblock %}
-    </main>
+    <!-- Contenido -->
+    {% block base_content %}{% endblock %}
 
     <!-- Footer Futurista -->
     <footer class="mt-6">

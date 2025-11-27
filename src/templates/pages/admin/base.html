@@ -40,6 +40,13 @@ Panel administrativo de LogBait
 </div>
 {% endblock %}
 
+{% block base_content %}
+<!-- Contenido Principal -->
+<main class="container flex-fill my-5">
+    {% block content %}{% endblock %}
+</main>
+{% endblock %}
+
 {% block base_scripts %}
 <style>
     body {

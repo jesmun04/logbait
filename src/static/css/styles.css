@@ -199,6 +199,7 @@ a.navbar-brand:hover {
   text-shadow: var(--glow-green);
   font-family: var(--font-family-title), monospace;
   text-transform: uppercase;
+  vertical-align: middle;
 }
 
 /* === HERO === */

@@ -4,7 +4,7 @@
 LogBait Casa de Apuestas Online
 {% endblock %}
 
-{% block navbar %}            
+{% block navbar %}
 <a class="navbar-brand fw-bold" id="brand" href="{{ url_for('index.home') }}">
     <span id="brandIcon" class="logo-icon me-2"></span>LogBait
 </a>
@@ -47,4 +47,11 @@ LogBait Casa de Apuestas Online
     </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block base_content %}
+<!-- Contenido Principal -->
+<main class="container flex-fill my-5">
+    {% block content %}{% endblock %}
+</main>
 {% endblock %}

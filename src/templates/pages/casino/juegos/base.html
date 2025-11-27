@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% set multijugador = multijugador or false %}
+{% set has_navbar_stats = has_navbar_stats or false %}
+
+{% if multijugador %}
+    {% import "partials/sala_contents.html" as parcial_sala with context %}
+{% endif %}
+
+{% block platform_name %}
+LogBait Casa de Apuestas Online
+{% endblock %}
+
+{% block navbar %}
+<div class="d-sm-flex w-100 flex-sm-row align-items-center justify-content-between gap-3">
+    <div class="d-flex flex-row align-items-center gap-3">
+        <a class="btn btn-outline-primary mr-4" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Volver al Dashboard" href="{{ url_for('dashboard.home') }}">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="d-flex flex-column align-items-start flex-grow-1">
+            <a class="navbar-brand fw-bold fs-6 mb-0 pb-0" id="brand" href="{{ url_for('index.home') }}">
+                <span id="brandIcon" class="logo-icon me-2"></span>LogBait
+            </a>
+            <h4 class="mt-0">
+                <span id="prefijoTituloJuego" class="me-1">Juego:</span>
+                <span id="tituloJuego">{% block game_title %}{% endblock %}</span>
+            </h4>
+        </div>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarStats">
+            <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="ms-auto d-block d-sm-none">
+            {% if multijugador %}
+            <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#gameSidebar" aria-expanded="false" aria-controls="gameSidebar">
+                <i class="fas fa-users"></i>
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="navbarStats" class="collapse show navbar-collapse ms-sm-auto">
+        <div class="d-flex flex-column gap-2 align-items-center">
+            {% if has_navbar_stats %}
+            <div class="card translucent-card mx-auto">
+                <div class="card-body px-3 py-2 align-items-center">
+                    {% block game_navbar_stats %}{% endblock %}
+                </div>
+            </div>
+            {% endif %}
+            <span class="navbar-text mx-3 d-sm-none">
+                <i class="fas fa-bolt me-1"></i>
+                $<span id="balance-sm">{{ "%.2f"|format(current_user.balance) }}</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="d-none d-sm-flex flex-row align-items-center gap-3">
+        <span class="navbar-text">
+            <i class="fas fa-bolt me-1"></i>
+            $<span id="balance">{{ "%.2f"|format(current_user.balance) }}</span>
+        </span>
+        {% if multijugador %}
+        <div class="d-inline" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Mostrar panel multijugador">
+            <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#gameSidebar" aria-expanded="false" aria-controls="gameSidebar">
+                <i class="fas fa-users"></i>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block base_content %}
+<div class="my-4">
+    <div class="row flex-nowrap g-0">
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="col">
+            <main class="container">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+
+        {% if multijugador %}
+        <!-- SIDEBAR (pantallas grandes) -->
+        <div class="collapse collapse-horizontal" style="max-width: 28rem;" id="gameSidebar">
+            <div class="h-100 sticky-top z-1" style="width: 28rem;">
+                <div class="ms-2 ps-2 h-100 border-start">
+                    <div class="container sticky-top z-1" style="top: 6.5rem;">
+                        <!-- Nombre de Sala -->
+                        <div class="text-center mb-2">
+                            <p class="mb-0 text-muted">Sala actual:</p>
+                            <h4 class="mt-0 text-cyan">{{ sala.nombre }}</h4>
+                        </div>
+
+                        <!-- Emblemas de Información -->
+                        <div class="d-flex justify-content-center gap-3 mb-4">
+                            <span id="contador-jugadores" class="badge" style="background: var(--gradient-matrix); color: black;">
+                                <i class="fas fa-users me-1"></i>{{ sala.jugadores_actuales }}/{{ sala.capacidad }}
+                            </span>
+                            <span class="badge" style="background: var(--gradient-sunset);">
+                                <i class="fas fa-coins me-1"></i>Apuesta mínima: {{ sala.apuesta_minima }}€
+                            </span>
+                        </div>
+
+                        <!-- Lista de Jugadores -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-users me-2"></i>Jugadores Conectados
+                            </div>
+                            <div class="card-body">
+                                {{ parcial_sala.content_lista_usuarios() }}
+                            </div>
+                        </div>
+
+                        <!-- Chat de Sala -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-comments me-2"></i>Chat de Sala
+                            </div>
+                            <div class="card-body">
+                                {{ parcial_sala.content_chat() }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block base_scripts %}
+<script>
+// Actualizar los dos indicadores de balance (actualiza "balance-sm" cuando "balance" cambia).
+// TODO: pensar una solución mejor que permita compartir el mismo elemento del DOM
+document.addEventListener('DOMContentLoaded', () => {
+    const element1 = document.getElementById('balance');
+    const element2 = document.getElementById('balance-sm');
+
+    // Crear un MutationObserver
+    const observer = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'characterData') {
+                // If the text content changed, update element2
+                element2.textContent = mutation.target.data;
+            } else if (mutation.type === 'childList') {
+                // If child nodes changed, update element2's textContent
+                element2.textContent = element1.textContent;
+            }
+        }
+    });
+
+    // Configurar observador para buscar cambios en texto
+    observer.observe(element1, {
+        characterData: true ,// busca cambios en nodos de texto
+        subtree: true,       // necesario para buscar elementos dentro de element1
+        childList: true      // busca nodos hijos añadidos/cambiados
+    });
+});
+</script>
+
+{% if multijugador %}
+    {{ parcial_sala.scripts() }}
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const salaId = {{ sala.id }};
+        const socket = window.socket;
+
+        // Unirse a la sala
+        socket.emit('join_room', { sala_id: salaId });
+    })
+    </script>
+{% endif %}
+
+<style>
+#prefijoTituloJuego {
+    font-weight: 300;
+}
+
+#tituloJuego {
+    font-weight: 800;
+    background: var(--gradient-matrix);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+</style>
+{% endblock %}
