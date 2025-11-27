@@ -1,7 +1,30 @@
-{% extends "pages/casino/base.html" %}
+{% extends "pages/casino/juegos/base.html" %}
 
 {% block title %}
 Coinflip
+{% endblock %}
+
+{% block game_title %}
+Coinflip
+{% endblock %}
+
+{% set has_navbar_stats = true %}
+{% block game_navbar_stats %}
+<!-- Panel de información -->
+<div class="d-flex flex-row gap-3">
+  <div class="text-center">
+    <div class="text-muted">Saldo inicial</div>
+    <h5 class="mb-0">${{ "%.2f"|format(current_user.balance) }}</h5>
+  </div>
+  <div class="text-center">
+    <div class="text-muted">Estado</div>
+    <h5 id="estado-sistema" class="text-info mb-0">En espera</h5>
+  </div>
+  <div class="text-center">
+    <div class="text-muted">Último resultado</div>
+    <h5 id="ultimo-resultado" class="text-secondary mb-0">$0.00</h5>
+  </div>
+</div>
 {% endblock %}
 
 {% block content %}
@@ -13,22 +36,6 @@ Coinflip
         Cara o Cruz
       </div>
       <div class="card-body">
-        <!-- Panel de información -->
-        <div class="row mb-4">
-          <div class="col-md-4 text-center">
-            <div class="text-muted">Saldo inicial</div>
-            <h3>$<span id="balance">{{ "%.2f"|format(current_user.balance) }}</span></h3>
-          </div>
-          <div class="col-md-4 text-center">
-            <div class="text-muted">Estado</div>
-            <h3 id="estado-sistema" class="text-info">En espera</h3>
-          </div>
-          <div class="col-md-4 text-center">
-            <div class="text-muted">Último resultado</div>
-            <h3 id="ultimo-resultado" class="text-secondary">$0.00</h3>
-          </div>
-        </div>
-
         <!-- Controles -->
         <div class="row mb-4">
           <div class="col-md-6 mb-3">
