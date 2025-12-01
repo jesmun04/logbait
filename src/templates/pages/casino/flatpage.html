@@ -49,9 +49,11 @@
 </div>
 
 {% else %}
-<article class="content">
-    {{ html | safe }}
-</article>
+<div class="row justify-content-center">
+    <article class="content col-12 col-xl-10">
+        {{ html | safe }}
+    </article>
+</div>
 {% endif %}
 
 {% endblock %}
