@@ -296,6 +296,7 @@ a.navbar-brand:hover {
 /* === ACCORDIONS === */
 .accordion {
   background: var(--gradient-dark);
+  border-radius: var(--border-radius-button);
 }
 
 .accordion-item, .accordion-button {
