@@ -1,3 +1,5 @@
+{% set hide_bg_cyber_grid = hide_bg_cyber_grid or false %}
+
 <!DOCTYPE html>
 <html lang="es" data-bs-theme="dark">
 <head>
@@ -16,7 +18,7 @@
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/logo_icon.css') }}" rel="stylesheet">
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 {% if not hide_bg_cyber_grid %}bg-cyber-grid{% endif %}">
     <!-- Navbar Futurista -->
     <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">

@@ -7,13 +7,14 @@ Inicio
 {% endblock %}
 
 {% block base_content %}
-<!-- Sección de juegos -->
-<div class="container-fluid mt-5 animated-translateY">
-    <div class="row position-relative">
+<!-- Sección de presentación -->
+<div class="mt-5 animated-translateY">
+    <!-- Contenido -->
+    <div class="position-relative mb-0">
         <div class="hero-bg fade-in-gradient position-absolute"></div>
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-12 col-md-8">
+                <div class="col-12 col-md-10 col-xl-8">
                     <div class="fade-out-gradient animated-translateY">
                         <div id="logo" class="mx-auto"></div>
                     </div>
@@ -31,7 +32,7 @@ Inicio
                 </div>
             </div>
             <div class="row justify-content-center">
-                <div class="col-12 col-md-6 col-xl-4">
+                <div class="col-12 col-sm-11 col-md-8 col-lg-6 col-xl-5 col-xxl-4">
                     <div class="animated-translateY text-center mb-4">
                         {% if current_user.is_authenticated %}
                         <p class="mb-1 text-muted small">
@@ -47,8 +48,8 @@ Inicio
                                     <input type="email" name="email" class="form-control" placeholder="nombre@example.com">
                                     <label for="floatingInput">Introduce tu correo electrónico</label>
                                 </div>
-                                <button class="btn btn-outline-primary" type="submit">
-                                    <i class="fas fa-user-plus me-2"></i>Registrarse
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="d-none d-sm-inline fas fa-user-plus me-2"></i>Regístrate
                                 </button>
                             </div>
                         </form>
@@ -61,23 +62,28 @@ Inicio
             </div>
         </div>
     </div>
-    <div class="row position-relative" style="min-height: 7em;">
+
+    <!-- Pie del contenedor -->
+    <div class="position-relative" style="min-height: 7em; margin-top: -1px;">
         <div class="hero-bg-bottom position-absolute"></div>
-        <div class="d-flex flex-column align-items-center justify-content-end">
-            <a id="showContentButton" type="button" class="btn btn-primary btn-lg rounded-circle animated-rotate" style="aspect-ratio: 1 / 1; line-height: 2em; margin-bottom: -1.4em;" href="#gamesSection">
-                <i class="fa-solid fa-arrow-down"></i>
-            </a>
-        </div>
+    </div>
+
+    <!-- Botón de desplazamiento -->
+    <div class="position-sticky text-center w-100" style="bottom: 1em; margin-top: -1.4em;">
+        <a id="showContentButton" type="button" class="btn btn-primary btn-lg rounded-circle animated-rotate" style="aspect-ratio: 1 / 1; line-height: 2em;" href="#gamesSection">
+            <i class="fa-solid fa-arrow-down"></i>
+        </a>
     </div>
 </div>
 
-<div id="gamesSection" class="pt-5">
+<div id="gamesSection" class="pt-4">
     {{ super() }}
 </div></div>
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
+<!-- Sección de juegos -->
+<div class="row g-4 mb-5 justify-content-center">
     <div class="col-12 text-center">
         <div class="animated-translateY">
             <h1 class="text-cyan">Nuestros Juegos</h1>
@@ -86,9 +92,7 @@ Inicio
             </p>
         </div>
     </div>
-</div>
 
-<div class="row g-4 mt-3 mb-5 justify-content-center">
     <!-- Blackjack -->
     <div class="col-12 col-lg-4 col-md-6">
         <div class="card hover-card clickable h-100 animated-rotate" data-game="blackjack">
@@ -181,38 +185,42 @@ Inicio
     </div>
 </div>
 
-<!-- Sección de desafío -->
-<div class="card translucent-card animated-translateY">
-    {% if current_user.is_authenticated %}
-    <div class="card-body text-center p-5">
-        <h2 class="mb-3">Comienza a jugar</h2>
-        <p>
-            Ya te has unido a nuestra plataforma y estás a un paso de comenzar: entra en el Dashboard para jugar, revisa tu progreso o configura tus datos.
-        </p>
-        <div class="mt-4">
-            <a href="{{ url_for('dashboard.home') }}" class="btn btn-primary btn-lg">
-                <i class="fas fa-home me-2"></i>Ir al Dashboard
-            </a>
-            <div class="d-flex flex-md-row flex-column justify-content-center gap-3 mt-4">
-                <a href="{{ url_for('estadisticas.home') }}" class="btn btn-outline-primary">Ver mis estadísticas</a>
-                <a href="{{ url_for('perfil.home') }}" class="btn btn-outline-primary">Configurar perfil</a>
+<div class="row justify-content-center">
+    <div class="col-12">
+        <!-- Sección de desafío -->
+        <div class="card translucent-card animated-translateY">
+            {% if current_user.is_authenticated %}
+            <div class="card-body text-center p-5">
+                <h2 class="mb-3">Comienza a jugar</h2>
+                <p>
+                    Ya te has unido a nuestra plataforma y estás a un paso de comenzar: entra en el Dashboard para jugar, revisa tu progreso o configura tus datos.
+                </p>
+                <div class="mt-4">
+                    <a href="{{ url_for('dashboard.home') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-home me-2"></i>Ir al Dashboard
+                    </a>
+                    <div class="d-flex flex-md-row flex-column justify-content-center gap-3 mt-4">
+                        <a href="{{ url_for('estadisticas.home') }}" class="btn btn-outline-primary">Ver mis estadísticas</a>
+                        <a href="{{ url_for('perfil.home') }}" class="btn btn-outline-primary">Configurar perfil</a>
+                    </div>
+                </div>
             </div>
+            {% else %}
+            <div class="card-body text-center p-5">
+                <h2 class="mb-3">¿Desafías al azar?</h2>
+                <p>
+                    Únete a nuestra plataforma y descubre la emoción de nuestros juegos. Regístrate ahora y recibe crédito inicial para comenzar.
+                </p>
+                <div class="mt-4">
+                    <a href="{{ url_for('register.home') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Regístrate Ahora
+                    </a>
+                    <p class="mt-2 mb-0">¿Ya tienes cuenta? <a href="{{ url_for('login.home') }}">Inicia sesión</a></p>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
-    {% else %}
-    <div class="card-body text-center p-5">
-        <h2 class="mb-3">¿Desafías al azar?</h2>
-        <p>
-            Únete a nuestra plataforma y descubre la emoción de nuestros juegos. Regístrate ahora y recibe crédito inicial para comenzar.
-        </p>
-        <div class="mt-4">
-            <a href="{{ url_for('register.home') }}" class="btn btn-primary btn-lg">
-                <i class="fas fa-user-plus me-2"></i>Registrarse Ahora
-            </a>
-            <p class="mt-2 mb-0">¿Ya tienes cuenta? <a href="{{ url_for('login.home') }}">Inicia sesión</a></p>
-        </div>
-    </div>
-    {% endif %}
 </div>
 
 <!-- Modal de descripción de juegos (Bootstrap) -->
