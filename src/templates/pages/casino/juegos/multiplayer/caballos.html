@@ -1,4 +1,4 @@
-{% extends "pages/casino/base.html" %}
+{% extends "pages/casino/juegos/base.html" %}
 {% block title %}Carrera de Caballos Multijugador{% endblock %}
 {% block content %}
 <div class="row justify-content-center">
@@ -191,7 +191,6 @@
   border: 2px solid var(--neon-cyan);
 }
 </style>
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
 // ... Lógica JS adaptada de singleplayer y coinflip/blackjack multiplayer ...
 // Variables de estado
@@ -200,7 +199,7 @@ let carreraEnCurso = false;
 let salaId = Number("{{ sala.id }}");
 let esCreador = {{ 'true' if sala.creador_id == current_user.id else 'false' }};
 esCreador = (esCreador === true || esCreador === 'true');
-const socket = io();
+const socket = window.socket;
 const myId = Number("{{ current_user.id }}");
 let apuestas = {};
 let jugadores = [];

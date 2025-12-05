@@ -28,4 +28,4 @@ def sala_caballos(sala_id):
         abort(404)
     
     return render_template("pages/casino/juegos/multiplayer/caballos.html",
-                           sala=sala, user=current_user)
+                           sala=sala, user=current_user, multijugador=True,realtime_required=True)
