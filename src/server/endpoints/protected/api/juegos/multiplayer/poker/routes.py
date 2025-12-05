@@ -131,7 +131,7 @@ def _obtener_o_crear_partida(sala: SalaMultijugador) -> PartidaMultijugador:
             estado='activa',
             datos_juego=json.dumps({
                 'juego': 'poker',
-                'fase': 'preflop',                 
+                'fase': 'terminada',  # al entrar, que no se considere mano activa
                 'cartas_comunitarias': [],
                 'cartas_comunitarias_visibles': [],
                 'jugadores': {},
@@ -149,18 +149,31 @@ def _obtener_o_crear_partida(sala: SalaMultijugador) -> PartidaMultijugador:
 
 def _cargar_estado(partida: PartidaMultijugador):
     try:
-        return json.loads(partida.datos_juego or '{}')
+        estado = json.loads(partida.datos_juego or '{}')
     except json.JSONDecodeError:
-        return {
-            'juego': 'poker',
-            'fase': 'preflop',                  
-            'cartas_comunitarias': [],
-            'cartas_comunitarias_visibles': [],
-            'jugadores': {},
-            'bote': 0.0,
-            'apuesta_ronda': 0.0,
-            'ganador': None
-        }
+        estado = {}
+
+    # sane defaults
+    if not isinstance(estado, dict):
+        estado = {}
+    estado.setdefault('juego', 'poker')
+    estado.setdefault('fase', 'terminada')
+    estado.setdefault('cartas_comunitarias', [])
+    estado.setdefault('cartas_comunitarias_visibles', [])
+    estado.setdefault('jugadores', {})
+    estado.setdefault('bote', 0.0)
+    estado.setdefault('apuesta_ronda', 0.0)
+    estado.setdefault('ganador', None)
+
+    # Si no hay jugadores registrados o el estado está vacío, forzar fase terminada
+    if not estado.get('jugadores'):
+        estado['fase'] = 'terminada'
+        estado['bote'] = 0.0
+        estado['apuesta_ronda'] = 0.0
+        estado['cartas_comunitarias_visibles'] = []
+        estado['cartas_comunitarias'] = []
+
+    return estado
 
 
 
@@ -237,7 +250,9 @@ def _asegurar_jugador_en_estado(estado: dict, usuario: User):
 
 
 def _jugador_necesita_actuar(jugador: dict | None, estado: dict) -> bool:
-    if not jugador or jugador.get('estado') != 'activo':
+    if not jugador or jugador.get('estado') not in ('activo', 'all_in'):
+        return False
+    if jugador.get('estado') == 'all_in':
         return False
     if estado.get('fase') == 'terminada':
         return False
@@ -294,6 +309,28 @@ def _establecer_turno_para_fase(estado: dict, fase: str):
         return
     total = len(orden)
     dealer_idx = estado.get('dealer_index', 0) % total
+    jugadores = estado.get('jugadores') or {}
+
+    vivos = [j for j in jugadores.values() if j.get('estado') in ('activo','all_in')]
+    activos_para_actuar = [j for j in vivos if j.get('estado') == 'activo' and (j.get('stack',0) > 0)]
+
+    if len(activos_para_actuar) <= 1:
+        # si solo queda uno activo con stack, solo necesita actuar si no ha igualado la apuesta
+        if activos_para_actuar:
+            unico = activos_para_actuar[0]
+            apuesta_ronda = float(estado.get('apuesta_ronda', 0.0) or 0.0)
+            if float(unico.get('apuesta_actual', 0.0) or 0.0) < apuesta_ronda:
+                # asignar turno al único jugador pendiente
+                try:
+                    unico_idx = orden.index(unico['user_id'])
+                except ValueError:
+                    unico_idx = 0
+                estado['turno_idx'] = unico_idx
+                estado['turno_actual'] = unico['user_id']
+                return
+        estado['turno_idx'] = None
+        estado['turno_actual'] = None
+        return
     if fase == 'preflop':
         if total <= 2:
             inicio = dealer_idx
@@ -305,6 +342,34 @@ def _establecer_turno_para_fase(estado: dict, fase: str):
         else:
             inicio = _indice_siguiente(estado, dealer_idx, 1)
     _buscar_turno_desde(estado, inicio)
+
+
+def _forzar_turno_para_pagar_si_falta(estado: dict):
+    """
+    Si no hay turno asignado pero existe alguien activo que no ha igualado la
+    apuesta de la ronda, le damos el turno para que pueda hacer call.
+    Esto evita que el turno se quede en None cuando un rival se va all-in y
+    el siguiente jugador debe decidir.
+    """
+    if estado.get('fase') in (None, 'terminada'):
+        return
+    if estado.get('turno_actual') is not None:
+        return
+    apuesta_ronda = float(estado.get('apuesta_ronda', 0.0) or 0.0)
+    orden = estado.get('orden_turnos') or []
+    jugadores = estado.get('jugadores') or {}
+    for idx, uid in enumerate(orden):
+        j = jugadores.get(str(uid))
+        if not j or j.get('estado') != 'activo':
+            continue
+        stack = float(j.get('stack', 0.0) or 0.0)
+        if stack <= 0:
+            continue
+        apuesta_actual = float(j.get('apuesta_actual', 0.0) or 0.0)
+        if (apuesta_ronda - apuesta_actual) > 1e-6:
+            estado['turno_idx'] = idx
+            estado['turno_actual'] = uid
+            return
 
 
 def _apostar_blind(jugador: dict, monto: float, estado: dict) -> float:
@@ -322,6 +387,8 @@ def _apostar_blind(jugador: dict, monto: float, estado: dict) -> float:
     if jugador['stack'] <= 1e-6:
         jugador['stack'] = 0.0
         jugador['sin_stack'] = True
+        jugador['estado'] = 'all_in'
+        jugador['ha_actuado'] = True
     return aporte
 
 
@@ -362,7 +429,7 @@ def _asegurar_usuario_en_sala(sala_id: int):
 
 def _resolver_si_todos_han_actuado(estado: dict, sala_id: int | None = None):
     jugadores = estado.get('jugadores', {})
-    activos = [j for j in jugadores.values() if j.get('estado') == 'activo']
+    activos = [j for j in jugadores.values() if j.get('estado') in ('activo','all_in')]
     if not activos:
         return  # nadie activo
 
@@ -403,6 +470,61 @@ def _resolver_si_todos_han_actuado(estado: dict, sala_id: int | None = None):
         _finalizar_con_ganador(estado, None, sala_id)
 
 
+def _auto_avanzar_si_todos_all_in(estado: dict, sala_id: int | None = None):
+    """
+    Si todos los jugadores están all-in, o todos menos uno están all-in y éste ya
+    igualó la apuesta, avanzamos automáticamente las calles restantes y resolvemos.
+    """
+    fase = estado.get('fase')
+    if fase not in ('preflop', 'flop', 'turn', 'river'):
+        return
+    jugadores = estado.get('jugadores', {}) or {}
+    activos = [j for j in jugadores.values() if j.get('estado') in ('activo','all_in')]
+    if not activos:
+        return
+    activos_con_stack = [j for j in activos if j.get('estado') == 'activo' and float(j.get('stack', 0.0) or 0.0) > 0]
+
+    def apuestas_igualadas():
+        ronda = float(estado.get('apuesta_ronda', 0.0) or 0.0)
+        for j in activos:
+            # Solo importa la gente con stack para igualar
+            if j.get('estado') == 'activo' and float(j.get('stack', 0.0) or 0.0) > 0:
+                if abs(float(j.get('apuesta_actual', 0.0) or 0.0) - ronda) > 1e-6:
+                    return False
+        return True
+
+    if activos_con_stack and len(activos_con_stack) > 1:
+        return  # aún hay más de un jugador con stack para actuar
+    if not apuestas_igualadas():
+        return
+
+    # Avanzar automáticamente hasta el river y resolver
+    while estado.get('fase') in ('preflop', 'flop', 'turn'):
+        fase_actual = estado.get('fase')
+        comunitarias = estado.get('cartas_comunitarias', [])
+        if fase_actual == 'preflop':
+            estado['cartas_comunitarias_visibles'] = comunitarias[:3]
+            estado['fase'] = 'flop'
+        elif fase_actual == 'flop':
+            estado['cartas_comunitarias_visibles'] = comunitarias[:4]
+            estado['fase'] = 'turn'
+        elif fase_actual == 'turn':
+            estado['cartas_comunitarias_visibles'] = comunitarias[:5]
+            estado['fase'] = 'river'
+        estado['apuesta_ronda'] = 0.0
+        for j in jugadores.values():
+            if j.get('estado') == 'activo':
+                j['ha_actuado'] = False
+                j['apuesta_actual'] = 0.0
+            elif j.get('estado') == 'all_in':
+                j['ha_actuado'] = True
+        estado['turno_idx'] = None
+        estado['turno_actual'] = None
+
+    if estado.get('fase') == 'river':
+        _finalizar_con_ganador(estado, None, sala_id)
+
+
 def _reiniciar_ronda_apuestas(estado: dict):
     estado['apuesta_ronda'] = 0.0
     for j in estado.get('jugadores', {}).values():
@@ -420,7 +542,7 @@ def _finalizar_con_ganador(estado: dict, ganador: dict | None, sala_id: int | No
     comunitarias = estado.get('cartas_comunitarias', [])
     estado['cartas_comunitarias_visibles'] = list(comunitarias)
 
-    participantes = [j for j in jugadores.values() if j.get('estado') == 'activo']
+    participantes = [j for j in jugadores.values() if j.get('estado') in ('activo','all_in')]
     if not participantes and ganador:
         participantes = [ganador]
 
@@ -439,9 +561,47 @@ def _finalizar_con_ganador(estado: dict, ganador: dict | None, sala_id: int | No
         estado['ganador'] = []
         return
 
-    mejor_rank = max(res['rank'] for res in resultados)
-    ganadores = [res for res in resultados if res['rank'] == mejor_rank]
-    reparto = bote / len(ganadores) if ganadores else 0.0
+    # Sidepot simple para HU: si hay 2 jugadores y uno estaba corto (all-in), el pote máximo que puede ganar es su aporte * 2
+    if len(participantes) == 2:
+        aporte_a = float(participantes[0].get('total_aportado', 0.0) or 0.0)
+        aporte_b = float(participantes[1].get('total_aportado', 0.0) or 0.0)
+        min_aporte = min(aporte_a, aporte_b)
+        cap = min_aporte * 2.0
+        if bote > cap:
+            exceso = bote - cap
+            # Reembolsa el exceso al jugador que aportó más
+            mayor = participantes[0] if aporte_a > aporte_b else participantes[1]
+            mayor['stack'] = float(mayor.get('stack', 0.0)) + exceso
+            user_mayor = User.query.get(mayor['user_id'])
+            if user_mayor:
+                user_mayor.balance = float(getattr(user_mayor, 'balance', 0.0) or 0.0) + exceso
+            bote = cap
+            estado['bote'] = bote
+
+    # Sidepots: calcular premios proporcionales al aporte
+    contribs = {res['jugador']['user_id']: float(res['jugador'].get('total_aportado', 0.0) or 0.0) for res in resultados}
+    unique_levels = sorted(set(contribs.values()))
+    winnings = {res['jugador']['user_id']: 0.0 for res in resultados}
+
+    def rank_val(r): return r['rank']
+
+    prev = 0.0
+    for lvl in unique_levels:
+        eligibles = [r for r in resultados if contribs.get(r['jugador']['user_id'], 0.0) >= lvl]
+        if not eligibles:
+            prev = lvl
+            continue
+        pot_piece = (lvl - prev) * len(eligibles)
+        if pot_piece <= 0:
+            prev = lvl
+            continue
+        # mejor rank entre elegibles
+        best_rank = max((rank_val(r) for r in eligibles))
+        winners = [r for r in eligibles if rank_val(r) == best_rank]
+        share = pot_piece / len(winners)
+        for w in winners:
+            winnings[w['jugador']['user_id']] += share
+        prev = lvl
 
     estado['ganador'] = []
     participantes_ids = {res['jugador']['user_id'] for res in resultados}
@@ -457,25 +617,31 @@ def _finalizar_con_ganador(estado: dict, ganador: dict | None, sala_id: int | No
         jugador['mano_ganadora'] = res['mano']
         jugador['mano_texto'] = HAND_NAMES.get(res['rank'][0], 'Mejor mano')
         jugador['apuesta_actual'] = 0.0
-        if res in ganadores:
-            jugador['stack'] = float(jugador.get('stack', 0.0)) + reparto
-            jugador['ultima_accion'] = f'Gana {reparto:.2f}€'
+
+        premio = winnings.get(jugador['user_id'], 0.0)
+        if premio > 0:
+            jugador['stack'] = float(jugador.get('stack', 0.0)) + premio
+            jugador['ultima_accion'] = f'Gana {premio:.2f}€'
             jugador['es_ganador'] = True
-            jugador['ultima_ganancia'] = reparto
+            jugador['ultima_ganancia'] = premio
             ganadores_payload.append({
                 'user_id': jugador['user_id'],
                 'username': jugador['username'],
-                'ganancia': round(reparto, 2),
+                'ganancia': round(premio, 2),
                 'mano': jugador.get('mano_ganadora', []),
                 'mano_texto': jugador.get('mano_texto')
             })
             estado['ganador'].append({
                 'user_id': jugador['user_id'],
                 'username': jugador['username'],
-                'ganancia': reparto,
+                'ganancia': premio,
                 'mano': res['mano'],
                 'rango': jugador['mano_texto']
             })
+            user = User.query.get(jugador['user_id'])
+            if user:
+                user.balance = float(getattr(user, 'balance', 0.0) or 0.0) + premio
+                jugador['saldo_cuenta'] = user.balance
         else:
             jugador['es_ganador'] = False
             jugador['ultima_ganancia'] = 0.0
@@ -584,6 +750,8 @@ def _accion_generica(sala_id: int, tipo: str, cantidad: float | None = None):
         if j['stack'] <= 1e-6:
             j['stack'] = 0.0
             j['sin_stack'] = True
+            j['estado'] = 'all_in'
+            j['ha_actuado'] = True
         return aporte
 
     mensaje = 'Acción realizada'
@@ -651,6 +819,8 @@ def _accion_generica(sala_id: int, tipo: str, cantidad: float | None = None):
     fase_antes = estado.get('fase')
     _resolver_si_todos_han_actuado(estado, sala_id)
     _actualizar_turno_despues_accion(estado, fase_antes)
+    _auto_avanzar_si_todos_all_in(estado, sala_id)
+    _forzar_turno_para_pagar_si_falta(estado)
     _guardar_estado(partida, estado)
 
     return jsonify({
@@ -673,6 +843,19 @@ def estado(sala_id):
 
     partida = _obtener_o_crear_partida(sala)
     estado = _cargar_estado(partida)
+    # Si la fase es una mano activa pero sin apuestas/cartas visibles, la consideramos terminada para permitir buy-in
+    fase = estado.get('fase')
+    if fase in ('preflop', 'flop', 'turn', 'river') and not estado.get('ganador'):
+        comunitarias_vis = estado.get('cartas_comunitarias_visibles') or []
+        apuestas_activas = any((j.get('apuesta_actual') or 0) > 0 for j in (estado.get('jugadores') or {}).values())
+        if not comunitarias_vis and not apuestas_activas:
+            estado['fase'] = 'terminada'
+            estado['apuesta_ronda'] = 0.0
+            estado['bote'] = 0.0
+            for info in (estado.get('jugadores') or {}).values():
+                info['apuesta_actual'] = 0.0
+                info['total_aportado'] = info.get('total_aportado') or 0.0
+            _guardar_estado(partida, estado)
     # Aseguramos que el jugador actual exista en el estado con stack inicial 0
     ya_estaba = str(current_user.id) in (estado.get('jugadores') or {})
     _asegurar_jugador_en_estado(estado, current_user)
@@ -760,6 +943,9 @@ def iniciar_mano(sala_id):
         previo = jugadores_previos.get(str(us.usuario_id), {}) if jugadores_previos else {}
         stack_inicial = float(previo.get('stack', 0.0) or 0.0)
         saldo_actual = float(getattr(jugador_user, 'balance', 0.0) or 0.0)
+        # Solo participan en la mano quienes tienen stack en mesa
+        if stack_inicial <= 0:
+            continue
         jugadores_estado[str(us.usuario_id)] = {
             'user_id': us.usuario_id,
             'username': username,
@@ -778,8 +964,10 @@ def iniciar_mano(sala_id):
         }
 
     orden_turnos = [int(uid) for uid in jugadores_estado.keys()]
-    if not orden_turnos:
-        return jsonify({'error': 'No hay jugadores registrados'}), 400
+    if len(orden_turnos) == 0:
+        return jsonify({'error': 'No hay jugadores con stack para jugar esta mano'}), 400
+    if len(orden_turnos) == 1:
+        return jsonify({'error': 'Se necesitan al menos 2 jugadores con stack para iniciar la mano'}), 400
     total_jugadores = len(orden_turnos)
     prev_dealer_idx = estado_previo.get('dealer_index', -1)
     dealer_index = (prev_dealer_idx + 1) % total_jugadores

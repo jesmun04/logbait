@@ -178,6 +178,8 @@ const socket = window.socket || io();
 const HAND_PHASES = new Set(['preflop', 'flop', 'turn', 'river']);
 const initialBankCents = parseInt("{{ ((current_user.balance or 0) * 100)|int }}", 10) || 0;
 const minBuyinCents = parseInt("{{ ((sala.apuesta_minima or 0) * 100)|int }}", 10) || 0;
+let handActive = false;
+let currentPhase = 'esperando';
 
 // Elementos
 const elMesa = {
@@ -379,8 +381,10 @@ async function aplicarBuyin(cents){
   }
 }
 
+const canDeposit = () => !handActive || currentPhase === 'esperando' || currentPhase === 'terminada';
 if (elMesa.buyinApply){
   elMesa.buyinApply.addEventListener('click', () => {
+    if(!canDeposit()){ elMesa.buyinError.textContent = 'No puedes mover saldo durante una mano'; return; }
     const euros = parseFloat(elMesa.buyinInput.value || '0');
     aplicarBuyin(Math.round(euros * 100));
   });
@@ -402,6 +406,7 @@ if (elMesa.buyinWithdraw){
 }
 if (elMesa.buyinMax){
   elMesa.buyinMax.addEventListener('click', () => {
+    if(!canDeposit()){ elMesa.buyinError.textContent = 'No puedes mover saldo durante una mano'; return; }
     aplicarBuyin(buyinState.bankCents + buyinState.tableCents);
   });
 }
@@ -412,7 +417,9 @@ if (elMesa.buyinClose){
   elMesa.buyinClose.addEventListener('click', () => toggleBuyinOverlay(false));
 }
 if (elMesa.openBuyin){
-  elMesa.openBuyin.addEventListener('click', () => toggleBuyinOverlay(true));
+  elMesa.openBuyin.addEventListener('click', () => {
+    toggleBuyinOverlay(true);
+  });
 }
 if (elMesa.withdrawAll){
   elMesa.withdrawAll.addEventListener('click', () => aplicarBuyin(0));
@@ -484,6 +491,8 @@ function renderEstadoPartida(st){
   if (st.fase !== 'terminada'){
     renderEstadoPartida._ultimoGanadorMostrado = null;
   }
+  currentPhase = st.fase || 'esperando';
+  handActive = HAND_PHASES.has(currentPhase) && currentPhase !== 'esperando' && currentPhase !== 'terminada';
   const estados = {
     esperando: { texto: 'Esperando jugadores', clase: 'bg-secondary' },
     repartiendo: { texto: 'Repartiendo cartas', clase: 'bg-info' },
