@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (data.sala.juego === 'coinflip') {
                             window.location.href = `/api/multijugador/coinflip/sala/${salaId}`;
                         } else if (data.sala.juego === 'blackjack') {
-                            window.location.href = `/blackjack/sala/${salaId}`;
+                            window.location.href = `/api/multijugador/blackjack/sala/${salaId}`;
                         } else if (data.sala.juego === 'ruleta') {
                             window.location.href = `/ruleta/sala/${salaId}`;
                         } else if (data.sala.juego === 'caballos') {
