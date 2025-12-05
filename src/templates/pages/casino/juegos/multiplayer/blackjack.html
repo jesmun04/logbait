@@ -1,7 +1,11 @@
-{% extends "pages/casino/base.html" %}
+{% extends "pages/casino/juegos/base.html" %}
 
 {% block title %}
 Blackjack (multijugador)
+{% endblock %}
+
+{% block game_title %}
+Blackjack
 {% endblock %}
 
 {% block content %}
@@ -220,11 +224,10 @@ Blackjack (multijugador)
   </div>
 </div>
 
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
   const salaId = Number('{{ sala.id }}');
   const myId   = Number('{{ user.id }}');
-  const socket = io();
+  const socket = window.socket;
 
   let lastState = null, timerHandle = null;
   const statsCache = {};

@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, abort
+from flask import Blueprint, render_template, abort, redirect, url_for
 from flask_login import login_required, current_user
-from models import SalaMultijugador
+from models import SalaMultijugador, UsuarioSala
 from .socket_handlers import register_blackjack_handlers
 
 bp = Blueprint("api_multijugador_blackjack", __name__)
@@ -12,12 +12,32 @@ def on_register(state):
     if socketio:
         register_blackjack_handlers(socketio, app)
 
-@bp.route("/blackjack/sala/<int:sala_id>")
+@bp.route("/api/multijugador/blackjack/sala/<int:sala_id>")
 @login_required
 def vista_sala_blackjack(sala_id):
+    """P��gina principal del Blackjack multijugador"""
     sala = SalaMultijugador.query.get_or_404(sala_id)
+
+    # Verificar que el usuario est�� en la sala
+    usuario_en_sala = UsuarioSala.query.filter_by(
+        usuario_id=current_user.id,
+        sala_id=sala_id
+    ).first()
+
+    if not usuario_en_sala:
+        return redirect(url_for('salas_espera.lobby'))
+
     if sala.juego != "blackjack":
         abort(404)
-    return render_template("pages/casino/juegos/multiplayer/blackjack.html",
-                           sala=sala, user=current_user)
+
+    if sala.estado != "jugando":
+        return redirect(url_for('salas_espera.lobby'))
+
+    return render_template(
+        "pages/casino/juegos/multiplayer/blackjack.html",
+        sala=sala,
+        user=current_user,
+        multijugador=True,
+        realtime_required=True,
+    )
 

@@ -18,7 +18,7 @@ def generar_url_redireccion(juego, sala_id):
     if juego == 'coinflip':
         return f'/api/multijugador/coinflip/sala/{sala_id}'
     elif juego == 'blackjack':
-        return f'/blackjack/sala/{sala_id}'
+        return f'/api/multijugador/blackjack/sala/{sala_id}'
     elif juego == 'ruleta':
         return f'/ruleta/sala/{sala_id}'
     elif juego == 'caballos':
