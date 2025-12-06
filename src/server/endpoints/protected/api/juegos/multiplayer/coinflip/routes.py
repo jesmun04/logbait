@@ -1,9 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for
 from flask_login import login_required, current_user
 from models import db, SalaMultijugador, UsuarioSala
-
-bp = Blueprint('api_multijugador_coinflip', __name__)
-
 # Importar y registrar los socket handlers cuando se carga este blueprint
 from .socket_handlers import register_coinflip_handlers
 from flask import current_app
@@ -45,7 +42,7 @@ def sala_coinflip(sala_id):
     
     print(f"✅ Renderizando CoinFlip multijugador para {current_user.username}")
     return render_template('pages/casino/juegos/multiplayer/coinflip.html', 
-                         sala=sala, user=current_user)
+                         sala=sala, user=current_user, multijugador=True, realtime_required=True)
 
 @bp.route('/apostar/<int:sala_id>', methods=['POST'])
 @login_required

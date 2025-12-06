@@ -29,7 +29,7 @@ def register_coinflip_handlers(socketio, app):
         sala = SalaMultijugador.query.get(sala_id)
         
         if sala and sala.juego == 'coinflip':
-            join_room(f'coinflip_sala_{sala_id}')
+            join_room(f'sala_{sala_id}')
             
             # Inicializar sala si no existe
             if sala_id not in salas_coinflip:
@@ -57,13 +57,13 @@ def register_coinflip_handlers(socketio, app):
                 'jugadores': salas_coinflip[sala_id]['jugadores'],
                 'apuestas': salas_coinflip[sala_id]['apuestas'],
                 'estado': salas_coinflip[sala_id]['estado']
-            }, room=f'coinflip_sala_{sala_id}')
+            }, room=f'sala_{sala_id}')
             
             emit('user_joined_coinflip', {
                 'user_id': current_user.id,
                 'username': current_user.username,
                 'sala_id': sala_id
-            }, room=f'coinflip_sala_{sala_id}')
+            }, room=f'sala_{sala_id}')
             
             print(f"✅ {current_user.username} unido exitosamente a sala CoinFlip {sala_id}")
         else:
@@ -77,7 +77,7 @@ def register_coinflip_handlers(socketio, app):
         sala_id = data.get('sala_id')
         print(f"🚪 Usuario {current_user.username} saliendo de sala CoinFlip {sala_id}")
         
-        leave_room(f'coinflip_sala_{sala_id}')
+        leave_room(f'sala_{sala_id}')
         
         # Remover jugador de la sala
         if sala_id in salas_coinflip:
@@ -93,7 +93,7 @@ def register_coinflip_handlers(socketio, app):
         emit('user_left_coinflip', {
             'user_id': current_user.id,
             'username': current_user.username
-        }, room=f'coinflip_sala_{sala_id}')
+        }, room=f'sala_{sala_id}')
 
     @socketio.on('coinflip_apostar')
     def handle_coinflip_apostar(data):
@@ -148,7 +148,7 @@ def register_coinflip_handlers(socketio, app):
             'eleccion': eleccion,
             'cantidad': cantidad,
             'apuestas_totales': len(salas_coinflip[sala_id]['apuestas'])
-        }, room=f'coinflip_sala_{sala_id}')
+        }, room=f'sala_{sala_id}')
         
         # Emitir estado actualizado
         emit('estado_sala_actualizado', {
@@ -156,7 +156,7 @@ def register_coinflip_handlers(socketio, app):
             'jugadores': salas_coinflip[sala_id]['jugadores'],
             'apuestas': salas_coinflip[sala_id]['apuestas'],
             'estado': salas_coinflip[sala_id]['estado']
-        }, room=f'coinflip_sala_{sala_id}')
+        }, room=f'sala_{sala_id}')
         
         print(f"📊 Apuestas en sala {sala_id}: {len(salas_coinflip[sala_id]['apuestas'])}")
 
@@ -196,7 +196,7 @@ def register_coinflip_handlers(socketio, app):
             'resultado': resultado,
             'lanzador': current_user.username,
             'timestamp': datetime.utcnow().isoformat()
-        }, room=f'coinflip_sala_{sala_id}')
+        }, room=f'sala_{sala_id}')
         
         # Procesar resultados después de 3 segundos
         def procesar_resultados_background():
@@ -268,7 +268,7 @@ def register_coinflip_handlers(socketio, app):
                 socketio.emit('resultados_finales_coinflip', {
                     'resultados': resultados,
                     'resultado_moneda': resultado
-                }, room=f'coinflip_sala_{sala_id}')
+                }, room=f'sala_{sala_id}')
                 
                 # Resetear apuestas para la siguiente ronda
                 salas_coinflip[sala_id]['apuestas'] = []
@@ -280,24 +280,10 @@ def register_coinflip_handlers(socketio, app):
                     'jugadores': salas_coinflip[sala_id]['jugadores'],
                     'apuestas': salas_coinflip[sala_id]['apuestas'],
                     'estado': salas_coinflip[sala_id]['estado']
-                }, room=f'coinflip_sala_{sala_id}')
+                }, room=f'sala_{sala_id}')
                 
                 print(f"✅ Resultados procesados para sala {sala_id}")
         
         socketio.start_background_task(procesar_resultados_background)
-
-    @socketio.on('coinflip_chat_message')
-    def handle_coinflip_chat(data):
-        print("💬 Mensaje de chat recibido:", data)
-        
-        sala_id = data.get('sala_id')
-        message = data.get('message')
-        
-        emit('new_coinflip_message', {
-            'user_id': current_user.id,
-            'username': current_user.username,
-            'message': message,
-            'timestamp': datetime.utcnow().isoformat()
-        }, room=f'coinflip_sala_{sala_id}')
 
     print("✅ Todos los handlers de CoinFlip registrados correctamente")

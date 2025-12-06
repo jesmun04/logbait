@@ -1,146 +1,29 @@
-{% extends "pages/casino/base.html" %}
+{% extends "pages/casino/juegos/base.html" %}
 
 {% block title %}
 Coinflip (multijugador)
 {% endblock %}
 
-{% block content %}
-<div class="simple-background"></div>
+{% block game_title %}
+Coinflip
+{% endblock %}
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <!-- Header de la Sala -->
-            <div class="card mb-4">
-                <div class="card-header text-center">
-                    <h2 class="mb-0">CoinFlip - {{ sala.nombre }}</h2>
-                    <div class="d-flex justify-content-center gap-3 mt-2">
-                        <span class="badge bg-primary">
-                            <i class="fas fa-users me-1"></i><span id="contador-jugadores">0</span>/{{ sala.capacidad }}
-                        </span>
-                        <span class="badge bg-warning text-dark">
-                            <i class="fas fa-coins me-1"></i>Apuesta mínima: {{ sala.apuesta_minima }}€
-                        </span>
+{% block content_fluid %}
+<!-- Moneda -->
+<div class="row">
+    <div class="fluid-content">
+        <div class="coin-wrapper" style="margin-top: 2.5rem; margin-bottom: 2.5rem;">
+            <div id="moneda-multijugador" class="coin">
+                <div class="face front">
+                    <div class="face-inner">
+                        <div class="emoji">🪙</div>
+                        <div class="label">CARA</div>
                     </div>
                 </div>
-            </div>
-
-            <div class="row">
-                <!-- Panel de Juego -->
-                <div class="col-md-8">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h4 class="mb-0"><i class="fas fa-gamepad me-2"></i>Juego</h4>
-                        </div>
-                        <div class="card-body text-center">
-                            <!-- Moneda -->
-                            <div class="coin-wrapper mb-4">
-                                <div id="moneda-multijugador" class="coin">
-                                    <div class="face front">
-                                        <div class="face-inner">
-                                            <div class="emoji">🪙</div>
-                                            <div class="label">CARA</div>
-                                        </div>
-                                    </div>
-                                    <div class="face back">
-                                        <div class="face-inner">
-                                            <div class="emoji">🌿</div>
-                                            <div class="label">CRUZ</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div id="estado-juego" class="alert alert-info">
-                                Esperando apuestas...
-                            </div>
-
-                            <!-- Controles de Apuesta -->
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">Cantidad</label>
-                                    <input type="number" id="cantidad-apuesta" class="form-control" 
-                                           min="{{ sala.apuesta_minima }}" value="{{ sala.apuesta_minima }}">
-                                    <small class="text-muted">Tu balance: $<span id="balance-usuario">{{ "%.2f"|format(current_user.balance) }}</span></small>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Elección</label>
-                                    <div>
-                                        <button id="btn-elegir-cara" class="btn btn-outline-danger me-2" 
-                                                onclick="elegirLado('cara')">
-                                            <i class="fas fa-crown me-1"></i>Cara
-                                        </button>
-                                        <button id="btn-elegir-cruz" class="btn btn-outline-success" 
-                                                onclick="elegirLado('cruz')">
-                                            <i class="fas fa-leaf me-1"></i>Cruz
-                                        </button>
-                                    </div>
-                                    <small id="eleccion-actual" class="text-muted mt-1 d-block">No has elegido</small>
-                                </div>
-                            </div>
-
-                            <!-- Botones de Acción -->
-                            <div class="d-flex gap-2 justify-content-center">
-                                <button id="btn-apostar" class="btn btn-primary" onclick="realizarApuesta()">
-                                    <i class="fas fa-coins me-1"></i>Apostar
-                                </button>
-                                {% if sala.creador_id == current_user.id %}
-                                <button id="btn-lanzar" class="btn btn-success" onclick="lanzarMoneda()" disabled>
-                                    <i class="fas fa-rocket me-1"></i>Lanzar Moneda
-                                </button>
-                                {% endif %}
-                                <button id="btn-reiniciar" class="btn btn-outline-secondary" onclick="reiniciarApuesta()" style="display: none;">
-                                    <i class="fas fa-redo me-1"></i>Nueva Apuesta
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Apuestas Actuales -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="mb-0"><i class="fas fa-list me-2"></i>Apuestas Actuales 
-                                <span class="badge bg-primary" id="contador-apuestas">0</span>
-                            </h4>
-                        </div>
-                        <div class="card-body">
-                            <div id="lista-apuestas">
-                                <div class="text-center text-muted">No hay apuestas aún</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Panel Lateral -->
-                <div class="col-md-4">
-                    <!-- Jugadores -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h4 class="mb-0"><i class="fas fa-users me-2"></i>Jugadores Conectados</h4>
-                        </div>
-                        <div class="card-body">
-                            <div id="lista-jugadores">
-                                <div class="text-center text-muted">Cargando jugadores...</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Chat -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="mb-0"><i class="fas fa-comments me-2"></i>Chat</h4>
-                        </div>
-                        <div class="card-body">
-                            <div id="chat-messages" style="height: 200px; overflow-y: auto; margin-bottom: 10px; border: 1px solid #dee2e6; border-radius: 5px; padding: 10px;">
-                                <div class="text-center text-muted">El chat está vacío</div>
-                            </div>
-                            <div class="input-group">
-                                <input type="text" id="chat-input" class="form-control" placeholder="Escribe un mensaje...">
-                                <button class="btn btn-primary" onclick="enviarMensajeChat()">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </div>
-                        </div>
+                <div class="face back">
+                    <div class="face-inner">
+                        <div class="emoji">🌿</div>
+                        <div class="label">CRUZ</div>
                     </div>
                 </div>
             </div>
@@ -149,8 +32,95 @@ Coinflip (multijugador)
 </div>
 {% endblock %}
 
+{% block content %}
+<div class="row mt-4">
+    <!-- Panel de Juego -->
+    <div class="col-12">
+        <div id="estado-juego" class="text-center">
+            <div class="alert alert-info">
+                Esperando apuestas...
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-gamepad me-2"></i>Juego
+            </div>
+            <div class="card-body text-center">                
+                <!-- Controles de Apuesta -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Cantidad</label>
+                        <input type="number" id="cantidad-apuesta" class="form-control" 
+                                min="{{ sala.apuesta_minima }}" value="{{ sala.apuesta_minima }}">
+                        <small class="text-muted">Tu balance: $<span id="balance-usuario">{{ "%.2f"|format(current_user.balance) }}</span></small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Elección</label>
+                        <div>
+                            <button id="btn-elegir-cara" class="btn btn-outline-danger me-2" 
+                                    onclick="elegirLado('cara')">
+                                <i class="fas fa-crown me-1"></i>Cara
+                            </button>
+                            <button id="btn-elegir-cruz" class="btn btn-outline-success" 
+                                    onclick="elegirLado('cruz')">
+                                <i class="fas fa-leaf me-1"></i>Cruz
+                            </button>
+                        </div>
+                        <small id="eleccion-actual" class="text-muted mt-1 d-block">No has elegido</small>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="d-flex gap-2 justify-content-center">
+                    <button id="btn-apostar" class="btn btn-lg btn-primary" onclick="realizarApuesta()">
+                        <i class="fas fa-coins me-1"></i>Apostar
+                    </button>
+                    {% if sala.creador_id == current_user.id %}
+                    <button id="btn-lanzar" class="btn btn-lg btn-success" onclick="lanzarMoneda()" disabled>
+                        <i class="fas fa-rocket me-1"></i>Lanzar Moneda
+                    </button>
+                    {% endif %}
+                    <button id="btn-reiniciar" class="btn btn-outline-secondary" onclick="reiniciarApuesta()" style="display: none;">
+                        <i class="fas fa-redo me-1"></i>Nueva Apuesta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Apuestas Actuales -->
+    <div class="col-12 col-md-7">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-list me-2"></i>Apuestas Actuales 
+                <span class="badge bg-primary" id="contador-apuestas">0</span>
+            </div>
+            <div class="card-body">
+                <div id="lista-apuestas">
+                    <div class="text-center text-muted">No hay apuestas aún</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Eventos -->
+    <div class="col-12 col-md-5">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-comments me-2"></i>Eventos
+            </div>
+            <div class="card-body">
+                <div id="event-messages">
+                    <div class="text-center text-muted">No hay eventos</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
 {% block scripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
 <script>
 const salaId = {{ sala.id }};
 const esCreador = {{ 'true' if sala.creador_id == current_user.id else 'false' }};
@@ -188,20 +158,9 @@ socket.on('estado_sala_actualizado', (data) => {
     jugadoresConectados = data.jugadores || [];
     apuestasActuales = data.apuestas || [];
     
-    actualizarJugadores();
     actualizarApuestas();
     actualizarContadores();
     actualizarBotones();
-});
-
-socket.on('user_joined_coinflip', (data) => {
-    console.log('👤 Usuario unido:', data);
-    agregarMensajeChat('Sistema', `${data.username} se unió al juego`, 'system');
-});
-
-socket.on('user_left_coinflip', (data) => {
-    console.log('👤 Usuario salió:', data);
-    agregarMensajeChat('Sistema', `${data.username} salió del juego`, 'system');
 });
 
 socket.on('nueva_apuesta_coinflip', (data) => {
@@ -220,7 +179,7 @@ socket.on('nueva_apuesta_coinflip', (data) => {
     actualizarBotones();
     
     if (data.usuario_id !== {{ current_user.id }}) {
-        agregarMensajeChat('Sistema', `${data.username} apostó $${data.cantidad} por ${data.eleccion}`, 'system');
+        agregarEvento(`${data.username} apostó $${data.cantidad} por ${data.eleccion}`);
     }
 });
 
@@ -241,11 +200,6 @@ socket.on('moneda_lanzada', (data) => {
 socket.on('resultados_finales_coinflip', (data) => {
     console.log('🏁 Resultados finales recibidos:', data);
     mostrarResultadosFinales(data);
-});
-
-socket.on('new_coinflip_message', (data) => {
-    console.log('💬 Mensaje de chat recibido:', data);
-    agregarMensajeChat(data.username, data.message, 'user');
 });
 
 // Manejar errores
@@ -364,16 +318,16 @@ function mostrarResultadosFinales(data) {
     data.resultados.forEach(resultado => {
         const esYo = resultado.usuario_id === {{ current_user.id }};
         const resultadoItem = document.createElement('div');
-        resultadoItem.className = `d-flex justify-content-between align-items-center p-2 border rounded mb-2 ${esYo ? 'bg-light' : ''}`;
+        resultadoItem.className = `d-flex justify-content-between align-items-center p-2 border rounded mb-2 ${esYo ? 'bg-primary bg-opacity-25' : ''}`;
         resultadoItem.innerHTML = `
-            <div>
+            <div class="text-start">
                 <strong>${resultado.username}</strong>
                 ${esYo ? ' <small class="text-info">(Tú)</small>' : ''}
                 <br>
-                <small class="text-muted">Apostó: $${resultado.cantidad_apostada} por ${resultado.gano ? resultado.resultado_moneda : (resultado.resultado_moneda === 'cara' ? 'cruz' : 'cara')}</small>
+                <small class="text-muted">Apostó: $${resultado.cantidad_apostada} por ${(resultado.gano ? data.resultado_moneda : (data.resultado_moneda === "cara" ? "cruz" : "cara"))}</small>
             </div>
-            <div class="text-${resultado.gano ? 'success' : 'danger'} fw-bold">
-                ${resultado.gano ? `+$${resultado.ganancia.toFixed(2)}` : `-$${resultado.cantidad_apostada.toFixed(2)}`}
+            <div class="text-end fw-bold">
+                <span class="balance-${resultado.gano ? 'positive' : 'negative'}">${resultado.gano ? `+$${resultado.ganancia.toFixed(2)}` : `-$${resultado.cantidad_apostada.toFixed(2)}`}</span>
                 <br>
                 <small class="text-muted">Nuevo: $${resultado.nuevo_balance.toFixed(2)}</small>
             </div>
@@ -395,8 +349,6 @@ function mostrarResultadosFinales(data) {
     // Resetear estado después de 8 segundos (más tiempo para leer resultados)
     setTimeout(() => {
         reiniciarJuego();
-        document.getElementById('estado-juego').innerHTML = '<div class="alert alert-info">Esperando apuestas...</div>';
-        document.getElementById('lista-apuestas').innerHTML = '<div class="text-center text-muted">No hay apuestas aún</div>';
         apuestasActuales = [];
         actualizarContadores();
     }, 8000);
@@ -445,30 +397,9 @@ function reiniciarJuego() {
     document.getElementById('contador-apuestas').textContent = '0';
     
     // Resetear estado del juego
-    document.getElementById('estado-juego').innerHTML = '<div class="alert alert-info">Esperando apuestas...</div>';
+    document.getElementById('estado-juego').insertAdjacentHTML('beforeend', '<div class="alert alert-info">Esperando apuestas...</div>');
     
     console.log('✅ Juego reiniciado para nueva ronda');
-}
-
-function actualizarJugadores() {
-    const container = document.getElementById('lista-jugadores');
-    
-    if (jugadoresConectados.length === 0) {
-        container.innerHTML = '<div class="text-center text-muted">No hay jugadores conectados</div>';
-        return;
-    }
-    
-    container.innerHTML = jugadoresConectados.map(jugador => `
-        <div class="d-flex justify-content-between align-items-center p-2 border-bottom ${jugador.es_creador ? 'bg-primary bg-opacity-10' : ''}">
-            <div>
-                <i class="fas fa-user${jugador.es_creador ? '-crown text-warning' : ''} me-2"></i>
-                ${jugador.username}
-                ${jugador.es_creador ? '<small class="text-warning">(Creador)</small>' : ''}
-                ${jugador.id === {{ current_user.id }} ? '<small class="text-info">(Tú)</small>' : ''}
-            </div>
-            <div class="text-success">$${jugador.balance?.toFixed(2) || '0.00'}</div>
-        </div>
-    `).join('');
 }
 
 function actualizarApuestas() {
@@ -494,7 +425,6 @@ function actualizarApuestas() {
 }
 
 function actualizarContadores() {
-    document.getElementById('contador-jugadores').textContent = jugadoresConectados.length;
     document.getElementById('contador-apuestas').textContent = apuestasActuales.length;
 }
 
@@ -505,21 +435,8 @@ function actualizarBotones() {
     }
 }
 
-function enviarMensajeChat() {
-    const input = document.getElementById('chat-input');
-    const message = input.value.trim();
-    
-    if (message) {
-        socket.emit('coinflip_chat_message', {
-            sala_id: salaId,
-            message: message
-        });
-        input.value = '';
-    }
-}
-
-function agregarMensajeChat(usuario, mensaje, tipo) {
-    const chat = document.getElementById('chat-messages');
+function agregarEvento(mensaje) {
+    const chat = document.getElementById('event-messages');
     
     // Remover mensaje de "está vacío" si existe
     if (chat.querySelector('.text-muted')) {
@@ -527,24 +444,17 @@ function agregarMensajeChat(usuario, mensaje, tipo) {
     }
     
     const mensajeDiv = document.createElement('div');
-    mensajeDiv.className = `mb-2 ${tipo === 'system' ? 'text-info fst-italic' : ''}`;
-    mensajeDiv.innerHTML = `<strong>${usuario}:</strong> ${mensaje}`;
+    mensajeDiv.innerHTML = mensaje;
     chat.appendChild(mensajeDiv);
     chat.scrollTop = chat.scrollHeight;
 }
-
-// Permitir enviar mensaje con Enter
-document.getElementById('chat-input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        enviarMensajeChat();
-    }
-});
 </script>
 
 <style>
 .coin-wrapper {
-    width: 120px;
-    height: 120px;
+    width: 80%;
+    max-width: 12em;
+    aspect-ratio: 1 / 1;
     perspective: 1000px;
     margin: 0 auto;
 }
@@ -570,14 +480,18 @@ document.getElementById('chat-input').addEventListener('keypress', function(e) {
 }
 
 .face.front {
-    background: radial-gradient(circle at 30% 30%, #ffd54f, #d4af37);
+    background: radial-gradient(circle at 30% 30%, #fff59d 0%, #ffd54f 40%, #d4af37 100%);
     color: #2b2b2b;
+    border: rgba(132, 104, 12, 0.7) 3px outset;
+    box-shadow: 0 0 10px rgba(255, 196, 0, 0.6), 0 6px 30px rgba(255, 196, 0, 0.5);
 }
 
 .face.back {
-    background: radial-gradient(circle at 30% 30%, #f3f4f6, #c0c0c0);
+    background: radial-gradient(circle at 30% 30%, #f3f4f6 0%, #c0c0c0 45%, #9d9d9d 100%);
     color: #1f1f1f;
+    border: rgba(105, 105, 105, 0.75) 3px outset;
     transform: rotateY(180deg);
+    box-shadow: 0 0 10px rgba(159, 192, 227, 0.7), 0 6px 30px rgba(159, 192, 227, 0.6);
 }
 
 .face-inner {
@@ -585,19 +499,14 @@ document.getElementById('chat-input').addEventListener('keypress', function(e) {
 }
 
 .emoji {
-    font-size: 2rem;
+    font-size: 4rem;
     margin-bottom: 4px;
 }
 
 .label {
     font-family: 'Orbitron', sans-serif;
     font-weight: 700;
-    font-size: 0.8rem;
-}
-
-#chat-messages {
-    max-height: 200px;
-    overflow-y: auto;
+    font-size: 1.2rem;
 }
 </style>
 {% endblock %}
