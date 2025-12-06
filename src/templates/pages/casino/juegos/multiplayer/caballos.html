@@ -1,49 +1,76 @@
 {% extends "pages/casino/juegos/base.html" %}
-{% block title %}Carrera de Caballos Multijugador{% endblock %}
-{% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-10">
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h4>🏇 Carrera de Caballos (Multijugador) — Sala {{ sala.id }}</h4>
-        <button class="btn btn-info btn-sm" onclick="mostrarAyuda()">❓ HELP</button>
-      </div>
-      <div class="card-body">
-        <div class="text-center mb-4">
-          <h5>Balance inicial: $<span id="balance-inicial">{{ "%.2f"|format(current_user.balance) }}</span></h5>
-        </div>
-        <div class="mb-3">
-          <strong>Jugadores en la sala:</strong>
-          <span id="jugadores-lista" class="badge bg-primary"></span>
-        </div>
-        <!-- Información de caballos (igual que singleplayer) -->
-        <div class="row mb-4">
-          <div class="col-12">
-            <h5>Información de los Caballos</h5>
-            <div class="row">
-              <div class="col-md-3 mb-3">
-                <div class="card h-100"><div class="card-body text-center"><h5>🐎 Relámpago</h5><div class="progress mb-2"><div class="progress-bar bg-success" role="progressbar" style="width: 85%"></div></div><small>Velocidad: 85%</small><div class="progress mb-2"><div class="progress-bar bg-info" role="progressbar" style="width: 70%"></div></div><small>Resistencia: 70%</small><div class="mt-2"><span class="badge bg-secondary">Multiplicador: 1.5x</span></div></div></div>
-              </div>
-              <div class="col-md-3 mb-3">
-                <div class="card h-100"><div class="card-body text-center"><h5>🐴 Trueno</h5><div class="progress mb-2"><div class="progress-bar bg-success" role="progressbar" style="width: 75%"></div></div><small>Velocidad: 75%</small><div class="progress mb-2"><div class="progress-bar bg-info" role="progressbar" style="width: 80%"></div></div><small>Resistencia: 80%</small><div class="mt-2"><span class="badge bg-secondary">Multiplicador: 2x</span></div></div></div>
-              </div>
-              <div class="col-md-3 mb-3">
-                <div class="card h-100"><div class="card-body text-center"><h5>🏇 Centella</h5><div class="progress mb-2"><div class="progress-bar bg-success" role="progressbar" style="width: 65%"></div></div><small>Velocidad: 65%</small><div class="progress mb-2"><div class="progress-bar bg-info" role="progressbar" style="width: 85%"></div></div><small>Resistencia: 85%</small><div class="mt-2"><span class="badge bg-secondary">Multiplicador: 3x</span></div></div></div>
-              </div>
-              <div class="col-md-3 mb-3">
-                <div class="card h-100"><div class="card-body text-center"><h5>🎠 Azabache</h5><div class="progress mb-2"><div class="progress-bar bg-success" role="progressbar" style="width: 45%"></div></div><small>Velocidad: 45%</small><div class="progress mb-2"><div class="progress-bar bg-info" role="progressbar" style="width: 95%"></div></div><small>Resistencia: 95%</small><div class="mt-2"><span class="badge bg-secondary">Multiplicador: 6x</span></div></div></div>
-              </div>
+
+{% block title %}
+Carrera de caballos (multijugador)
+{% endblock %}
+
+{% block game_title %}
+Carrera de caballos
+{% endblock %}
+
+{% set has_navbar_stats = true %}
+{% block game_navbar_stats %}
+<!-- Panel de Control -->
+<div class="row">
+    <div class="col">
+        <div class="small text-center text-uppercase text-nowrap">
+            <i class="fas fa-coins me-2"></i>Balance inicial
+            <div class="h4 mb-0 balance-positive">
+                $<span id="balance-inicial">{{ "%.2f"|format(current_user.balance) }}</span>
             </div>
-          </div>
         </div>
+    </div>
+    <div class="col">
+        <div class="small text-center text-uppercase text-nowrap">
+            <i class="fas fa-info me-2"></i>Información
+            <br>
+            <button class="btn btn-outline-primary btn-sm" onclick="mostrarAyuda()">
+                <i class="fas fa-question me-2"></i>Ayuda
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content_fluid %}
+<!-- Pista de carrera mejorada -->
+<div class="row">
+  <div class="pista-carrera mb-4">
+    <div class="meta"></div>
+    {% for i in range(1, 5) %}
+    <div class="carril" id="carril{{ i }}">
+      <div class="caballo" id="caballo{{ i }}">
+        {{ ["🐎", "🐴", "🏇", "🎠"][i-1] }}
+      </div>
+      <div class="numero">{{ i }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
         <!-- Selección de apuesta -->
         <div class="row mb-4">
           <div class="col-md-4">
-            <label for="cantidad" class="form-label">Cantidad a apostar:</label>
-            <input type="number" class="form-control" id="cantidad" min="1" max="{{ current_user.balance }}" step="1" value="10">
+            <label for="cantidad" class="form-label">
+              <i class="fas fa-money-bill-wave me-2"></i>Cantidad a apostar:
+            </label>
+            <div class="input-group">
+              <span class="input-group-text bg-dark text-light">
+                <i class="fas fa-dollar-sign"></i>
+              </span>
+              <input type="number" class="form-control" id="cantidad" min="1" max="{{ current_user.balance }}" step="1" value="10">
+            </div>
           </div>
           <div class="col-md-8">
-            <label class="form-label">Selecciona un caballo:</label>
+            <label class="form-label">
+              <i class="fas fa-horse me-2"></i>Selecciona un caballo:
+            </label>
             <div class="d-flex gap-2 flex-wrap">
               <button class="btn btn-outline-primary caballo-btn" onclick="seleccionarCaballo(1)">🐎 Relámpago (1.5x)</button>
               <button class="btn btn-outline-success caballo-btn" onclick="seleccionarCaballo(2)">🐴 Trueno (2x)</button>
@@ -52,32 +79,73 @@
             </div>
           </div>
         </div>
-        <!-- Pista de carrera -->
-        <div class="pista-carrera mb-4">
-          <div class="meta"></div>
-          <div class="carril" id="carril1"><div class="caballo" id="caballo1">🐎</div><div class="numero">1</div></div>
-          <div class="carril" id="carril2"><div class="caballo" id="caballo2">🐴</div><div class="numero">2</div></div>
-          <div class="carril" id="carril3"><div class="caballo" id="caballo3">🏇</div><div class="numero">3</div></div>
-          <div class="carril" id="carril4"><div class="caballo" id="caballo4">🎠</div><div class="numero">4</div></div>
-        </div>
         <!-- Controles -->
         <div class="text-center">
           <button class="btn btn-primary btn-lg me-2" id="btn-apostar" onclick="apostarCaballo()">Apostar</button>
           <button class="btn btn-success btn-lg me-2" id="btn-iniciar" style="display:none;">Iniciar Carrera</button>
-          <button class="btn btn-secondary btn-lg" onclick="reiniciarCarrera()">🔄 Reiniciar</button>
+          <button class="btn btn-outline-primary btn-lg" onclick="reiniciarCarrera()">🔄 Reiniciar</button>
         </div>
-        <div id="info-apuesta" class="text-center mt-3 fw-bold"></div>
+        <div id="info-apuesta" class="text-center mt-3"></div>
         <div id="resultado" class="mt-4"></div>
       </div>
     </div>
   </div>
+
+  <div class="col-12 mt-4">
+    <div class="card">
+      <div class="card-header">
+        🏇 INFORMACIÓN DE LOS CABALLOS
+      </div>
+      <div class="card-body">
+        <!-- Información de caballos -->
+        <div class="row">
+          {% for caballo in [
+          {"id": 1, "nombre": "Relámpago", "velocidad": 85, "resistencia": 70, "multiplicador": 1.5, "emoji": "🐎",
+          "color": "primary"},
+          {"id": 2, "nombre": "Trueno", "velocidad": 75, "resistencia": 80, "multiplicador": 2.0, "emoji": "🐴",
+          "color": "success"},
+          {"id": 3, "nombre": "Centella", "velocidad": 65, "resistencia": 85, "multiplicador": 3.0, "emoji": "🏇",
+          "color": "danger"},
+          {"id": 4, "nombre": "Azabache", "velocidad": 45, "resistencia": 95, "multiplicador": 6.0, "emoji": "🎠",
+          "color": "warning"}
+          ] %}
+          <div class="col-md-3 mb-3">
+            <div class="card h-100 translucent-card">
+              <div class="card-body text-center">
+                <h5 class="text-{{ caballo.color }}">{{ caballo.emoji }} {{ caballo.nombre }}</h5>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div class="progress-bar bg-{{ caballo.color }}" role="progressbar"
+                    style="width: {{ caballo.velocidad }}%"></div>
+                </div>
+                <small>Velocidad: {{ caballo.velocidad }}%</small>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div class="progress-bar bg-info" role="progressbar" style="width: {{ caballo.resistencia }}%">
+                  </div>
+                </div>
+                <small>Resistencia: {{ caballo.resistencia }}%</small>
+                <div class="mt-2">
+                  <span class="badge" style="background: var(--gradient-matrix); color: black;">
+                    Multiplicador: {{ caballo.multiplicador }}x
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
 <!-- Modal de Ayuda (igual que singleplayer) -->
 <div class="modal fade" id="modalAyuda" tabindex="-1" aria-labelledby="modalAyudaLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modalAyudaLabel">🏇 Ayuda - Carrera de Caballos</h5>
+        <h5 class="modal-title" id="modalAyudaLabel">
+          <i class="fas fa-horse me-2"></i>Ayuda - Carrera de Caballos (multijugador)
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -93,7 +161,9 @@
         <p>La carrera será visible para todos los jugadores a la vez. ¡Que gane el mejor caballo!</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+          <i class="fas fa-check me-2"></i>Entendido
+        </button>
       </div>
     </div>
   </div>
@@ -106,8 +176,9 @@
 .pista-carrera {
   position: relative;
   background: linear-gradient(135deg, #1a5f2a 0%, #2d8f3f 50%, #1a5f2a 100%);
-  border: 3px solid var(--neon-cyan);
-  border-radius: 12px;
+  border-style: solid;
+  border-color: var(--neon-cyan);
+  border-width: 1px 0 1px 0;
   padding: 15px;
   min-height: 280px;
   overflow: hidden;
@@ -218,7 +289,12 @@ function seleccionarCaballo(numero) {
   });
   const btnSeleccionado = document.querySelector(`.caballo-btn:nth-child(${numero})`);
   btnSeleccionado.className = btnSeleccionado.className.replace('btn-outline-', 'btn-');
-  document.getElementById('info-apuesta').innerHTML = `Apuestas por: ${['Relámpago','Trueno','Centella','Azabache'][numero-1]}`;
+  document.getElementById('info-apuesta').innerHTML = `
+    <div class="alert alert-info text-center">
+      <i class="fas fa-horse me-2"></i>
+      Apuestas por: <strong>${['Relámpago','Trueno','Centella','Azabache'][numero-1]}</strong>
+    </div>
+  `;
 }
 
 function apostarCaballo() {
@@ -234,7 +310,6 @@ function apostarCaballo() {
 socket.on('estado_sala_actualizado', data => {
   apuestas = data.apuestas;
   jugadores = data.jugadores;
-  document.getElementById('jugadores-lista').textContent = jugadores.map(j => j.username).join(', ');
   // Mostrar apuestas recibidas
   let info = '';
   for (const uid in apuestas) {
