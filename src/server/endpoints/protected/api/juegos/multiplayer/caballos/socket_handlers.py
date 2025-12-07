@@ -29,8 +29,6 @@ def elegir_ganador():
 
 
 def register_caballos_handlers(socketio, app):
-    print("✅ Registrando handlers de Caballos multijugador")
-
     @socketio.on('join_caballos_room')
     def handle_join(data):
         if not current_user.is_authenticated:

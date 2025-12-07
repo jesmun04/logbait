@@ -10,8 +10,6 @@ import time
 salas_coinflip = {}
 
 def register_coinflip_handlers(socketio, app):
-    print("✅ Registrando handlers de CoinFlip multijugador")
-    
     @socketio.on('connect')
     def handle_connect_coinflip():
         if current_user.is_authenticated:
