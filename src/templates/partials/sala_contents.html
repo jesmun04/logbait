@@ -16,27 +16,39 @@
 {% endmacro %}
 
 {% macro content_lista_usuarios() %}
-<div id="jugadores-container">
+<div id="jugadores-container" class="row g-2">
     <!-- Se actualizará dinámicamente -->
 </div>
 {% endmacro %}
 
 <!-- NUEVO MACRO PARA MODALES DE BLOQUEO -->
 {% macro content_modales() %}
-<div class="modal fade" id="modalBloquearUsuario" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal fade" id="modalBloquearUsuario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark text-light">
-            <div class="modal-header border-neon">
-                <h5 class="modal-title">Bloquear Usuario</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
             <div class="modal-body">
-                <p>¿Estás seguro que deseas bloquear a <span id="nombreUsuarioBloquear"></span>?</p>
-                <p class="text-warning"><small>No verás sus mensajes en el chat.</small></p>
+                <div class="text-center mb-4">
+                    <div class="fs-1">🛑</div>
+                    <h4 class="modal-title mt-2 mb-2">Bloquear usuario</h4>
+                    <p>
+                        ¿Estás seguro que deseas bloquear a <span id="nombreUsuarioBloquear" class="font-monospace"></span>?
+                        <br>
+                        No verás sus mensajes en el chat.
+                    </p>
+                </div>
+                <div class="alert alert-info mt-3 mb-0">
+                    <small>
+                        <i class="fa-solid fa-circle-info me-1"></i>Puedes deshacer esta acción en cualquier momento a lo largo de esta partida o en cualquier otra sala multijugador no creada por este usuario.
+                    </small>
+                </div>
             </div>
             <div class="modal-footer border-neon">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmarBloquear">Bloquear</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                    <i class="fa-solid fa-ban me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmarBloquear">
+                    <i class="fa-solid fa-circle-stop me-1"></i>Bloquear
+                </button>
             </div>
         </div>
     </div>
@@ -75,6 +87,20 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {                
                 const container = document.getElementById('jugadores-container');
+
+                // Eliminar tooltips de Bootstrap de los elementos del contenedor
+                // (como se va a actualizar el contenedor, es posible que los 
+                // tooltips que había abiertos antes de la actualización no
+                // desaparezcan, si no hacemos esto).
+                const elements = container.querySelectorAll('[data-bs-toggle="tooltip"]');
+                elements.forEach(el => {
+                    const tooltip = bootstrap.Tooltip.getInstance(el);
+                    if (tooltip) {
+                        tooltip.hide();
+                        tooltip.dispose();
+                    }
+                });
+
                 container.innerHTML = data.jugadores.map(jugador => {
                     const esUsuarioActual = jugador.id === {{ current_user.id }};
                     const estaBloqueado = usuariosBloqueados.has(jugador.id);
@@ -83,8 +109,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     const usernameEscaped = jugador.username.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     
                     return `
-                    <div class="col-md-6 mb-3">
-                        <div class="card translucent-card ${jugador.es_creador ? 'border-primary' : ''} ${estaBloqueado ? 'border-danger opacity-75' : ''}">
+                    <div class="col-md-6">
+                        <div class="card translucent-card ${jugador.es_creador ? 'border-primary' : ''}">
                             <div class="card-body py-2 px-3">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <!-- LADO IZQUIERDO: Icono + Nombre -->
@@ -99,23 +125,22 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <!-- Etiqueta Creador (AHORA A LA DERECHA) -->
                                         ${jugador.es_creador ? '<span class="badge bg-primary">Creador</span>' : ''}
                                         
-                                        <!-- Etiqueta Bloqueado -->
-                                        ${estaBloqueado ? '<span class="badge bg-danger">Bloqueado</span>' : ''}
-                                        
                                         <!-- Botones de acción -->
                                         ${!esUsuarioActual && !jugador.es_creador && esCreador ? 
                                             `<div class="btn-group btn-group-sm">
                                                 ${!estaBloqueado ? 
-                                                    `<button class="btn btn-outline-warning px-3 py-1" 
+                                                    `<button class="btn btn-sm btn-outline-warning" 
                                                             onclick="mostrarModalBloquear(${jugador.id}, '${usernameEscaped}')"
-                                                            title="Bloquear usuario"
-                                                            data-bs-toggle="tooltip">
-                                                        <i class="fas fa-ban"></i>
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="left"
+                                                            data-bs-title="Bloquear usuario">
+                                                        <i class="fas fa-circle-stop"></i>
                                                     </button>` :
-                                                    `<button class="btn btn-outline-success px-3 py-1" 
+                                                    `<button class="btn btn-sm btn-outline-success" 
                                                             onclick="desbloquearUsuario(${jugador.id})"
-                                                            title="Desbloquear usuario"
-                                                            data-bs-toggle="tooltip">
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="left"
+                                                            data-bs-title="Desbloquear usuario">
                                                         <i class="fas fa-check"></i>
                                                     </button>`
                                                 }
@@ -128,9 +153,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     `;
                 }).join('');
-                
-                // Inicializar tooltips de Bootstrap
-                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+
+                // Volver a inicializar tooltips de Bootstrap de elementos del contenedor.
+                var tooltipTriggerList = [].slice.call(
+                    container.querySelectorAll('[data-bs-toggle="tooltip"]')
+                );
                 var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                     return new bootstrap.Tooltip(tooltipTriggerEl);
                 });
@@ -141,29 +168,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función global para mostrar modal de bloqueo (CON DEPURACIÓN)
     window.mostrarModalBloquear = function(usuarioId, username) {
         console.log('🔄 Mostrando modal para usuario:', usuarioId, username);
-        
-        // DESTRUIR TODOS LOS TOOLTIPS ANTES DE MOSTRAR EL MODAL
-        const tooltips = document.querySelectorAll('.tooltip');
-        tooltips.forEach(tooltip => {
-            try {
-                const bsTooltip = bootstrap.Tooltip.getInstance(tooltip);
-                if (bsTooltip) {
-                    bsTooltip.dispose();
-                }
-                tooltip.remove();
-            } catch (e) {
-                console.log('Error limpiando tooltip:', e);
-            }
-        });
-        
-        // También destruir tooltips de Bootstrap
-        const tooltipInstances = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        tooltipInstances.forEach(el => {
-            const instance = bootstrap.Tooltip.getInstance(el);
-            if (instance) {
-                instance.dispose();
-            }
-        });
         
         // Verificar que el modal existe
         const modalElement = document.getElementById('modalBloquearUsuario');
@@ -188,11 +192,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Mostrar modal
         const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
         
-        // Limpiar tooltips cuando se cierre el modal
-        modalElement.addEventListener('hidden.bs.modal', function() {
-            limpiarTooltips();
-        });
-        
         modal.show();
         console.log('✅ Modal mostrado');
         
@@ -207,44 +206,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('✅ Confirmando bloqueo para usuario:', usuarioId);
                 bloquearUsuario(usuarioId);
                 modal.hide();
-                // Limpiar tooltips después de la acción
-                setTimeout(limpiarTooltips, 100);
             };
             console.log('✅ Botón de confirmar configurado');
         }
     };
-    // Función para limpiar tooltips
-    function limpiarTooltips() {
-        // Destruir instancias de Bootstrap
-        const tooltipElements = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        tooltipElements.forEach(el => {
-            const instance = bootstrap.Tooltip.getInstance(el);
-            if (instance) {
-                instance.dispose();
-            }
-        });
-        
-        // Eliminar elementos .tooltip del DOM
-        const tooltips = document.querySelectorAll('.tooltip');
-        tooltips.forEach(tooltip => {
-            if (tooltip.parentNode) {
-                tooltip.parentNode.removeChild(tooltip);
-            }
-        });
-        
-        // También limpiar elementos .tooltip-inner
-        const tooltipInners = document.querySelectorAll('.tooltip-inner');
-        tooltipInners.forEach(tooltip => {
-            if (tooltip.parentNode) {
-                tooltip.parentNode.removeChild(tooltip);
-            }
-        });
-        
-        console.log('🧹 Tooltips limpiados');
-    }
-
-    // Añadir esta función a window para poder llamarla desde cualquier lugar
-    window.limpiarTooltips = limpiarTooltips;
 
     window.desbloquearUsuario = async function(usuarioId) {
         console.log('🔓 EJECUTANDO DESBLOQUEO para usuario:', usuarioId);
@@ -271,8 +236,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 usuariosBloqueados.delete(usuarioId);
                 actualizarListaJugadores();
                 mostrarNotificacion('Usuario desbloqueado exitosamente', 'success');
-                
-                setTimeout(limpiarTooltips, 100);
             } else {
                 const error = await response.json();
                 console.error('❌ Error del servidor:', error);
@@ -530,41 +493,6 @@ function limpiarNotificaciones() {
 .btn-outline-success:hover {
     background-color: #198754;
     color: #fff;
-}
-
-/* Mejorar visualización de tarjetas */
-.translucent-card {
-    background: rgba(255, 255, 255, 0.05) !important;
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-}
-
-.translucent-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-/* Asegurar que los botones sean visibles */
-.btn-sm {
-    padding: 0.25rem 0.5rem !important;
-    font-size: 0.875rem !important;
-}
-
-/* Tooltip personalizado */
-.tooltip {
-    z-index: 9999 !important;
-}
-
-/* Espaciado entre elementos */
-.gap-2 {
-    gap: 0.5rem;
-}
-
-/* Mejorar visualización de badges */
-.badge {
-    font-size: 0.75em;
-    padding: 0.35em 0.65em;
-    font-weight: 600;
 }
 </style>
 {% endmacro %}
