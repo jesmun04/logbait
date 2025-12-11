@@ -1,6 +1,7 @@
 {% extends "pages/casino/base.html" %}
 
 {% import "partials/estadisticas.html" as parcial_estadisticas with context %}
+{% import "partials/agregar_fondos.html" as parcial_agregar_fondos with context %}
 
 {% block title %}
 Estadísticas
@@ -35,7 +36,7 @@ Estadísticas
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                {% include "partials/agregar_fondos.html" %}
+                {{ parcial_agregar_fondos.content() }}
             </div>
         </div>
     </div>
@@ -46,5 +47,6 @@ Estadísticas
 {% endblock %}
 
 {% block scripts %}
+{{ parcial_agregar_fondos.scripts() }}
 {{ parcial_estadisticas.scripts() }}
 {% endblock %}

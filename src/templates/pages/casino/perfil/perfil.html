@@ -1,5 +1,8 @@
 {% extends "pages/casino/base.html" %}
+
+{% import "partials/agregar_fondos.html" as parcial_agregar_fondos with context %}
 {% import "partials/doom.html" as parcial_doom without context %}
+
 {% block title %}
 Perfil
 {% endblock %}
@@ -82,7 +85,7 @@ Perfil
                 Gestión de Fondos
             </div>
             <div class="card-body p-sm-5 p-4">
-                {% include "partials/agregar_fondos.html" %}
+                {{ parcial_agregar_fondos.content() }}
             </div>
         </div>
     </div>
@@ -194,6 +197,8 @@ Perfil
 {% endblock %}
 
 {% block scripts %}
+{{ parcial_agregar_fondos.scripts() }}
+
 {% if mostrar_doom %}
 {{ parcial_doom.scripts() }}
 {% endif %}
