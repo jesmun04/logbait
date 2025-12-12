@@ -159,6 +159,7 @@ Apuestas
                                 <th class="cyber-th">Usuario</th>
                                 <th class="cyber-th">Fecha</th>
                                 <th class="cyber-th">Juego</th>
+                                <th class="cyber-th">Modo</th>
                                 <th class="cyber-th">Resultado</th>
                                 <th class="cyber-th">Apuesta</th>
                                 <th class="cyber-th">Ganancia</th>
@@ -199,6 +200,17 @@ Apuestas
                                         {% else %}🎮{% endif %}
                                         {{ apuesta.juego|title }}
                                     </span>
+                                </td>
+                                <td>
+                                    {% if apuesta.tipo_juego == 'singleplayer' %}
+                                    <span class="badge text-bg-light">
+                                        <i class="fas fa-user me-1"></i>Un jugador
+                                    </span>
+                                    {% else %}
+                                    <span class="badge text-bg-light">
+                                        <i class="fas fa-users me-1"></i>Multijugador
+                                    </span>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     <span class="badge rounded-pill

@@ -16,9 +16,13 @@
 
 {% macro tipo_badge(tipo) -%}
   {%- if tipo == 'multiplayer' or tipo == 'multijugador' or tipo == 'multi' -%}
-    <span class="badge bg-info">👥 Multi</span>
+    <span class="badge text-bg-light">
+        <i class="fas fa-users me-1"></i>Multijugador
+    </span>
   {%- else -%}
-    <span class="badge bg-secondary">🎮 Single</span>
+    <span class="badge text-bg-light">
+        <i class="fas fa-user me-1"></i>Un jugador
+    </span>
   {%- endif -%}
 {%- endmacro %}
 
@@ -282,7 +286,7 @@
                         <thead>
                             <tr>
                                 <th>Juego</th>
-                                <th>Tipo</th>
+                                <th>Modo</th>
                                 <th>Apostado</th>
                                 <th>Resultado</th>
                                 <th>Neto</th>
@@ -301,12 +305,20 @@
                                 </td>
                                 <td>
                                     {% if tipo == 'multiplayer' or tipo == 'multijugador' %}
-                                        <span class="badge bg-info">👥 Multi</span>
+                                    <span class="badge text-bg-light">
+                                        <i class="fas fa-users me-1"></i>Multijugador
+                                    </span>
                                     {% else %}
-                                        <span class="badge bg-secondary">🎮 Single</span>
+                                    <span class="badge text-bg-light">
+                                        <i class="fas fa-user me-1"></i>Un jugador
+                                    </span>
                                     {% endif %}
                                 </td>
-                                <td class="fw-bold">${{ "%.2f"|format(ap.cantidad) }}</td>
+                                <td>
+                                    <span class="balance-neutral">
+                                        ${{ "%.2f"|format(ap.cantidad) }}
+                                    </span>
+                                </td>
                                 <td>
                                     {# Forzamos etiqueta a partir del neto real #}
                                     {% set etiqueta = 'Empate' %}
@@ -320,8 +332,10 @@
                                     {% endif %}
                                     <span class="badge {{ clase }}">{{ etiqueta }}</span>
                                 </td>
-                                <td class="{% if neto_row > 0 %}text-success{% elif neto_row == 0 %}text-muted{% else %}text-danger{% endif %} fw-bold">
-                                    ${{ "%.2f"|format(neto_row) }}
+                                <td>
+                                    <span class="{% if neto_row > 0 %}balance-positive{% elif neto_row == 0 %}balance-neutral{% else %}balance-negative{% endif %}">
+                                        ${{ "%.2f"|format(neto_row) }}
+                                    </span>
                                 </td>
                                 <td>
                                     <small class="text-muted">{{ ap.fecha.strftime('%d/%m/%Y %H:%M') }}</small>

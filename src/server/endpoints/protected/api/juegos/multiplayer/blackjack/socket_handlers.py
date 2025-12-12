@@ -285,7 +285,7 @@ def ejecutar_crupier_y_resolver(sala_id):
 
             apuesta_db = Apuesta(
                 user_id=uid,
-                juego="blackjack_multijugador",
+                juego="blackjack",
                 tipo_juego='multiplayer',
                 cantidad=apuesta_monto,
                 resultado=resultado,

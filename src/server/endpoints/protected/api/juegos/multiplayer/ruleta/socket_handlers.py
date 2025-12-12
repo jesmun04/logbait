@@ -68,7 +68,7 @@ def register_ruleta_handlers(socketio, app):
                 apuesta_db.resultado = f'Número {result_number} - Ganancia: {total_win_euros:.2f}€'
             stats = Estadistica.query.filter_by(user_id=a['usuario_id'], juego='ruleta').first()
             if not stats:
-                stats = Estadistica(user_id=a['usuario_id'], juego='ruleta', partidas_jugadas=0, partidas_ganadas=0, ganancia_total=0.0, apuesta_total=0.0)
+                stats = Estadistica(user_id=a['usuario_id'], juego='ruleta', tipo_juego='multiplayer', partidas_jugadas=0, partidas_ganadas=0, ganancia_total=0.0, apuesta_total=0.0)
                 db.session.add(stats)
             stats.partidas_jugadas += 1
             stats.apuesta_total += total_bet_euros
@@ -286,7 +286,7 @@ def register_ruleta_handlers(socketio, app):
         # descontar balance y guardar apuesta en DB y en memoria (secreta)
         current_user.balance -= total_euros
         # crear registro de apuesta en la base de datos para que la vista de estadísticas lo recoja
-        apuesta_db = Apuesta(user_id=current_user.id, juego='ruleta', cantidad=total_euros, resultado='PENDIENTE', ganancia=0.0)
+        apuesta_db = Apuesta(user_id=current_user.id, juego='ruleta', tipo_juego='multiplayer', cantidad=total_euros, resultado='PENDIENTE', ganancia=0.0)
         db.session.add(apuesta_db)
         db.session.commit()
 

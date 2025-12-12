@@ -83,7 +83,7 @@ def apostar(sala_id):
     # Crear registro de la apuesta (resultado pendiente)
     apuesta = Apuesta(
         user_id=current_user.id,
-        juego='coinflip_multijugador',
+        juego='coinflip',
         tipo_juego='multiplayer',
         cantidad=cantidad,
         resultado='pendiente',
@@ -145,7 +145,7 @@ def procesar_resultados(sala_id):
     # Obtener todas las apuestas pendientes de esta sala
     # (En una implementación real, necesitarías relacionar apuestas con sala)
     apuestas_pendientes = Apuesta.query.filter_by(
-        juego='coinflip_multijugador', 
+        juego='coinflip', 
         tipo_juego='multiplayer',
         resultado='pendiente'
     ).all()
