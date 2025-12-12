@@ -130,17 +130,22 @@ LogBait Casa de Apuestas Online
                                     <span>
                                         <i class="fas fa-comments me-2"></i>Chat de Sala
                                     </span>
-                                    <button class="btn btn-sm btn-warning" type="button" data-bs-toggle="collapse" data-bs-target="#notificationSettings" aria-expanded="false" aria-controls="notificationSettings">
-                                        <i class="fas fa-gear"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-body pt-0">
-                                <div class="collapse" id="notificationSettings">
-                                    <div class="card card-body p-3 mt-3">
-                                        {{ parcial_sala.content_chat_notifications_config() }}
+                                    <div>
+                                        <input type="checkbox" class="btn-check" id="chatConfigToggle" autocomplete="off" data-bs-toggle="collapse" data-bs-target="#notificationSettings" aria-expanded="false" aria-controls="notificationSettings">
+                                        <label class="btn btn-sm btn-warning" for="chatConfigToggle" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-title="Configurar chat">
+                                            <i class="fas fa-gear"></i>
+                                        </label>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="collapse" id="notificationSettings">
+                                <ul class="list-group" style="border-radius: 0;">
+                                    <li class="list-group-item">
+                                        {{ parcial_sala.content_chat_notifications_config() }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body pt-0">
                                 {{ parcial_sala.content_chat() }}
                             </div>
                         </div>
