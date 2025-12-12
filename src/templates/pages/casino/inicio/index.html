@@ -147,7 +147,7 @@ Inicio
 
     <!-- Carreras de Caballos -->
     <div class="col-12 col-xxl-3 col-lg-6 col-md-6">
-        <div class="card hover-card clickable h-100 animated-rotate" data-game="horseracing">
+        <div class="card hover-card clickable h-100 animated-rotate" data-game="caballos">
             <img src="{{ url_for('static', filename='img/caballos.jpeg') }}" alt="Carreras de Caballos" class="game-image">
             <div class="card-body text-center game-content">
                 <h3 class="card-title game-title">Carrera de caballos</h3>
@@ -225,23 +225,34 @@ Inicio
 
 <!-- Modal de descripción de juegos (Bootstrap) -->
 <div class="modal fade" id="gameModal" tabindex="-1" aria-labelledby="modalGameTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalGameTitle">Juego</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        <p id="modalGameDescription">Descripción del juego.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cerrar</button>
-        {% if current_user.is_authenticated %}
-        <a type="button" class="btn btn-primary" href="{{ url_for('dashboard.home') }}">Ir al Dashboard</a>
-        {% endif %}
-      </div>
+    <div id="game-modal-image"></div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="text-end">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
+                </div>
+                <div class="text-center">
+                    <span class="modal-icon fs-1" id="modalGameIcon">🎮</span>
+                    <h4 class="modal-title" id="modalGameTitle">Juego</h4>
+                    <div class="d-flex flex-wrap justify-content-center gap-2 mt-2 mb-3" id="modalGameBadges"></div>
+                    <p id="modalGameDescription" class="mb-0">Descripción del juego.</p>
+                    <div class="alert alert-info mt-3 mb-0">
+                        {% if current_user.is_authenticated %}
+                        <p class="small">Ya has iniciado sesión en LogBait: accede al Dashboard para jugar a este juego.
+                        </p>
+                        <a type="button" class="btn btn-primary" href="{{ url_for('dashboard.home') }}">
+                            <i class="fas fa-home me-2"></i>Ir al Dashboard
+                        </a>
+                        {% else %}
+                        <p class="small mb-0">Regístrate o inicia sesión para jugar a este juego y muchos más.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <style>
@@ -314,6 +325,18 @@ Inicio
     object-fit: cover;
     display: block;
 }
+
+#game-modal-image {
+    position: fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 100vh;
+    width: 100vw;
+    top: 0;
+    filter: brightness(30%);
+    pointer-events: none;
+}
 </style>
 {% endblock %}
 
@@ -321,18 +344,56 @@ Inicio
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const gameModal = new bootstrap.Modal(document.getElementById('gameModal'));
+    const modalImage = document.getElementById('game-modal-image');
+    const modalIcon = document.getElementById('modalGameIcon');
     const modalTitle = document.getElementById('modalGameTitle');
+    const modalBadges = document.getElementById('modalGameBadges');
     const modalDescription = document.getElementById('modalGameDescription');
 
     const gameCards = document.querySelectorAll('.clickable, .clickable'); // corrige posibles typos
-    const gameDescriptions = {
-        'blackjack': 'Blackjack: el clásico juego de cartas donde el objetivo es alcanzar 21 sin pasarse. Demuestra tu estrategia y reta al crupier en cada mano. ♠️♦️',
-        'ruleta': 'Ruleta: el icónico juego de casino donde la emoción gira sin parar. Apuesta a tu número, color o combinación favorita y mira cómo la bola recorre el tambor hasta decidir tu suerte. 🎯💫 Perfecta mezcla de azar y estrategia, ideal para quienes disfrutan la adrenalina de cada giro y la posibilidad de grandes premios en cada ronda. 🔴⚫💰',
-        'coinflip': 'Coinflip: un juego rápido y emocionante donde apuestas por cara o cruz. Simple pero lleno de adrenalina: elige tu lado, mira girar la moneda y descubre si la suerte está de tu parte. Perfecto para quienes buscan acción instantánea y resultados al momento.',
-        'poker': 'Póker: el legendario juego de estrategia, habilidad y nervios de acero. Forma la mejor mano posible, apuesta con inteligencia y lee a tus oponentes para llevarte el bote. Ideal para quienes disfrutan de la táctica y el desafío mental en cada ronda. ♣️♥️',
-        'horseracing': 'Carrera de caballos: vive la emoción de las pistas apostando por tu corcel favorito. Observa la intensidad de cada tramo, siente la adrenalina en la recta final y celebra la victoria cuando tu caballo cruza la meta. 🏇💨',
-        'slots': 'Tragaperras: el clásico de los casinos reinventado. Gira los rodillos, combina símbolos y descubre premios sorprendentes. Colores, sonido y emoción en cada tirada… ¡la suerte podría cambiarte en un segundo! 🎰✨',
-        'quiniela': 'Quiniela Deportiva: el emocionante juego donde predices el resultado de los partidos. Selecciona tus equipos favoritos y sube la adrenalina mientras esperas el pitido final. Ideal para los aficionados al deporte que disfrutan de la estrategia y la anticipación. 💪⚽🏀'
+    const gameData = {
+        'blackjack': {
+            'emoji': "🎲",
+            'singleplayer': true,
+            'multiplayer': true,
+            'description': 'Blackjack: el clásico juego de cartas donde el objetivo es alcanzar 21 sin pasarse. Demuestra tu estrategia y reta al crupier en cada mano. ♠️♦️'
+        },
+        'ruleta': {
+            'emoji': "🎯",
+            'singleplayer': true,
+            'multiplayer': true,
+            'description': 'Ruleta: el icónico juego de casino donde la emoción gira sin parar. Apuesta a tu número, color o combinación favorita y mira cómo la bola recorre el tambor hasta decidir tu suerte. 🎯💫 Perfecta mezcla de azar y estrategia, ideal para quienes disfrutan la adrenalina de cada giro y la posibilidad de grandes premios en cada ronda. 🔴⚫💰'
+        },
+        'coinflip': {
+            'emoji': "🪙",
+            'singleplayer': true,
+            'multiplayer': true,
+            'description': 'Coinflip: un juego rápido y emocionante donde apuestas por cara o cruz. Simple pero lleno de adrenalina: elige tu lado, mira girar la moneda y descubre si la suerte está de tu parte. Perfecto para quienes buscan acción instantánea y resultados al momento.'
+        },
+        'poker': {
+            'emoji': "🃏",
+            'singleplayer': false,
+            'multiplayer': true,
+            'description': 'Póker: el legendario juego de estrategia, habilidad y nervios de acero. Forma la mejor mano posible, apuesta con inteligencia y lee a tus oponentes para llevarte el bote. Ideal para quienes disfrutan de la táctica y el desafío mental en cada ronda. ♣️♥️'
+        },
+        'caballos': {
+            'emoji': "🏇",
+            'singleplayer': true,
+            'multiplayer': true,
+            'description': 'Carrera de caballos: vive la emoción de las pistas apostando por tu corcel favorito. Observa la intensidad de cada tramo, siente la adrenalina en la recta final y celebra la victoria cuando tu caballo cruza la meta. 🏇💨'
+        },
+        'slots': {
+            'emoji': "🎰",
+            'singleplayer': true,
+            'multiplayer': false,
+            'description': 'Tragaperras: el clásico de los casinos reinventado. Gira los rodillos, combina símbolos y descubre premios sorprendentes. Colores, sonido y emoción en cada tirada… ¡la suerte podría cambiarte en un segundo! 🎰✨'
+        },
+        'quiniela': {
+            'emoji': "⚽",
+            'singleplayer': true,
+            'multiplayer': false,
+            'description': 'Quiniela Deportiva: el emocionante juego donde predices el resultado de los partidos. Selecciona tus equipos favoritos y sube la adrenalina mientras esperas el pitido final. Ideal para los aficionados al deporte que disfrutan de la estrategia y la anticipación. 💪⚽🏀'
+        }
     };
 
     gameCards.forEach(card => {
@@ -340,8 +401,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const gameName = card.getAttribute('data-game');
             const title = card.querySelector('.game-title').textContent;
 
+            modalImage.style.backgroundImage = `url("/static/img/${gameName}.jpeg")`
+            modalIcon.textContent = gameData[gameName].emoji || '🎮';
             modalTitle.textContent = title;
-            modalDescription.textContent = gameDescriptions[gameName] || 'Descripción no disponible.';
+            modalDescription.textContent = gameData[gameName].description || 'Descripción no disponible.';
+
+            modalBadges.innerHTML = "";
+            if (gameData[gameName].singleplayer) {
+                modalBadges.insertAdjacentHTML('beforeend', `
+                    <span class="badge text-bg-info">
+                        <i class="fas fa-user me-1"></i>Un jugador
+                    </span>
+                `);
+            }
+            if (gameData[gameName].multiplayer) {
+                modalBadges.insertAdjacentHTML('beforeend', `
+                    <span class="badge text-bg-success">
+                        <i class="fas fa-users me-1"></i>Multijugador
+                    </span>
+                `);
+            }
+
             gameModal.show();
         });
     });
