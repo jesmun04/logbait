@@ -5,57 +5,78 @@ Salas multijugador
 {% endblock %}
 
 {% block content %}
-<div class="simple-background"></div>
-
-<div class="text-center mb-5">
-    <h1 class="hero-title">Salas de Espera</h1>  
-    <p class="hero-subtitle mt-4">
-        Crea o únete a salas para jugar con otros usuarios en tiempo real
-    </p>
+<div class="row justify-content-center mb-5 g-4">
+    <div class="col-12">
+        <div class="text-center">
+            <h1 class="hero-title"><i class="fas fa-people-roof me-3"></i>Salas Multijugador</h1>  
+            <p class="hero-subtitle mt-4 mb-1">
+                Crea o únete a salas para jugar con otros usuarios en tiempo real en cualquiera de los siguientes juegos:
+            </p>
+        </div>
+    </div>
+    {% for juego in [
+        {"emoji": "🎲", "nombre": "Blackjack"},
+        {"emoji": "🏇", "nombre": "Carrera de caballos"},
+        {"emoji": "🪙", "nombre": "Coinflip"},
+        {"emoji": "🃏", "nombre": "Póker"},
+        {"emoji": "🎯", "nombre": "Ruleta europea"},
+    ] %}
+    <div class="col-6 col-sm-4 col-md-3 col-xl-2">
+        <div class="card translucent-card card-body animated-rotate p-2 text-center h-100">
+            <div class="fs-1 mb-2">{{ juego.emoji }}</div>
+            <h3 class="card-title fs-5">{{ juego.nombre }}</h3>
+        </div>
+    </div>
+    {% endfor %}
 </div>
 
 <div class="row">
     <!-- Panel de Crear Sala -->
     <div class="col-md-4 mb-4">
-        <div class="card hover-card">
+        <div class="card animated-translateY">
             <div class="card-header">
-                <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Crear Sala</h4>
+                <i class="fas fa-plus-circle me-2"></i>Crear Sala
             </div>
             <div class="card-body">
                 <form method="POST" action="{{ url_for('salas_espera.crear_sala') }}">
                     <div class="mb-3">
-                        <label class="form-label">Nombre de la Sala</label>
+                        <label class="form-label fw-bold mb-1">Nombre de la sala</label>
                         <input type="text" class="form-control" name="nombre" required 
                                placeholder="Ej: Torneo Blackjack Pro">
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Juego</label>
+                        <label class="form-label fw-bold mb-1">Juego</label>
                         <select class="form-select" name="juego" required id="select-juego" onchange="actualizarCapacidad()">
                             <option value="">Selecciona un juego</option>
-                            <option value="coinflip">Coinflip (2 jugadores)</option>
-                            <option value="caballos">Carrera de Caballos (4 jugadores)</option>
-                            <option value="blackjack">Blackjack (4 jugadores)</option>
-                            <option value="poker">Póker (4 jugadores)</option>
-                            <option value="ruleta">Ruleta (4 jugadores)</option>
+                            <option value="blackjack">🎲 Blackjack (de 2 a 4 jugadores)</option>
+                            <option value="caballos">🏇 Carrera de caballos (4 jugadores)</option>
+                            <option value="coinflip">🪙 Coinflip (2 jugadores)</option>
+                            <option value="poker">🃏 Póker (de 2 a 4 jugadores)</option>
+                            <option value="ruleta">🎯 Ruleta europea (de 2 a 4 jugadores)</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Capacidad</label>
+                        <label class="form-label fw-bold mb-1">Capacidad</label>
                         <select class="form-select" name="capacidad" id="select-capacidad">
                             <!-- Se actualizará dinámicamente -->
                         </select>
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">Apuesta Mínima</label>
-                        <input type="number" class="form-control" name="apuesta_minima" 
-                               value="10.0" min="1" step="0.5" required>
+                        <label class="form-label fw-bold mb-1">Apuesta mínima</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-dollar-sign"></i>
+                            </span>
+                            <input type="number" class="form-control" name="apuesta_minima" 
+                               value="10.0" placeholder="Cantidad" min="1" step="0.5" required>
+                        </div>
                     </div>
                     
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-gamepad me-2"></i>Crear Sala
+                        <i class="fas fa-gamepad me-2"></i>Crear sala
                     </button>
                 </form>
             </div>
@@ -64,9 +85,9 @@ Salas multijugador
 
     <!-- Lista de Salas Disponibles -->
     <div class="col-md-8">
-        <div class="card">
+        <div class="card animated-translateY">
             <div class="card-header">
-                <h4 class="mb-0"><i class="fas fa-list me-2"></i>Salas Disponibles</h4>
+                <i class="fas fa-list me-2"></i>Salas Disponibles
             </div>
             <div class="card-body">
                 <div id="salas-container">

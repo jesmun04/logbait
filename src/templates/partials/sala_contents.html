@@ -1,5 +1,5 @@
-{% macro content_chat() %}
-<div id="chat-messages" class="pt-2">
+{% macro content_chat(chat_height) %}
+<div id="chat-messages" class="pt-2" style="--height: {{ chat_height }}">
     <!-- Mensajes del chat -->
 </div>
 <div class="input-group">

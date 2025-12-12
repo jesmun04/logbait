@@ -100,7 +100,7 @@ LogBait Casa de Apuestas Online
                         <!-- Nombre de Sala -->
                         <div class="text-center mb-2">
                             <p class="mb-0 text-muted">Sala actual:</p>
-                            <h4 class="mt-0 text-cyan">{{ sala.nombre }}</h4>
+                            <h4 class="mt-0 text-cyan"><i class="fas fa-people-roof me-2"></i>{{ sala.nombre }}</h4>
                         </div>
 
                         <!-- Emblemas de Información -->
@@ -146,7 +146,7 @@ LogBait Casa de Apuestas Online
                                 </ul>
                             </div>
                             <div class="card-body pt-0">
-                                {{ parcial_sala.content_chat() }}
+                                {{ parcial_sala.content_chat("clamp(15rem, 30vh, 35rem)") }}
                             </div>
                         </div>
                     </div>

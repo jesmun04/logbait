@@ -7,64 +7,77 @@ Sala: {{ sala.nombre }}
 {% endblock %}
 
 {% block content %}
-<div class="simple-background"></div>
+<div class="row justify-content-center">
+    <!-- Header de la Sala -->
+    <div class="col-12 mb-5">
+        <div class="d-flex flex-sm-row flex-column gap-4 align-items-center justify-content-between">
+            <div class="d-flex flex-column align-items-center align-items-sm-start">
+                <h3>Sala multijugador:</h3>
+                <h1 class="text-cyan fw-bold mb-2"><i class="fas fa-people-roof me-3"></i>{{ sala.nombre }}</h1>
+                <div class="d-flex justify-content-center gap-3 mt-2">
+                    <span class="badge" style="background: var(--gradient-cyber);">
+                        <i class="fas fa-gamepad me-1"></i>{{ sala.juego|title }}
+                    </span>
+                    <span id="contador-jugadores" class="badge" style="background: var(--gradient-matrix); color: black;">
+                        <i class="fas fa-users me-1"></i>{{ sala.jugadores_actuales }}/{{ sala.capacidad }}
+                    </span>
+                    <span class="badge" style="background: var(--gradient-sunset);">
+                        <i class="fas fa-coins me-1"></i>Apuesta mínima: {{ sala.apuesta_minima }}€
+                    </span>
+                </div>
+            </div>
+            <div class="d-flex flex-column gap-2">
+                <a href="{{ url_for('salas_espera.lobby') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-1"></i>Volver a la lista de salas
+                </a>
+            </div>
+        </div>
+    </div>
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <!-- Header de la Sala -->
-            <div class="card mb-4">
-                <div class="card-header text-center">
-                    <h2 class="mb-0">{{ sala.nombre }}</h2>
-                    <div class="d-flex justify-content-center gap-3 mt-2">
-                        <span class="badge" style="background: var(--gradient-cyber);">
-                            <i class="fas fa-gamepad me-1"></i>{{ sala.juego|title }}
-                        </span>
-                        <span id="contador-jugadores" class="badge" style="background: var(--gradient-matrix); color: black;">
-                            <i class="fas fa-users me-1"></i>{{ sala.jugadores_actuales }}/{{ sala.capacidad }}
-                        </span>
-                        <span class="badge" style="background: var(--gradient-sunset);">
-                            <i class="fas fa-coins me-1"></i>Apuesta mínima: {{ sala.apuesta_minima }}€
-                        </span>
+    <!-- Lista de Jugadores -->
+    <div class="col-12 col-lg-5">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-users me-2"></i>Jugadores Conectados
+            </div>
+            <div class="card-body">
+                {{ parcial_sala.content_lista_usuarios() }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat de Sala -->
+    <div class="col-12 col-lg-7">
+        <div class="card cyber-grid mb-4">
+            <div class="card-header">
+                <i class="fas fa-comments me-2"></i>Chat de Sala
+            </div>
+            <div class="card-body pt-0">
+                {{ parcial_sala.content_chat("clamp(15rem, 30vh, 30rem)") }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Controles de Sala -->
+    <div class="col-auto position-sticky z-3" style="bottom: 1rem;">
+        <div class="card">
+            <div class="card-body text-center">
+                <div id="alertaInicioPartida">
+                    {% if sala.creador_id != current_user.id %}
+                    <div id="alertaInicioPartida" class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Esperando a que el creador inicie la partida...
                     </div>
-                </div>
-            </div>
-
-            <!-- Lista de Jugadores -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h4 class="mb-0"><i class="fas fa-users me-2"></i>Jugadores Conectados</h4>
-                </div>
-                <div class="card-body">
-                    {{ parcial_sala.content_lista_usuarios() }}
-                </div>
-            </div>
-
-            <!-- Chat de Sala -->
-            <div class="card cyber-grid mb-4">
-                <div class="card-header">
-                    <h4 class="mb-0"><i class="fas fa-comments me-2"></i>Chat de Sala</h4>
-                </div>
-                <div class="card-body pt-0">
-                    {{ parcial_sala.content_chat() }}
-                </div>
-            </div>
-
-            <!-- Controles de Sala -->
-            <div class="card">
-                <div class="card-body text-center">
-                    {% if sala.creador_id == current_user.id %}
-                        <button id="btn-iniciar" class="btn btn-success btn-lg me-3" 
-                                {% if sala.jugadores_actuales < 2 %}disabled{% endif %}>
-                            <i class="fas fa-play me-2"></i>Iniciar Partida
-                        </button>
-                    {% else %}
-                        <div class="alert alert-info" style="background: rgba(0, 243, 255, 0.1); border: 1px solid var(--neon-cyan);">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Esperando a que el creador inicie la partida...
-                        </div>
                     {% endif %}
-                    
+                </div>
+
+                <div class="d-flex flex-row flex-wrap align-items-center justify-content-center gap-3">
+                    {% if sala.creador_id == current_user.id %}
+                    <button id="btn-iniciar" class="btn btn-success btn-lg" 
+                            {% if sala.jugadores_actuales < 2 %}disabled{% endif %}>
+                        <i class="fas fa-play me-2"></i>Iniciar Partida
+                    </button>
+                    {% endif %}
                     <form method="POST" action="{{ url_for('salas_espera.salir_sala', sala_id=sala.id) }}" class="d-inline">
                         <button type="submit" class="btn btn-outline-primary">
                             <i class="fas fa-sign-out-alt me-2"></i>Salir de la Sala
@@ -144,9 +157,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // MANEJAR INICIO DE JUEGO VIA SOCKET - REDIRECCIÓN PARA TODOS
     socket.on('game_started', (data) => {
         console.log('🎮✅ Juego iniciado recibido:', data);
-        
+
+        // Desactivar botón de inicio de juego.
+        if (btnIniciar) {
+            btnIniciar.disabled = true;
+        }
+
         // Mostrar mensaje de redirección
-        alert(`¡El juego ha comenzado! Redirigiendo a ${data.juego}...`);
+        const contenedor = document.getElementById('alertaInicioPartida');
+        contenedor.innerHTML = `
+            <div class="alert alert-info">
+                <div class="d-flex flex-row align-items-center justify-content-center gap-2">
+                    <div class="spinner-border me-2" role="status"></div>
+                    <span>Iniciando partida de ${data.juego}...</span>
+                </div>
+            </div>
+        `;
         
         // Redirigir a todos los jugadores después de 2 segundos
         setTimeout(() => {
