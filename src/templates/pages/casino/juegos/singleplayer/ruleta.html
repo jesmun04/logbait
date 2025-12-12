@@ -1,7 +1,29 @@
-{% extends "pages/casino/base.html" %}
+{% extends "pages/casino/juegos/base.html" %}
 
 {% block title %}
 Ruleta Europea
+{% endblock %}
+
+{% block game_title %}
+Ruleta europea
+{% endblock %}
+
+{% set has_navbar_stats = true %}
+{% block game_navbar_stats %}
+<div class="row row-cols-1 row-cols-md-3 g-3 text-center align-items-center">
+  <div class="col">
+    <div class="small text-uppercase text-muted">Banco</div>
+    <div class="h5 mb-0 text-gradient fw-bold"><span id="bank">0</span>¢</div>
+  </div>
+  <div class="col">
+    <div class="small text-uppercase text-muted">Apuesta actual</div>
+    <div class="h5 mb-0 text-gradient fw-bold"><span id="betTotal">0</span>¢</div>
+  </div>
+  <div class="col">
+    <div class="small text-uppercase text-muted">Última acción</div>
+    <div class="h6 mb-0 fw-semibold text-info" id="lastAction">—</div>
+  </div>
+</div>
 {% endblock %}
 
 {% block content %}
@@ -13,15 +35,8 @@ Ruleta Europea
       <p class="ruleta-section-label text-uppercase text-muted mb-1">Modo singleplayer</p>
       <h2 class="ruleta-heading mb-0">🎯 Ruleta europea</h2>
     </div>
-    <div class="balances">
-      <span class="pill">Banco: <b id="bank">0</b>¢</span>
-      <span class="pill">Apuesta actual: <b id="betTotal">0</b>¢</span>
-      <span class="pill">Última acción: <span id="lastAction">—</span></span>
-    </div>
     <div class="ms-auto">
-      <a href="{{ url_for('dashboard.home') }}" class="btn btn-outline-primary btn-sm">
-        <i class="fas fa-gauge me-1"></i>Dashboard
-      </a>
+      <span class="pill">Tablero europeo</span>
     </div>
   </div>
 
