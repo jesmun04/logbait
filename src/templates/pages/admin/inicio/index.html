@@ -58,17 +58,17 @@ Inicio
     <div class="col-12">
         <div class="card animated-translateY">
             <div class="card-header">
-                🎮 Estadísticas por Juego
+                <i class="fa-solid fa-gamepad me-2"></i>Estadísticas por Juego
             </div>
             <div class="card-body">
                 <div class="games-stats">
                     {% for juego, stats in juegos_stats.items() %}
                     <div class="game-stat">
-                        <h4>{{ juego.upper() }}</h4>
-                        <p><strong>Apuestas:</strong> {{ stats.total_apuestas or 0 }}</p>
-                        <p><strong>Ganadas:</strong> {{ stats.ganadas or 0 }}</p>
-                        <p><strong>Apostado:</strong> ${{ "%.2f"|format(stats.total_apostado or 0) }}</p>
-                        <p><strong>Ganado:</strong> ${{ "%.2f"|format(stats.total_ganado or 0) }}</p>
+                        <h5 class="card-title">{{ juego.upper() }}</h5>
+                        <p class="mb-0"><strong>Apuestas:</strong> {{ stats.total_apuestas or 0 }}</p>
+                        <p class="mb-0"><strong>Ganadas:</strong> {{ stats.ganadas or 0 }}</p>
+                        <p class="mb-0"><strong>Apostado:</strong> ${{ "%.2f"|format(stats.total_apostado or 0) }}</p>
+                        <p class="mb-0"><strong>Ganado:</strong> ${{ "%.2f"|format(stats.total_ganado or 0) }}</p>
                     </div>
                     {% endfor %}
                 </div>
@@ -80,7 +80,7 @@ Inicio
     <div class="col-lg-6">
         <div class="card animated-translateY h-100">
             <div class="card-header">
-                👥 Usuarios Recientes
+                <i class="fa-solid fa-users me-2"></i>Usuarios Recientes
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -139,7 +139,7 @@ Inicio
     <div class="col-lg-6">
         <div class="card animated-translateY h-100">
             <div class="card-header">
-                📈 Apuestas Recientes
+                <i class="fa-solid fa-coins me-2"></i>Apuestas Recientes
             </div>
             <div class="card-body">
                 <div class="table-responsive">

@@ -16,10 +16,10 @@ def require_admin():
         def decorated_function(*args, **kwargs):
             if not current_user.is_authenticated:
                 flash('Debes iniciar sesión para acceder al panel administrativo.')
-                return redirect(url_for('login'))
+                return redirect(url_for('login.home'))
             if not is_admin_user():
                 flash('Acceso denegado. Se requieren privilegios de administrador.')
-                return redirect(url_for('dashboard'))
+                return redirect(url_for('dashboard.home'))
             return f(*args, **kwargs)
         return decorated_function
     return decorator
