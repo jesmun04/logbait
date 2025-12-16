@@ -33,8 +33,9 @@ Su objetivo es ofrecer una experiencia sencilla, segura y responsable para los u
 
 LogBait permite a los usuarios registrarse, gestionar su saldo virtual, realizar apuestas en distintos juegos y consultar los resultados obtenidos.
 
-Actualmente se encuentra en su primera fase **MVP (Producto Mínimo Viable)**, cuyo propósito es ofrecer una versión funcional que cubra las características esenciales de una casa de apuestas online.
-Según vayamos avanzando en el proyecto, seguiremos implementando historias de usuario que aportarán versatilidad y comodidad al usuario. las funcionalidades concretas de estas historias se pueden observar en el apartado de **Próximos pasos**.
+Actualmente se encuentra en fase **beta**, pues ya incorpora la funcionalidad del Producto Mínimo Viable (cuyo propósito es ofrecer una versión funcional que cubra las características esenciales de una casa de apuestas online) además de varias características adicionales.
+
+Según vayamos avanzando en el proyecto, seguiremos implementando historias de usuario que aportarán versatilidad y comodidad al usuario. Las funcionalidades concretas de estas historias se pueden observar en el apartado de **Próximos pasos**.
 
 Se puede encontrar información más detallada sobre el proyecto y su gestión en la [Wiki del repositorio](https://github.com/UCM-FDI-DISIA/proyectois1-thatwasepic/wiki).
 
@@ -213,16 +214,6 @@ para salir del entorno virtual Python.
 
 ---
 
-## 👥 Créditos
-
-Este proyecto está desarrollado por un equipo de 7 personas, compuesto por las siguientes:
-
-<a href="https://github.com/UCM-FDI-DISIA/proyectois1-thatwasepic/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=UCM-FDI-DISIA/proyectois1-thatwasepic" height="50px"/>
-</a>
-
----
-
 ## 💡 Próximos pasos
 
 Las futuras iteraciones del proyecto incluirán:
@@ -232,3 +223,13 @@ Las futuras iteraciones del proyecto incluirán:
 - Soporte para múltiples servidores con sincronización Redis (escalabilidad).  
 - Mejoras de accesibilidad y experiencia de usuario en dispositivos móviles.  
 - Sistema de torneos y ligas entre jugadores.
+
+---
+
+## 👥 Créditos
+
+Este proyecto está desarrollado por un equipo de 7 personas, compuesto por las siguientes:
+
+<a href="https://github.com/UCM-FDI-DISIA/proyectois1-thatwasepic/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=UCM-FDI-DISIA/proyectois1-thatwasepic" height="50px"/>
+</a>
