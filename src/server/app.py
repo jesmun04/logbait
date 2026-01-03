@@ -76,9 +76,10 @@ except ImportError as e:
 # Registrar flatpages
 pages = FlatPages(app)
 
-print("📄 FlatPages encontrados:")
-for p in pages:
-    print(" -", p.path)
+with app.app_context():
+    print("📄 FlatPages encontrados:")
+    for p in pages:
+        print(" -", p.path)
 
 @app.route('/<path:path>/')
 def flatpage(path):
