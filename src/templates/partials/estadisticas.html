@@ -3,7 +3,7 @@
 {% set admin_page = admin_page or false %}
 
 {% macro game_emoji(game) -%}
-  {%- if game in ['poker', 'poker_multijugador'] -%}🂡
+  {%- if game in ['poker', 'poker_multijugador'] -%}🃏
   {%- elif game == 'blackjack' -%}🎲
   {%- elif game == 'coinflip' -%}🪙
   {%- elif game in ['tragaperras','slots'] -%}🎰
@@ -222,7 +222,7 @@
   <div class="col-12">
     <div class="card animated-translateY">
       <div class="card-header d-flex align-items-center justify-content-between">
-        <span>🂡 Rendimiento en Póker</span>
+        <span>🃏 Rendimiento en Póker</span>
         <span class="badge bg-dark">{{ poker.partidas }} partidas</span>
       </div>
       <div class="card-body">

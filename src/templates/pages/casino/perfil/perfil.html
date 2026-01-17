@@ -28,15 +28,66 @@ Perfil
     </div>
 </div>
 
+<!-- Opciones de Superusuario -->
+
+{% if is_admin() %}
+<div class="row g-4 mb-5">
+    <div class="col-12">
+        <div class="card animated-translateY">
+            <div id="adminSectionHeader" class="collapse admin-multi-collapse">
+                <div class="card-header">
+                    <i class="fas fa-unlock-keyhole me-2"></i>
+                    Opciones de superusuario
+                </div>
+            </div>
+            <div id="adminSection" class="collapse admin-multi-collapse">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item list-group-item-warning">
+                        Las herramientas mostradas a continuación pueden revelar y modificar datos sensibles, y deben usarse únicamente con fines de administración y moderación. Se <b>prohibe</b> su uso a toda persona ajena al equipo responsable de LogBait.
+                    </div>
+                    <div class="list-group-item py-3">
+                        <div class="d-flex flex-md-row flex-column gap-3 align-items-md-center justify-content-between">
+                            <div>
+                                <h4>Panel administrativo</h4>
+                                <div>
+                                    Consulta y gestiona los datos almacenados en la plataforma.
+                                </div>
+                            </div>
+                            <a href="{{ url_for('admin_panel.home') }}" class="btn btn-success me-2">
+                                <i class="fas fa-shield-halved me-2"></i>
+                                Acceder al panel administrativo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="adminSectionToggle" class="collapse show admin-multi-collapse">
+                <div class="card-body">
+                    <div class="d-flex flex-column flex-md-row gap-3 align-items-center justify-content-center">
+                        <p class="my-0 text-center" style="background: var(--gradient-matrix); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                            <i class="fas fa-unlock-keyhole me-1"></i>
+                            Dispones de privilegios de superusuario.
+                        </p>
+                        <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target=".admin-multi-collapse" aria-expanded="false" aria-controls="adminSection adminSectionHeader adminSectionToggle">
+                            Mostrar herramientas
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="row g-4">
     <!-- Formulario de Edición -->
     <div class="col-lg-6">
         <div class="card animated-translateY h-100">
             <div class="card-header">
                 <i class="fas fa-user-edit me-2"></i>
-                Editar Perfil
+                Editar datos
             </div>
-            <div class="card-body p-sm-5 p-4">
+            <div class="card-body p-4">
                 <form method="POST" class="scanline d-flex flex-column justify-content-between gap-4 h-100">
                     <div>
                         <div class="mb-4">
@@ -70,7 +121,7 @@ Perfil
                     <div class="mx-auto">
                         <button type="submit" class="btn btn-primary btn-lg">
                             <i class="fas fa-sync-alt me-2"></i>
-                            Actualizar perfil
+                            Actualizar datos
                         </button>
                     </div>
                 </form>
@@ -92,7 +143,7 @@ Perfil
                     </button>
                 </div>
             </div>
-            <div class="card-body p-sm-5 p-4">
+            <div class="card-body p-4">
                 {{ parcial_agregar_fondos.content() }}
             </div>
         </div>
@@ -111,8 +162,8 @@ Perfil
                         {% for stat in stats %}
                         {% set ganancia_neta = (stat.ganancia_total - stat.apuesta_total) %}
                         <div class="col-md-4 col-lg-2">
-                            <div class="stat-item text-center">
-                                <div class="mb-2" style="font-size: 2rem;">
+                            <div class="card translucent-card card-body p-2 text-center">
+                                <div style="font-size: 2rem;">
                                     {% if stat.juego == 'blackjack' %}🎲 
                                     {% elif stat.juego == 'poker' %}🃏 
                                     {% elif stat.juego == 'coinflip' %}🪙
@@ -122,17 +173,24 @@ Perfil
                                     {% elif stat.juego == 'quiniela' %}⚽
                                     {% else %}🎮{% endif %}
                                 </div>
-                                <div class="stat-value fw-bold h5 text-white">
-                                    {{ stat.partidas_jugadas or 0 }}
-                                </div>
-                                <div class="stat-label text-uppercase small text-muted mb-1">
+                                <h5>
                                     {{ stat.juego|replace('_', ' ')|title }}
+                                </h5>
+                                <div class="my-1">
+                                    <div class="stat-number h5 text-white mb-0">
+                                        {{ stat.partidas_jugadas or 0 }}
+                                    </div>
+                                    <small class="text-xs text-muted mt-0">
+                                        Partidas
+                                    </small>
                                 </div>
-                                <div class="text-small fw-bold {% if ganancia_neta >= 0 %}text-success{% else %}text-danger{% endif %}">
-                                    ${{ "%.2f"|format(ganancia_neta) }}
-                                </div>
-                                <div class="text-xs text-muted mt-1">
-                                    Ganancia Neta
+                                <div class="my-1">
+                                    <div class="text-small fw-bold {% if ganancia_neta >= 0 %}balance-positive{% else %}balance-negative{% endif %} mb-0">
+                                        ${{ "%.2f"|format(ganancia_neta) }}
+                                    </div>
+                                    <small class="text-xs text-muted mt-0">
+                                        Ganancia neta
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -181,43 +239,6 @@ Perfil
         </div>
     </div>
 </div>
-
-<!-- Opciones de Superusuario -->
-
-{% if is_admin() %}
-<hr class="mt-5 mb-5 w-50 mx-auto">
-<div class="text-center animated-translateY">
-    <i class="fa-solid fa-unlock-keyhole fs-1 mb-2"></i>
-    <h3>Opciones de superusuario</h3>
-    <p>
-        Has iniciado sesión como <span class="font-monospace">{{ user.username }}</span>, que dispone de privilegios de superusuario.
-    </p>
-    <div class="d-flex justify-content-center">
-        <div class="alert alert-warning glass-effect w-75">
-            Las herramientas mostradas a continuación pueden revelar y modificar datos sensibles, y deben usarse únicamente con fines de administración y moderación. Se <b>prohibe</b> su uso a toda persona ajena al equipo responsable de LogBait.
-        </div>
-    </div>
-</div>
-
-<div class="col-12 mt-4">
-    <div class="card animated-translateY">
-        <div class="card-body">
-            <div class="d-flex flex-sm-row flex-column gap-3 align-items-center justify-content-between">
-                <div>
-                    <h4>Panel administrativo</h4>
-                    <span>
-                        Consulta y gestiona los datos almacenados en la plataforma.
-                    </span>
-                </div>
-                <a href="{{ url_for('admin_panel.home') }}" class="btn btn-success me-2">
-                    <i class="fas fa-shield-halved me-2"></i>
-                    Acceder al panel administrativo
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
 {% endblock %}
 
 {% block scripts %}
