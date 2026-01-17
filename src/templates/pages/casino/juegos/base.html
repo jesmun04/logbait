@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% set platform_name = "LogBait Casa de Apuestas Online" %}
+
 {% set multijugador = multijugador or false %}
 {% set has_navbar_stats = has_navbar_stats or false %}
 
@@ -7,8 +9,10 @@
     {% import "partials/sala_contents.html" as parcial_sala with context %}
 {% endif %}
 
-{% block platform_name %}
-LogBait Casa de Apuestas Online
+{% block titlebar %}
+<a class="navbar-brand fw-bold fs-6 mb-0 py-0" id="brand" href="{{ url_for('index.home') }}" style="app-region: no-drag;">
+    <span id="brandIcon" class="logo-icon me-2"></span>LogBait
+</a>
 {% endblock %}
 
 {% block navbar %}
@@ -18,10 +22,11 @@ LogBait Casa de Apuestas Online
             <i class="fas fa-arrow-left"></i>
         </a>
         <div class="d-flex flex-column align-items-start flex-grow-1">
-            <a class="navbar-brand fw-bold fs-6 mb-0 pb-0" id="brand" href="{{ url_for('index.home') }}">
+            <a class="show-if-no-wco navbar-brand fw-bold fs-6 my-0 py-0" id="brand" href="{{ url_for('index.home') }}">
                 <span id="brandIcon" class="logo-icon me-2"></span>LogBait
             </a>
-            <h4 class="mt-0">
+            <span class="show-if-wco my-0 text-muted">Partida {% if multijugador %}multijugador{% else %} de un jugador{% endif %}</span>
+            <h4 class="my-0">
                 <span id="prefijoTituloJuego" class="me-1">Juego:</span>
                 <span id="tituloJuego">{% block game_title %}{% endblock %}</span>
             </h4>
@@ -241,7 +246,9 @@ document.addEventListener('DOMContentLoaded', function() {
 })
 </script>
 {% endif %}
+{% endblock %}
 
+{% block base_head %}
 <style>
 #prefijoTituloJuego {
     font-weight: 300;

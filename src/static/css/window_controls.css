@@ -1,0 +1,34 @@
+/* Defaults */
+.show-if-wco {
+    display: none;
+}
+
+.show-if-no-wco {
+    display: block;
+}
+
+/* Overrides */
+html.wco-active .show-if-wco {
+    display: block;
+}
+
+html.wco-active .show-if-no-wco {
+    display: none;
+}
+
+/* Other styles */
+#titleNavbar {
+    app-region: drag;
+}
+
+#titleNavbarContainer {
+    min-height: env(titlebar-area-height, 0);
+}
+
+html.wco-active #mainNavbarContainer {
+    max-width: unset;
+}
+
+#gameSidebarExit {
+    margin-top: env(titlebar-area-height, 0);
+}

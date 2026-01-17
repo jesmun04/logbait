@@ -1,57 +1,27 @@
-{% extends "base.html" %}
+{% extends "base_navigation.html" %}
 
-{% block platform_name %}
-LogBait Casa de Apuestas Online
-{% endblock %}
+{% set platform_name = "LogBait Casa de Apuestas Online" %}
+{% set main_page_link = url_for('index.home') %}
 
-{% block navbar %}
-<a class="navbar-brand fw-bold" id="brand" href="{{ url_for('index.home') }}">
-    <span id="brandIcon" class="logo-icon me-2"></span>LogBait
+{% macro brand_subtitle() %}{% endmacro %}
+
+{% block navbar_entries %}
+{% if current_user.is_authenticated %}
+<span class="navbar-text mx-3">
+    <i class="fas fa-bolt me-1"></i>
+    $<span id="balance">{{ "%.2f"|format(current_user.balance) }}</span>
+</span>
+<a class="nav-link {{ 'active' if request.endpoint == 'dashboard' }}" href="{{ url_for('dashboard.home') }}">
+    <i class="fas fa-home me-1"></i>Dashboard
 </a>
-
-<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-    <span class="navbar-toggler-icon"></span>
-</button>
-
-<div class="collapse navbar-collapse" id="navbarNav">
-    {% if current_user.is_authenticated %}
-    <div class="navbar-nav ms-auto align-items-center">
-        <span class="navbar-text mx-3">
-            <i class="fas fa-bolt me-1"></i>
-            $<span id="balance">{{ "%.2f"|format(current_user.balance) }}</span>
-        </span>
-        <a class="nav-link {{ 'active' if request.endpoint == 'dashboard' }}" href="{{ url_for('dashboard.home') }}">
-            <i class="fas fa-home me-1"></i>Dashboard
-        </a>
-        <a class="nav-link {{ 'active' if request.endpoint == 'multijugador' }}" href="{{ url_for('salas_espera.lobby') }}">
-            <i class="fas fa-people-roof me-1"></i>Salas
-        </a>
-        <a class="nav-link {{ 'active' if request.endpoint == 'estadisticas' }}" href="{{ url_for('estadisticas.home') }}">
-            <i class="fas fa-chart-column me-1"></i>Estadísticas
-        </a>
-        <a class="nav-link {{ 'active' if request.endpoint == 'perfil' }}" href="{{ url_for('perfil.home') }}">
-            <i class="fas fa-user-astronaut me-1"></i>Perfil
-        </a>
-        <a class="nav-link" href="{{ url_for('logout.home') }}">
-            <i class="fas fa-power-off me-1"></i>Salir
-        </a>
-    </div>
-    {% else %}
-    <div class="navbar-nav ms-auto">
-        <a class="nav-link {{ 'active' if request.endpoint == 'login' }}" href="{{ url_for('login.home') }}">
-            <i class="fas fa-sign-in-alt me-1"></i>Iniciar sesión
-        </a>
-        <a class="nav-link {{ 'active' if request.endpoint == 'register' }}" href="{{ url_for('register.home') }}">
-            <i class="fas fa-user-plus me-1"></i>Registrarse
-        </a>
-    </div>
-    {% endif %}
-</div>
-{% endblock %}
-
-{% block base_content %}
-<!-- Contenido Principal -->
-<main class="container flex-fill my-5">
-    {% block content %}{% endblock %}
-</main>
+<a class="nav-link {{ 'active' if request.endpoint == 'multijugador' }}" href="{{ url_for('salas_espera.lobby') }}">
+    <i class="fas fa-people-roof me-1"></i>Salas
+</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'estadisticas' }}" href="{{ url_for('estadisticas.home') }}">
+    <i class="fas fa-chart-column me-1"></i>Estadísticas
+</a>
+<a class="nav-link {{ 'active' if request.endpoint == 'perfil' }}" href="{{ url_for('perfil.home') }}">
+    <i class="fas fa-user-astronaut me-1"></i>Perfil
+</a>
+{% endif %}
 {% endblock %}

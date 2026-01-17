@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block titlebar %}
+<a class="d-flex flex-row align-items-start navbar-brand fs-6 mb-0 py-0" href="{{ main_page_link }}" style="app-region: no-drag;">
+    <span class="fw-bold fs-6" id="brand">
+        <span id="brandIcon" class="logo-icon me-2"></span>LogBait
+    </span>
+    <div class="ms-3">
+        {{ brand_subtitle() }}
+    </div>
+</a>
+{% endblock %}
+
+{% block navbar %}
+<div class="show-if-no-wco">
+    <a class="d-flex flex-column align-items-start navbar-brand" href="{{ main_page_link }}">
+        <span class="fw-bold" id="brand">
+            <span id="brandIcon" class="logo-icon me-2"></span>LogBait
+        </span>
+        {{ brand_subtitle() }}
+    </a>
+</div>
+<a class="link-underline link-underline-opacity-0" href="{{ main_page_link }}">
+    <h4 class="show-if-wco stat-number fw-light my-0">{% block title %}{% endblock %}</h4>
+</a>
+
+<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <span class="navbar-toggler-icon"></span>
+</button>
+
+<div class="collapse navbar-collapse" id="navbarNav">
+    <div class="navbar-nav ms-auto align-items-center">
+        {% block navbar_entries %}{% endblock %}
+
+        {% if current_user.is_authenticated %}
+        <a class="nav-link" href="{{ url_for('logout.home') }}">
+            <i class="fas fa-power-off me-1"></i>Salir
+        </a>
+        {% else %}
+        <a class="nav-link {{ 'active' if request.endpoint == 'login' }}" href="{{ url_for('login.home') }}">
+            <i class="fas fa-sign-in-alt me-1"></i>Iniciar sesión
+        </a>
+        <a class="nav-link {{ 'active' if request.endpoint == 'register' }}" href="{{ url_for('register.home') }}">
+            <i class="fas fa-user-plus me-1"></i>Registrarse
+        </a>
+        {% endif %}
+    </div>
+
+    {% block navbar_side %}{% endblock %}
+</div>
+{% endblock %}
+
+{% block base_content %}
+<!-- Contenido Principal -->
+<main class="container flex-fill my-5">
+    {% block content %}{% endblock %}
+</main>
+{% endblock %}

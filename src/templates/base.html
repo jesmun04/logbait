@@ -5,9 +5,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %} - {% block platform_name %}{% endblock %}</title>
+    <title>{% block title %}{% endblock %} - {{ platform_name }}</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='svg/icon.svg') }}">
     <link rel="manifest" href="{{ url_for('static', filename='pwa/manifest/manifest.json') }}">
+
+    <script>
+        // Gestionar controles de ventana con la API Window Controls Overlay.
+        (function () {
+            if ('windowControlsOverlay' in navigator && navigator.windowControlsOverlay.visible) {
+                document.documentElement.classList.add('wco-active');
+            }
+        })();
+
+        if ('windowControlsOverlay' in navigator) {
+            navigator.windowControlsOverlay.addEventListener('geometrychange', () => {
+                document.documentElement.classList.toggle(
+                    'wco-active',
+                    navigator.windowControlsOverlay.visible
+                );
+            });
+        }
+    </script>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" rel="stylesheet">
@@ -16,16 +34,26 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     
+    <link href="{{ url_for('static', filename='css/window_controls.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/logo_icon.css') }}" rel="stylesheet">
+
+    {% block base_head %}{% endblock %}
 </head>
 <body class="d-flex flex-column min-vh-100 {% if not hide_bg_cyber_grid %}bg-cyber-grid{% endif %}">
     <!-- Navbar Futurista -->
-    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark sticky-top">
-        <div class="container">
-            {% block navbar %}{% endblock %}
-        </div>
-    </nav>
+    <div class="sticky-top">
+        <nav id="titleNavbar" class="show-if-wco navbar navbar-dark scrolled py-1">
+            <div id="titleNavbarContainer" class="container-fluid">
+                {% block titlebar %}{% endblock %}
+            </div>
+        </nav>
+        <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark">
+            <div id="mainNavbarContainer" class="container">
+                {% block navbar %}{% endblock %}
+            </div>
+        </nav>
+    </div>
 
     {% with messages = get_flashed_messages() %}
         <noscript>
