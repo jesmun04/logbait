@@ -9,7 +9,7 @@ bp = Blueprint('perfil', __name__)
 @login_required
 def home():
     stats = Estadistica.query.filter_by(user_id=current_user.id).all()
-    mostrar_doom = False  # Variable para controlar si mostrar Doom
+    mostrar_doom = current_user.username.lower() == "doom"  # Variable para controlar si mostrar Doom
     
     if request.method == 'POST':
         nuevo_username = request.form.get('username')
@@ -18,46 +18,42 @@ def home():
         
         # Verificar si el usuario intenta cambiar a "Doom"
         if nuevo_username and nuevo_username.lower() == "doom" and nuevo_username != current_user.username:
-            flash('El nombre "Doom" está reservado. No puedes usar este nombre, pero... ¡disfruta del juego!', 'warning')
             mostrar_doom = True  # Mostrar Doom aunque no cambie el nombre
-        
+            flash(f'El nombre "Doom" está reservado y no se puede utilizar. Tu nombre sigue siendo "{current_user.username}", pero... ¡disfruta del juego!', 'info')
         # Solo permitir cambios si NO es a "Doom"
         elif nuevo_username and nuevo_username != current_user.username:
             usuario_existente = User.query.filter_by(username=nuevo_username).first()
             if usuario_existente:
                 flash('El nombre de usuario ya está en uso')
                 return redirect(url_for('perfil.home'))
-            current_user.username = nuevo_username
+            else:
+                current_user.username = nuevo_username
         
         if nuevo_email and nuevo_email != current_user.email:
             email_existente = User.query.filter_by(email=nuevo_email).first()
             if email_existente:
                 flash('El email ya está en uso')
                 return redirect(url_for('perfil.home'))
-            current_user.email = nuevo_email
+            else:
+                current_user.email = nuevo_email
         
         if nueva_password:
             if len(nueva_password) < 6:
                 flash('La contraseña debe tener al menos 6 caracteres')
                 return redirect(url_for('perfil.home'))
-            current_user.set_password(nueva_password)
+            else:
+                current_user.set_password(nueva_password)
         
         db.session.commit()
         if not mostrar_doom:  # Solo mostrar éxito si no fue intento de Doom
             flash('Perfil actualizado correctamente')
-        
-        # Si intentó cambiarse a Doom, recargamos la página mostrando Doom
+    
+    # GET request
+    
+    if mostrar_doom:
+        return render_template('pages/casino/juegos/easteregg/doom.html')
+    else:
         return render_template('pages/casino/perfil/perfil.html', 
-                             user=current_user, 
-                             stats=stats,
-                             is_admin=is_admin_user,
-                             mostrar_doom=mostrar_doom)
-    
-    # GET request - verificar si ya se llama Doom
-    mostrar_doom = current_user.username.lower() == "doom"
-    
-    return render_template('pages/casino/perfil/perfil.html', 
-                         user=current_user, 
-                         stats=stats,
-                         is_admin=is_admin_user,
-                         mostrar_doom=mostrar_doom)
+                        user=current_user, 
+                        stats=stats,
+                        is_admin=is_admin_user)

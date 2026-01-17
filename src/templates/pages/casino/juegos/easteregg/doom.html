@@ -1,0 +1,97 @@
+{% extends "pages/casino/juegos/base.html" %}
+
+{% block title %}
+Doom
+{% endblock %}
+
+{% block game_title %}
+Doom
+{% endblock %}
+
+{% set has_navbar_stats = false %}
+
+{% block content_fluid %}
+<div class="row">
+    <div class="fluid-content m-0 p-0">
+        <div class="position-relative">
+            <button class="btn btn-sm btn-outline-primary position-absolute z-2" style="top: 1rem; right: 1rem;" onclick="dosbox.requestFullScreen();">
+                Pantalla completa
+            </button>
+            <div id="dosbox"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row mt-4 justify-content-center">
+    <div class="col-auto">
+        <div class="card">
+            <div class="card-header">
+                Controles
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Acción</th>
+                        <th>Controles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Moverse</td>
+                        <td>ARRIBA, ABAJO, IZQUIERDA, DERECHA</td>
+                    </tr>
+                    <tr>
+                        <td>Usar</td>
+                        <td>W</td>
+                    </tr>
+                    <tr>
+                        <td>Disparar</td>
+                        <td>S</td>
+                    </tr>
+                    <tr>
+                        <td>Aumentar velocidad</td>
+                        <td>SPACE</td>
+                    </tr>
+                    <tr>
+                        <td>Ametrallar en</td>
+                        <td>ALT</td>
+                    </tr>
+                    <tr>
+                        <td>Ametrallar</td>
+                        <td>A, D</td>
+                    </tr>
+                    <tr>
+                        <td>Cambiar arma</td>
+                        <td>1, 2, 3, 4, 5, 6, 7</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://js-dos.com/cdn/js-dos-api.js"></script>
+
+<script>
+var dosbox = new Dosbox({
+    id: "dosbox",
+    onload: function (dosbox) {
+        dosbox.run("https://js-dos.com/cdn/upload/DOOM-@evilution.zip", "./DOOM/DOOM.EXE");
+    },
+    onrun: function (dosbox, app) {
+        console.log("App '" + app + "' is ran");
+    }
+});
+</script>
+
+<style>
+    .dosbox-container {
+        display: flex;
+        justify-content: center;
+    }
+</style>
+{% endblock %}

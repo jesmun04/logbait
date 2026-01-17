@@ -2,7 +2,6 @@
 
 {% import "partials/agregar_fondos.html" as parcial_agregar_fondos with context %}
 {% import "partials/limite_depositos.html" as parcial_limite_depositos with context %}
-{% import "partials/doom.html" as parcial_doom without context %}
 
 {% block title %}
 Perfil
@@ -205,24 +204,6 @@ Perfil
             </div>
         </div>
     </div>
-{% if mostrar_doom %}
-    <div class="col-12">
-        <div class="card animated-translateY">
-            <div class="card-header">
-                <i class="fas fa-gamepad me-2"></i>
-                🎮 ¡Bonus especial! Disfruta de DOOM
-            </div>
-            <div class="card-body">
-                <div class="alert alert-info mb-3">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Nota:</strong> No puedes cambiar tu nombre a "Doom", pero puedes disfrutar del juego clásico.
-                    Tu nombre sigue siendo <strong>{{ user.username }}</strong>.
-                </div>
-                {{ parcial_doom.content() }}
-            </div>
-        </div>
-    </div>
-{% endif %}
 </div>
 
 <!-- Modal para configurar límite de depósito -->
@@ -244,10 +225,6 @@ Perfil
 {% block scripts %}
 {{ parcial_agregar_fondos.scripts() }}
 {{ parcial_limite_depositos.scripts() }}
-
-{% if mostrar_doom %}
-{{ parcial_doom.scripts() }}
-{% endif %}
 
 <style>
 .text-cyan { color: var(--neon-cyan); }
