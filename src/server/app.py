@@ -108,7 +108,8 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     
     socketio.run(
-        app, 
+        app,
+        host="0.0.0.0",
         port=port, 
         debug=not is_production,
         allow_unsafe_werkzeug=True
