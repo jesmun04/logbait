@@ -45,7 +45,7 @@
     </div>
 
     <div id="navbarStats" class="collapse show navbar-collapse">
-        <div class="d-flex flex-column gap-2 align-items-center">
+        <div class="d-flex flex-column gap-2 align-items-center pt-3 pt-sm-0">
             {% if has_navbar_stats %}
             <div class="card translucent-card mx-auto">
                 <div class="card-body px-3 py-2 align-items-center">
@@ -89,16 +89,14 @@
         </main>
 
         {% if multijugador %}
-        <!-- SIDEBAR (pantallas grandes) -->
+        <!-- BARRA LATERAL -->
         <div class="collapse collapse-horizontal" style="overflow: inherit;" id="gameSidebar">
             <div class="d-flex flex-row h-100" id="gameSidebarContainer">
                 <div class="vr h-100" id="gameSidebarSeparator"></div>
                 <div class="h-100 flex-fill">
                     <div id="gameSidebarExit">
                         <div class="pt-3 container d-flex justify-content-end">
-                            <button class="sidebar-toggle btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#gameSidebar" aria-expanded="false" aria-controls="gameSidebar">
-                                <i class="fas fa-xmark"></i>
-                            </button>
+                            <button class="sidebar-toggle btn-close p-2" type="button" data-bs-toggle="collapse" data-bs-target="#gameSidebar" aria-expanded="false" aria-controls="gameSidebar"></button>
                         </div>
                     </div>
                     <div class="pb-3 pb-xl-0 container sticky-xl-top z-1" style="top: 6.5rem;">
@@ -283,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
         height: 100vh;
         max-height: 100vh;
         background: var(--deep-space);
-        box-shadow: -1px 0 0 rgba(0, 243, 255, 0.25), -2px 0 30px rgba(0, 0, 0, 0.5);
+        box-shadow: -1px 0 0 var(--sidebar-border-color), -2px 0 30px var(--sidebar-shadow-color);
     }
 
     #gameSidebarContainer {

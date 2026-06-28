@@ -7,7 +7,7 @@
 
 {% block navbar_entries %}
 {% if current_user.is_authenticated %}
-<span class="navbar-text mx-3">
+<span class="navbar-text mb-3 mb-lg-0 mx-lg-3">
     <i class="fas fa-bolt me-1"></i>
     $<span id="balance">{{ "%.2f"|format(current_user.balance) }}</span>
 </span>
@@ -19,9 +19,6 @@
 </a>
 <a class="nav-link {{ 'active' if request.endpoint == 'estadisticas' }}" href="{{ url_for('estadisticas.home') }}">
     <i class="fas fa-chart-column me-1"></i>Estadísticas
-</a>
-<a class="nav-link {{ 'active' if request.endpoint == 'perfil' }}" href="{{ url_for('perfil.home') }}">
-    <i class="fas fa-user-astronaut me-1"></i>Perfil
 </a>
 {% endif %}
 {% endblock %}

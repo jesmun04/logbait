@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
 {% block titlebar %}
-<a class="d-flex flex-row align-items-start navbar-brand fs-6 mb-0 py-0" href="{{ main_page_link }}" style="app-region: no-drag;">
+<a class="d-flex flex-row align-items-start navbar-brand fs-6 mb-0 py-0" href="{{ main_page_link }}"
+    style="app-region: no-drag;">
     <span class="fw-bold fs-6" id="brand">
         <span id="brandIcon" class="logo-icon me-2"></span>LogBait
     </span>
@@ -24,29 +25,64 @@
     <h4 class="show-if-wco stat-number fw-light my-0">{% block title %}{% endblock %}</h4>
 </a>
 
-<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+<button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarNav">
     <span class="navbar-toggler-icon"></span>
 </button>
 
-<div class="collapse navbar-collapse" id="navbarNav">
-    <div class="navbar-nav ms-auto align-items-center">
-        {% block navbar_entries %}{% endblock %}
-
-        {% if current_user.is_authenticated %}
-        <a class="nav-link" href="{{ url_for('logout.home') }}">
-            <i class="fas fa-power-off me-1"></i>Salir
-        </a>
-        {% else %}
-        <a class="nav-link {{ 'active' if request.endpoint == 'login' }}" href="{{ url_for('login.home') }}">
-            <i class="fas fa-sign-in-alt me-1"></i>Iniciar sesión
-        </a>
-        <a class="nav-link {{ 'active' if request.endpoint == 'register' }}" href="{{ url_for('register.home') }}">
-            <i class="fas fa-user-plus me-1"></i>Registrarse
-        </a>
-        {% endif %}
+<div class="offcanvas offcanvas-top" tabindex="-1" id="navbarNav" aria-labelledby="offcanvasNavbarLabel"
+        style="height: fit-content; max-height: 100vh;">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menú</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
+    <div class="offcanvas-body">
+        <div class="navbar-nav ms-auto align-items-lg-center">
+            {% block navbar_entries %}{% endblock %}
 
-    {% block navbar_side %}{% endblock %}
+            {% block navbar_side %}{% endblock %}
+
+            {% if current_user.is_authenticated %}
+            <hr class="d-block d-lg-none">
+            <div class="nav-item dropdown ms-lg-3">
+                <a class="d-flex flex-row align-items-center text-decoration-none" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="user-avatar" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Cuenta de LogBait: {{ current_user.username }}">
+                        {{ current_user.username[0]|upper }}
+                    </span>
+                    <span class="dropdown-toggle ps-2 d-lg-none">
+                        Cuenta de LogBait: <b>{{ current_user.username }}</b>
+                    </span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end mt-3 mt-lg-2">
+                    <div class="px-4 text-center">
+                        <p class="small text-muted text-nowrap mt-1 mb-2">
+                            Has iniciado sesión como:
+                        </p>
+                        <h4 class="text-nowrap fw-bold mb-0">
+                            {{ current_user.username }}
+                        </h5>
+                        <p class="text-nowrap font-monospace mb-2">
+                            {{ current_user.email }}
+                        </p>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item {{ 'active' if request.endpoint == 'perfil.home' }}" href="{{ url_for('perfil.home') }}">
+                        <i class="fas fa-user-astronaut me-2"></i>Perfil
+                    </a>
+                    <a class="dropdown-item" href="{{ url_for('logout.home') }}">
+                        <i class="fas fa-power-off me-2"></i>Cerrar sesión
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <a class="nav-link {{ 'active' if request.endpoint == 'login' }}" href="{{ url_for('login.home') }}">
+                <i class="fas fa-sign-in-alt me-1"></i>Iniciar sesión
+            </a>
+            <a class="nav-link {{ 'active' if request.endpoint == 'register' }}" href="{{ url_for('register.home') }}">
+                <i class="fas fa-user-plus me-1"></i>Registrarse
+            </a>
+            {% endif %}
+        </div>
+    </div>
 </div>
 {% endblock %}
 

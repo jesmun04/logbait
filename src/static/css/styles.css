@@ -18,6 +18,7 @@
   --gradient-matrix: linear-gradient(135deg, var(--matrix-green), var(--neon-cyan));
   --gradient-sunset: linear-gradient(135deg, var(--neon-orange) 0%, var(--neon-pink) 50%, var(--neon-cyan) 100%);
   --gradient-dark: linear-gradient(135deg, rgba(40, 40, 70, 0.8), rgba(25, 25, 50, 0.9));
+  --gradient-dark-solid: linear-gradient(135deg, rgb(40, 40, 70), rgb(25, 25, 50));
 
   --glow-cyan: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan), 0 0 30px var(--neon-cyan);
   --glow-pink: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink), 0 0 30px var(--neon-pink);
@@ -34,6 +35,9 @@
   --border-radius-card: 25px;
 
   --shadow-hologram: 0 0 60px rgba(0, 243, 255, 0.3);
+
+  --sidebar-border-color: rgba(0, 243, 255, 0.25);
+  --sidebar-shadow-color: rgba(0, 0, 0, 0.5);
 
   --font-family-title: 'Orbitron';
   --font-family-body: 'Saira';
@@ -196,16 +200,28 @@ a.navbar-brand:hover {
   border-radius: var(--border-radius-button);
   border: 1px solid transparent;
   text-transform: uppercase;
+}
+
+.navbar-nav .nav-link, .nav-item a .user-avatar {
   transition: all 0.25s ease;
 }
 
 .navbar-nav .nav-link:hover,
-.navbar-nav .nav-link.active {
-  color: white !important;
-  background: var(--gradient-cyber);
-  border-color: var(--neon-cyan);
+.navbar-nav .nav-link.active,
+.nav-item a:hover .user-avatar {
   box-shadow: 0 3px 0 var(--neon-cyan);
   transform: translateY(-2px);
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  border-color: var(--neon-cyan);
+  color: white !important;
+  background: var(--gradient-cyber);
+}
+
+.nav-item a:hover .user-avatar {
+  outline: solid 1px var(--neon-cyan);
 }
 
 /* === NAVBAR SALDO (VERDE) === */
@@ -253,8 +269,8 @@ a.navbar-brand:hover {
 .card {
   background: var(--gradient-dark);
   border: 1px solid var(--neon-cyan);
-  border-radius: var(--border-radius-card);
   box-shadow: var(--shadow-hologram);
+  border-radius: var(--border-radius-card);
   position: relative;
   overflow: hidden;
 }
@@ -314,15 +330,22 @@ a.navbar-brand:hover {
   overflow: hidden;
 }
 
+/* === MENÚS === */
+.dropdown-menu {
+  background: var(--gradient-dark-solid);
+  border: 1px solid var(--neon-cyan);
+  box-shadow: var(--shadow-hologram);
+}
+
 /* === BOTONES === */
 
 /* Animación ripple para botones */
-.btn, .page-link {
+.btn, .dropdown-item, .page-link {
   position: relative;
   overflow: hidden;
 }
 
-.btn::before, .page-link::before {
+.btn::before, .dropdown-item::before, .page-link::before {
   content: '';
   position: absolute;
   top: 0;
@@ -333,13 +356,17 @@ a.navbar-brand:hover {
   transition: left 0.6s ease;
 }
 
-.btn:hover::before, .page-link:hover::before {
+.btn:hover::before, .dropdown-item:active::before, .page-link:hover::before {
   left: 100%;
 }
 
 /* Estilos generales */
 
 /* === BOTONES === */
+.btn, .page-link, .page-item.disabled .page-link, .dropdown-item {
+  transition: all 0.4s ease;
+}
+
 .btn {
   border-radius: var(--border-radius-button);
 }
@@ -349,7 +376,6 @@ a.navbar-brand:hover {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
-  transition: all 0.4s ease;
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
   border: none;
   outline-color: transparent;
@@ -421,6 +447,20 @@ a.navbar-brand:hover {
   color: black;
   box-shadow: var(--glow-orange-button);
   outline: solid 1px var(--neon-orange);
+}
+
+.dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.dropdown-item:active {
+  background: var(--gradient-cyber);
+  color: white;
+}
+
+.dropdown-item.active {
+  background: var(--gradient-sunset);
+  color: white;
 }
 
 /* === PAGINACIÓN === */
@@ -547,6 +587,16 @@ footer h5 {
   padding: 1.2em;
 }
 
+/* === OFFCAMVAS (BARRA LATERAL) === */
+.offcanvas {
+  --bs-offcanvas-box-shadow: 0 0 32px var(--sidebar-shadow-color);
+  --bs-offcanvas-border-color: var(--sidebar-border-color);
+}
+
+.offcanvas.show, .offcanvas.showing {
+  background: var(--gradient-dark-solid);
+}
+
 /* === SCROLLBAR === */
 html {
   scrollbar-color: var(--neon-purple) var(--deep-space);
@@ -598,6 +648,24 @@ html {
   background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #000;
+  font-size: 1.1rem;
+}
+
+a:hover .user-avatar {
+  background: var(--gradient-cyber);
+  color: white;
 }
 
 /* === COLORES DE TEXTO === */
