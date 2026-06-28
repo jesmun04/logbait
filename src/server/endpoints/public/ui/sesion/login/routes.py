@@ -6,6 +6,10 @@ bp = Blueprint('login', __name__)
 
 @bp.route('/login', methods=['GET', 'POST'])
 def home():
+    if current_user.is_authenticated:
+        flash('La sesión actual debe cerrarse antes de iniciar una nueva')
+        return redirect(url_for('dashboard.home'))
+
     if request.method == 'POST':
         try:
             username = request.form['username']

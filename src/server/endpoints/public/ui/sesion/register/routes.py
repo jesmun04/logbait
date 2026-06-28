@@ -6,6 +6,10 @@ bp = Blueprint('register', __name__)
 
 @bp.route('/register', methods=['GET', 'POST'])
 def home():
+    if current_user.is_authenticated:
+        flash('La sesión actual debe cerrarse antes de registrar una nueva cuenta')
+        return redirect(url_for('dashboard.home'))
+    
     if request.method == 'POST':
         try:
             username = request.form['username']
