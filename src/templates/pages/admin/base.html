@@ -11,14 +11,20 @@
 
 {% block navbar_entries %}
 {% if current_user.is_authenticated %}
-<a class="nav-link" href="{{ url_for('admin_usuarios.home') }}">
-    <i class="fas fa-users me-1"></i>Usuarios
+<a class="nav-link {{ 'active' if request.endpoint == 'admin_usuarios.home' }}" href="{{ url_for('admin_usuarios.home') }}">
+    <span class="nav-link-label">
+        <i class="fas fa-users me-1"></i>Usuarios
+    </span>
 </a>
-<a class="nav-link" href="{{ url_for('admin_apuestas.home') }}">
-    <i class="fas fa-coins me-1"></i>Apuestas
+<a class="nav-link {{ 'active' if request.endpoint == 'admin_apuestas.home' }}" href="{{ url_for('admin_apuestas.home') }}">
+    <span class="nav-link-label">
+        <i class="fas fa-coins me-1"></i>Apuestas
+    </span>
 </a>
-<a class="nav-link" href="{{ url_for('admin_estadisticas.home') }}">
-    <i class="fas fa-chart-column me-1"></i>Estadísticas
+<a class="nav-link {{ 'active' if request.endpoint == 'admin_estadisticas.home' }}" href="{{ url_for('admin_estadisticas.home') }}">
+    <span class="nav-link-label">
+        <i class="fas fa-chart-column me-1"></i>Estadísticas
+    </span>
 </a>
 {% endif %}
 {% endblock %}

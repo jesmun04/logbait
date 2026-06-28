@@ -194,7 +194,7 @@ a.navbar-brand:hover {
 
 .navbar-nav .nav-link {
   font-family: var(--font-family-body);
-  color: #b0b0ff !important;
+  color: #b0b0ff;
   font-weight: 600;
   padding: 0.7rem 1.2rem;
   border-radius: var(--border-radius-button);
@@ -206,17 +206,22 @@ a.navbar-brand:hover {
   transition: all 0.25s ease;
 }
 
+.navbar-nav .nav-link.active:not(:hover) .nav-link-label {
+  color: white;
+  border-bottom: 3px solid; 
+  border-image: var(--gradient-sunset) 1;
+}
+
 .navbar-nav .nav-link:hover,
-.navbar-nav .nav-link.active,
 .nav-item a:hover .user-avatar {
   box-shadow: 0 3px 0 var(--neon-cyan);
   transform: translateY(-2px);
 }
 
-.navbar-nav .nav-link:hover,
-.navbar-nav .nav-link.active {
+.navbar-nav .nav-link:hover {
+  text-decoration: none;
   border-color: var(--neon-cyan);
-  color: white !important;
+  color: white;
   background: var(--gradient-cyber);
 }
 

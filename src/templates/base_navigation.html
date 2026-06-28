@@ -74,11 +74,15 @@
                 </div>
             </div>
             {% else %}
-            <a class="nav-link {{ 'active' if request.endpoint == 'login' }}" href="{{ url_for('login.home') }}">
-                <i class="fas fa-sign-in-alt me-1"></i>Iniciar sesión
+            <a class="nav-link {{ 'active' if request.endpoint == 'login.home' }}" href="{{ url_for('login.home') }}">
+                <span class="nav-link-label">
+                    <i class="fas fa-sign-in-alt me-1"></i>Iniciar sesión
+                </span>
             </a>
-            <a class="nav-link {{ 'active' if request.endpoint == 'register' }}" href="{{ url_for('register.home') }}">
-                <i class="fas fa-user-plus me-1"></i>Registrarse
+            <a class="nav-link {{ 'active' if request.endpoint == 'register.home' }}" href="{{ url_for('register.home') }}">
+                <span class="nav-link-label">
+                    <i class="fas fa-user-plus me-1"></i>Registrarse
+                </span>
             </a>
             {% endif %}
         </div>
