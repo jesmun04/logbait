@@ -1,4 +1,4 @@
-from flask import flash, redirect, url_for
+from flask import flash, redirect, url_for, abort
 from flask_login import current_user
 from functools import wraps
 
@@ -15,11 +15,9 @@ def require_admin():
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if not current_user.is_authenticated:
-                flash('Debes iniciar sesión para acceder al panel administrativo.')
-                return redirect(url_for('login.home'))
+                abort(401)
             if not is_admin_user():
-                flash('Acceso denegado. Se requieren privilegios de administrador.')
-                return redirect(url_for('dashboard.home'))
+                abort(403)
             return f(*args, **kwargs)
         return decorated_function
     return decorator

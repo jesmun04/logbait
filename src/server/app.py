@@ -45,8 +45,9 @@ app.jinja_env.globals["get_headings"] = get_headings
 # Inicializar extensiones
 db.init_app(app)
 login_manager = LoginManager()
+login_manager.login_message = "Inicia sesión para acceder a esta página"
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'login.home'
 
 # SOCKETIO SIMPLIFICADO
 is_production = os.environ.get('DATABASE_URL') is not None
