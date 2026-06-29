@@ -8,6 +8,72 @@ Inicio
 
 {% set demo_ui = true %}
 
+{% set juegos = [
+    {
+        "name": "blackjack",
+        "title": "Blackjack",
+        "emoji": "🎲",
+        "card_layout": "col-12 col-lg-4 col-md-6",
+        "singleplayer": true,
+        "multiplayer": true,
+        "desc": "Blackjack: el clásico juego de cartas donde el objetivo es alcanzar 21 sin pasarse. Demuestra tu estrategia y reta al crupier en cada mano. ♠️♦️"
+    },
+    {
+        "name": "ruleta",
+        "title": "Ruleta europea",
+        "emoji": "🎯",
+        "card_layout": "col-12 col-lg-4 col-md-6",
+        "singleplayer": true,
+        "multiplayer": true,
+        "desc": "Ruleta: el icónico juego de casino donde la emoción gira sin parar. Apuesta a tu número, color o combinación favorita y mira cómo la bola recorre el tambor hasta decidir tu suerte. 🎯💫 Perfecta mezcla de azar y estrategia, ideal para quienes disfrutan la adrenalina de cada giro y la posibilidad de grandes premios en cada ronda. 🔴⚫💰"
+    },
+    {
+        "name": "coinflip",
+        "title": "Coinflip",
+        "emoji": "🪙",
+        "card_layout": "col-12 col-lg-4 col-md-6",
+        "singleplayer": true,
+        "multiplayer": true,
+        "desc": "Coinflip: un juego rápido y emocionante donde apuestas por cara o cruz. Simple pero lleno de adrenalina: elige tu lado, mira girar la moneda y descubre si la suerte está de tu parte. Perfecto para quienes buscan acción instantánea y resultados al momento."
+    },
+    {
+        "name": "poker",
+        "title": "Póker",
+        "emoji": "🃏",
+        "card_layout": "col-12 col-xxl-3 col-lg-6 col-md-6",
+        "singleplayer": false,
+        "multiplayer": true,
+        "desc": "Póker: el legendario juego de estrategia, habilidad y nervios de acero. Forma la mejor mano posible, apuesta con inteligencia y lee a tus oponentes para llevarte el bote. Ideal para quienes disfrutan de la táctica y el desafío mental en cada ronda. ♣️♥️"
+    },
+    {
+        "name": "caballos",
+        "title": "Carrera de caballos",
+        "emoji": "🏇",
+        "card_layout": "col-12 col-xxl-3 col-lg-6 col-md-6",
+        "singleplayer": true,
+        "multiplayer": true,
+        "desc": "Carrera de caballos: vive la emoción de las pistas apostando por tu corcel favorito. Observa la intensidad de cada tramo, siente la adrenalina en la recta final y celebra la victoria cuando tu caballo cruza la meta. 🏇💨"
+    },
+    {
+        "name": "slots",
+        "title": "Tragaperras",
+        "emoji": "🎰",
+        "card_layout": "col-12 col-xxl-3 col-lg-6 col-md-6",
+        "singleplayer": true,
+        "multiplayer": false,
+        "desc": "Tragaperras: el clásico de los casinos reinventado. Gira los rodillos, combina símbolos y descubre premios sorprendentes. Colores, sonido y emoción en cada tirada… ¡la suerte podría cambiarte en un segundo! 🎰✨"
+    },
+    {
+        "name": "quiniela",
+        "title": "Quiniela deportiva",
+        "emoji": "⚽",
+        "card_layout": "col-12 col-xxl-3 col-lg-6",
+        "singleplayer": true,
+        "multiplayer": false,
+        "desc": "Quiniela Deportiva: el emocionante juego donde predices el resultado de los partidos. Selecciona tus equipos favoritos y sube la adrenalina mientras esperas el pitido final. Ideal para los aficionados al deporte que disfrutan de la estrategia y la anticipación. 💪⚽🏀"
+    }
+] %}
+
 {% import "partials/agregar_fondos.html" as parcial_agregar_fondos without context %}
 {% import "partials/sala_contents.html" as parcial_sala_contents without context %}
 
@@ -88,8 +154,8 @@ Inicio
 
 {% block content %}
 <!-- Sección de multijugador -->
-<div class="row g-md-5 g-3 mb-5 justify-content-md-between justify-content-center align-items-center">
-    <div class="col-lg-6 col-md-7 col-12 text-md-start text-center order-md-2">
+<div class="row g-md-5 g-3 pb-5 justify-content-md-between justify-content-center align-items-center">
+    <div class="col-lg-6 col-md-7 col-12 text-md-start text-center animated-translateY order-md-2">
         <span class="badge text-uppercase fs-6 mb-3" style="background: var(--gradient-blueish); color: black;">
             <i class="fa-solid fa-users me-1"></i>
             Modo multijugador
@@ -109,7 +175,7 @@ Inicio
             </p>
         </div>
     </div>
-    <div class="col-xl-5 col-lg-6 col-md-5 col-11 pe-none user-select-none order-md-1">
+    <div class="col-xl-5 col-lg-6 col-md-5 col-11 animated-rotate pe-none user-select-none order-md-1">
         <div class="position-relative">
             <div class="fade-out-gradient" style="max-height: 26em; width: 80%;">
                 {% with compact_view = true %}
@@ -129,8 +195,8 @@ Inicio
 </div>
 
 <!-- Sección de fondos virtuales -->
-<div class="row g-md-5 g-3 mb-5 justify-content-md-between justify-content-center align-items-center">
-    <div class="col-lg-6 col-md-7 col-12 text-md-start text-center">
+<div class="row g-md-5 g-3 py-5 justify-content-md-between justify-content-center align-items-center">
+    <div class="col-lg-6 col-md-7 col-12 text-md-start text-center animated-translateY">
         <span class="badge text-uppercase fs-6 mb-3" style="background: var(--gradient-blueish); color: black;">
             <i class="fa-solid fa-coins me-1"></i>
             Fondos virtuales
@@ -149,7 +215,7 @@ Inicio
             </p>
         </div>
     </div>
-    <div class="col-xl-5 col-lg-6 col-md-5 col-11 pe-none user-select-none">
+    <div class="col-xl-5 col-lg-6 col-md-5 col-11 animated-rotate pe-none user-select-none">
         <div class="card card-body p-4 fade-out-gradient" style="max-height: 24em;">
             {{ parcial_agregar_fondos.content(demo_ui) }}
         </div>
@@ -157,7 +223,7 @@ Inicio
 </div>
 
 <!-- Sección de juegos -->
-<div class="row g-4 mb-5 justify-content-center">
+<div class="row g-4 py-5 justify-content-center">
     <div class="col-12 text-center">
         <div class="animated-translateY">
             <div class="text-cyan">
@@ -172,99 +238,22 @@ Inicio
         </div>
     </div>
 
-    <!-- Blackjack -->
-    <div class="col-12 col-lg-4 col-md-6">
-        <div class="card hover-card clickable h-100 animated-rotate" data-game="blackjack">
-            <img src="{{ url_for('static', filename='img/blackjack.jpeg') }}" alt="Blackjack" class="game-image">
+    {% for juego in juegos %}
+    <div class="{{ juego.card_layout }}">
+        <div class="card hover-card clickable h-100 animated-rotate" data-game="{{ juego.name }}">
+            <img src="{{ url_for('static', filename='img/' + juego.name + '.jpeg') }}" alt="{{ juego.title }}" class="game-image">
             <div class="card-body text-center game-content">
-                <h3 class="card-title game-title">Blackjack</h3>
+                <h3 class="card-title game-title">{{ juego.title }}</h3>
                 <p class="game-description">
-                    Blackjack: el clásico juego de cartas donde el objetivo es alcanzar 21 sin pasarse. Demuestra tu estrategia y reta al crupier en cada mano. ♠️♦️
+                    {{ juego.desc }}
                 </p>
             </div>
         </div>
     </div>
-
-    <!-- Ruleta -->
-    <div class="col-12 col-lg-4 col-md-6">
-        <div class="card hover-card clickable h-100 animated-rotate" data-game="ruleta">
-            <img src="{{ url_for('static', filename='img/ruleta.jpeg') }}" alt="Ruleta" class="game-image">
-            <div class="card-body text-center game-content">
-                <h3 class="card-title game-title">Ruleta</h3>
-                <p class="game-description">
-                    Ruleta: el icónico juego de casino donde la emoción gira sin parar. Apuesta a tu número, color o combinación favorita y mira cómo la bola recorre el tambor hasta decidir tu suerte. 🎯💫 Perfecta mezcla de azar y estrategia, ideal para quienes disfrutan la adrenalina de cada giro y la posibilidad de grandes premios en cada ronda. 🔴⚫💰
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Coinflip -->
-    <div class="col-12 col-lg-4 col-md-6">
-        <div class="card hover-card clickable h-100 animated-rotate" data-game="coinflip">
-            <img src="{{ url_for('static', filename='img/coinflip.jpeg') }}" alt="Coinflip" class="game-image">
-            <div class="card-body text-center game-content">
-                <h3 class="card-title game-title">Coinflip</h3>
-                <p class="game-description">
-                    Coinflip: un juego rápido y emocionante donde apuestas por cara o cruz. Simple pero lleno de adrenalina: elige tu lado, mira girar la moneda y descubre si la suerte está de tu parte. Perfecto para quienes buscan acción instantánea y resultados al momento.
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Poker -->
-    <div class="col-12 col-xxl-3 col-lg-6 col-md-6">
-        <div class="card hover-card clickable h-100 animated-rotate" data-game="poker">
-            <img src="{{ url_for('static', filename='img/poker.jpeg') }}" alt="Poker" class="game-image">
-            <div class="card-body text-center game-content">
-                <h3 class="card-title game-title">Póker</h3>
-                <p class="game-description">
-                    Póker: el legendario juego de estrategia, habilidad y nervios de acero. Forma la mejor mano posible, apuesta con inteligencia y lee a tus oponentes para llevarte el bote. Ideal para quienes disfrutan de la táctica y el desafío mental en cada ronda. ♣️♥️
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Carreras de Caballos -->
-    <div class="col-12 col-xxl-3 col-lg-6 col-md-6">
-        <div class="card hover-card clickable h-100 animated-rotate" data-game="caballos">
-            <img src="{{ url_for('static', filename='img/caballos.jpeg') }}" alt="Carreras de Caballos" class="game-image">
-            <div class="card-body text-center game-content">
-                <h3 class="card-title game-title">Carrera de caballos</h3>
-                <p class="game-description">
-                    Carrera de caballos: vive la emoción de las pistas apostando por tu corcel favorito. Observa la intensidad de cada tramo, siente la adrenalina en la recta final y celebra la victoria cuando tu caballo cruza la meta. 🏇💨
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tragaperras -->
-    <div class="col-12 col-xxl-3 col-lg-6 col-md-6">
-        <div class="card hover-card clickable h-100 animated-rotate" data-game="slots">
-            <img src="{{ url_for('static', filename='img/slots.jpeg') }}" alt="Tragaperras" class="game-image">
-            <div class="card-body text-center game-content">
-                <h3 class="card-title game-title">Tragaperras</h3>
-                <p class="game-description">
-                    Tragaperras: el clásico de los casinos reinventado. Gira los rodillos, combina símbolos y descubre premios sorprendentes. Colores, sonido y emoción en cada tirada… ¡la suerte podría cambiarte en un segundo! 🎰✨
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quiniela -->
-    <div class="col-12 col-xxl-3 col-lg-6">
-        <div class="card hover-card clickable h-100 animated-rotate" data-game="quiniela">
-            <img src="{{ url_for('static', filename='img/quiniela.jpeg') }}" alt="Quiniela deportiva" class="game-image">
-            <div class="card-body text-center game-content">
-                <h3 class="card-title game-title">Quiniela deportiva</h3>
-                <p class="game-description">
-                    Quiniela deportiva: el emocionante juego donde predices el resultado de los partidos. Selecciona tus equipos favoritos y sube la adrenalina mientras esperas el pitido final. Ideal para los aficionados al deporte que disfrutan de la estrategia y la anticipación. 💪⚽🏀
-                </p>
-            </div>
-        </div>
-    </div>
+    {% endfor %}
 </div>
 
-<div class="row justify-content-center">
+<div class="row pt-4 justify-content-center">
     <div class="col-12">
         <!-- Sección de desafío -->
         <div class="card translucent-card animated-translateY">
@@ -274,11 +263,11 @@ Inicio
                 <p>
                     Ya te has unido a nuestra plataforma y estás a un paso de comenzar: entra en el Dashboard para jugar, revisa tu progreso o configura tus datos.
                 </p>
-                <div class="mt-4">
+                <div class="mt-4 d-flex flex-column align-items-center gap-3">
                     <a href="{{ url_for('dashboard.home') }}" class="btn btn-primary btn-lg">
                         <i class="fas fa-home me-2"></i>Ir al Dashboard
                     </a>
-                    <div class="d-flex flex-md-row flex-column justify-content-center gap-3 mt-4">
+                    <div class="btn-group" role="group">
                         <a href="{{ url_for('estadisticas.home') }}" class="btn btn-outline-primary">Ver mis estadísticas</a>
                         <a href="{{ url_for('perfil.home') }}" class="btn btn-outline-primary">Configurar perfil</a>
                     </div>
@@ -431,48 +420,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const gameCards = document.querySelectorAll('.clickable, .clickable'); // corrige posibles typos
     const gameData = {
-        'blackjack': {
-            'emoji': "🎲",
-            'singleplayer': true,
-            'multiplayer': true,
-            'description': 'Blackjack: el clásico juego de cartas donde el objetivo es alcanzar 21 sin pasarse. Demuestra tu estrategia y reta al crupier en cada mano. ♠️♦️'
+        {% for juego in juegos %}
+        '{{ juego.name }}': {
+            'emoji': "{{ juego.emoji }}",
+            'singleplayer': {{ 'true' if juego.singleplayer else 'false' }},
+            'multiplayer': {{ 'true' if juego.multiplayer else 'false' }},
+            'description': '{{ juego.desc }}'
         },
-        'ruleta': {
-            'emoji': "🎯",
-            'singleplayer': true,
-            'multiplayer': true,
-            'description': 'Ruleta: el icónico juego de casino donde la emoción gira sin parar. Apuesta a tu número, color o combinación favorita y mira cómo la bola recorre el tambor hasta decidir tu suerte. 🎯💫 Perfecta mezcla de azar y estrategia, ideal para quienes disfrutan la adrenalina de cada giro y la posibilidad de grandes premios en cada ronda. 🔴⚫💰'
-        },
-        'coinflip': {
-            'emoji': "🪙",
-            'singleplayer': true,
-            'multiplayer': true,
-            'description': 'Coinflip: un juego rápido y emocionante donde apuestas por cara o cruz. Simple pero lleno de adrenalina: elige tu lado, mira girar la moneda y descubre si la suerte está de tu parte. Perfecto para quienes buscan acción instantánea y resultados al momento.'
-        },
-        'poker': {
-            'emoji': "🃏",
-            'singleplayer': false,
-            'multiplayer': true,
-            'description': 'Póker: el legendario juego de estrategia, habilidad y nervios de acero. Forma la mejor mano posible, apuesta con inteligencia y lee a tus oponentes para llevarte el bote. Ideal para quienes disfrutan de la táctica y el desafío mental en cada ronda. ♣️♥️'
-        },
-        'caballos': {
-            'emoji': "🏇",
-            'singleplayer': true,
-            'multiplayer': true,
-            'description': 'Carrera de caballos: vive la emoción de las pistas apostando por tu corcel favorito. Observa la intensidad de cada tramo, siente la adrenalina en la recta final y celebra la victoria cuando tu caballo cruza la meta. 🏇💨'
-        },
-        'slots': {
-            'emoji': "🎰",
-            'singleplayer': true,
-            'multiplayer': false,
-            'description': 'Tragaperras: el clásico de los casinos reinventado. Gira los rodillos, combina símbolos y descubre premios sorprendentes. Colores, sonido y emoción en cada tirada… ¡la suerte podría cambiarte en un segundo! 🎰✨'
-        },
-        'quiniela': {
-            'emoji': "⚽",
-            'singleplayer': true,
-            'multiplayer': false,
-            'description': 'Quiniela Deportiva: el emocionante juego donde predices el resultado de los partidos. Selecciona tus equipos favoritos y sube la adrenalina mientras esperas el pitido final. Ideal para los aficionados al deporte que disfrutan de la estrategia y la anticipación. 💪⚽🏀'
-        }
+        {% endfor %}
     };
 
     gameCards.forEach(card => {
