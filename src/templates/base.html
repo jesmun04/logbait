@@ -78,38 +78,66 @@
     <!-- Contenido -->
     {% block base_content %}{% endblock %}
 
-    <!-- Footer Futurista -->
+    <!-- Pie de página -->
     <footer class="mt-6">
         <div class="container py-5">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="text-gradient mb-3">
-                        <span class="logo-icon me-2" style="background: var(--neon-cyan);"></span>LogBait Casa de Apuestas Online
-                    </h5>
-                    <p class="text-muted mb-0" style="line-height: 1.6;">
-                        Plataforma educativa para el estudio de probabilidades 
-                        y algoritmos de toma de decisiones en entornos controlados.
-                    </p>
-                    <p class="small mt-3">
-                        <a href="{{ url_for('flatpage', path='faq') }}">Preguntas frecuentes</a>
-                        <span class="mx-2">•</span>
-                        <a href="{{ url_for('flatpage', path='terminos_uso') }}">Términos y Condiciones de Uso</a>
-                        <span class="mx-2">•</span>
-                        <a href="{{ url_for('flatpage', path='politica_privacidad') }}">Política de Privacidad</a>
-                    </p>
+            <div class="row g-3 g-md-4">
+                <div class="col-lg-2 col-md-4 order-lg-2">
+                    <h6>Plataforma</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('index.home') }}">Página principal</a>
+                        </li>
+                    </ul>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <div class="d-flex flex-row justify-content-end align-items-center mb-3">
-                        <span class="badge me-2" style="background: var(--gradient-cyber);">v0.5 (<abbr title="Release Candidate">RC</abbr>) - Sprint V</span>
-                        <span class="badge me-2" style="background: var(--gradient-matrix); color: black;">SISTEMA ACTIVO</span>
-                        <a class="fs-3 link-light" title="Repositorio de LogBait en GitHub" href="https://github.com/UCM-FDI-DISIA/proyectois1-thatwasepic"><i class="fa-brands fa-github"></i></a>
-                    </div>
-                    <p class="text-muted mb-2">
-                        <i class="fas fa-shield-alt text-warning me-1"></i>
-                        Entorno educativo seguro - Créditos virtuales
+                <div class="col-lg-2 col-md-4 order-lg-3">
+                    <h6>Información</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('flatpage', path='terminos_uso') }}">Términos y Condiciones de Uso</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('flatpage', path='politica_privacidad') }}">Política de Privacidad</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 order-lg-4">
+                    <h6>Ayuda y soporte</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('flatpage', path='faq') }}">Preguntas frecuentes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://github.com/UCM-FDI-DISIA/proyectois1-thatwasepic/wiki">Wiki del proyecto</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://github.com/UCM-FDI-DISIA/proyectois1-thatwasepic/issues/new">Informar sobre un problema</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-6 col-md-12 order-lg-1">
+                    <hr class="mt-0 mb-4 d-lg-none">
+                    <h5 class="text-gradient mb-2">
+                        <span class="logo-icon me-2" style="background: var(--neon-cyan);"></span>LogBait
+                    </h5>
+                    <p class="text-muted mb-3">
+                        Plataforma web educativa de simulación de apuestas con divisas virtuales.
                     </p>
-                    <p class="text-muted mb-0">
-                        &copy; 2025 LogBait. Todos los sistemas operativos.
+                    <div class="d-flex flex-row gap-2 justify-content-start align-items-center mb-3">
+                        <span class="badge" style="background: var(--gradient-cyber);">v0.5 (<abbr title="Release Candidate">RC</abbr>) - Sprint V</span>
+                        <span class="badge" style="background: var(--gradient-matrix); color: black;">SISTEMA ACTIVO</span>
+                    </div>
+                    <div class="d-flex flex-row gap-2 justify-content-start align-items-center mb-1">
+                        <a class="fs-3 link-light" title="Repositorio de LogBait en GitHub" href="https://github.com/UCM-FDI-DISIA/proyectois1-thatwasepic">
+                            <i class="fa-brands fa-github"></i>
+                        </a>
+                        <span class="text-muted small">
+                            LogBait es un proyecto de código abierto. Cualquier incidencia
+                            puede ser reportada en el rastreador de problemas del repositorio.
+                        </span>
+                    </div>
+                    <p class="text-muted small">
+                        &copy; 2026 LogBait.
                     </p>
                 </div>
             </div>

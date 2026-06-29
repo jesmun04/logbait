@@ -564,6 +564,10 @@ footer h5 {
   -webkit-text-fill-color: transparent;
 }
 
+.nav.flex-column .nav-link {
+  padding-left: 0;
+}
+
 /* === CUADROS DE DIÁLOGO MODALES === */
 .modal {
   background-color: rgba(0, 0, 0, 0.6);
