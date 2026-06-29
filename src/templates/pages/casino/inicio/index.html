@@ -16,7 +16,8 @@ Inicio
         "card_layout": "col-12 col-lg-4 col-md-6",
         "singleplayer": true,
         "multiplayer": true,
-        "desc": "Blackjack: el clásico juego de cartas donde el objetivo es alcanzar 21 sin pasarse. Demuestra tu estrategia y reta al crupier en cada mano. ♠️♦️"
+        "desc": "¡Domina la mesa, llega a 21 sin pasarte y siente la adrenalina del crupier! ♠️",
+        "long_desc": "En Blackjack el objetivo es obtener una mano cuyo valor total sea lo más cercano a 21 sin excederlo. Cada carta vale su número, las figuras valen 10 y el As puede valer 1 u 11. Después de recibir dos cartas, decides si pedir más, plantarte o doblar la apuesta, compitiendo contra el crupier que sigue reglas estrictas."
     },
     {
         "name": "ruleta",
@@ -25,7 +26,8 @@ Inicio
         "card_layout": "col-12 col-lg-4 col-md-6",
         "singleplayer": true,
         "multiplayer": true,
-        "desc": "Ruleta: el icónico juego de casino donde la emoción gira sin parar. Apuesta a tu número, color o combinación favorita y mira cómo la bola recorre el tambor hasta decidir tu suerte. 🎯💫 Perfecta mezcla de azar y estrategia, ideal para quienes disfrutan la adrenalina de cada giro y la posibilidad de grandes premios en cada ronda. 🔴⚫💰"
+        "desc": "¡Gira la rueda, elige tu número o color y descubre la emoción del giro! 🎡",
+        "long_desc": "La ruleta europea cuenta con 37 casillas (0‑36). El jugador coloca fichas en números, colores, pares/impares o rangos, y la bola gira hasta detenerse. Si la bola cae en la casilla elegida, el jugador gana según la cuota de la apuesta. El cero actúa como ventaja de la casa."
     },
     {
         "name": "coinflip",
@@ -34,7 +36,8 @@ Inicio
         "card_layout": "col-12 col-lg-4 col-md-6",
         "singleplayer": true,
         "multiplayer": true,
-        "desc": "Coinflip: un juego rápido y emocionante donde apuestas por cara o cruz. Simple pero lleno de adrenalina: elige tu lado, mira girar la moneda y descubre si la suerte está de tu parte. Perfecto para quienes buscan acción instantánea y resultados al momento."
+        "desc": "¡Apuesta a cara o cruz, lanza la moneda y vive la sorpresa del resultado! 🪙",
+        "long_desc": "En Coinflip el jugador elige entre cara o cruz y lanza una moneda virtual. Si el resultado coincide con su elección gana la apuesta; de lo contrario la pierde. Es un juego de puro azar con resultados instantáneos."
     },
     {
         "name": "poker",
@@ -43,7 +46,8 @@ Inicio
         "card_layout": "col-12 col-xxl-3 col-lg-6 col-md-6",
         "singleplayer": false,
         "multiplayer": true,
-        "desc": "Póker: el legendario juego de estrategia, habilidad y nervios de acero. Forma la mejor mano posible, apuesta con inteligencia y lee a tus oponentes para llevarte el bote. Ideal para quienes disfrutan de la táctica y el desafío mental en cada ronda. ♣️♥️"
+        "desc": "Estrategia, faroles y grandes botes: ¡conviértete en el as del poker! 🂡",
+        "long_desc": "El póker reúne a varios jugadores que reciben cartas ocultas y comparten cartas comunitarias. Cada ronda permite apostar, subir o retirarse según la fuerza percibida de la mano. Al final, la mejor combinación según la tabla estándar se lleva el bote."
     },
     {
         "name": "caballos",
@@ -52,7 +56,8 @@ Inicio
         "card_layout": "col-12 col-xxl-3 col-lg-6 col-md-6",
         "singleplayer": true,
         "multiplayer": true,
-        "desc": "Carrera de caballos: vive la emoción de las pistas apostando por tu corcel favorito. Observa la intensidad de cada tramo, siente la adrenalina en la recta final y celebra la victoria cuando tu caballo cruza la meta. 🏇💨"
+        "desc": "Elige tu corcel, apuesta a la velocidad y vibra con cada sprint final. 🏇",
+        "long_desc": "En la Carrera de caballos los jugadores seleccionan un caballo y colocan su apuesta antes de que comience la carrera virtual. Cada caballo tiene probabilidades distintas; al llegar la meta, se paga a los que eligieron al ganador según esas probabilidades."
     },
     {
         "name": "slots",
@@ -61,7 +66,8 @@ Inicio
         "card_layout": "col-12 col-xxl-3 col-lg-6 col-md-6",
         "singleplayer": true,
         "multiplayer": false,
-        "desc": "Tragaperras: el clásico de los casinos reinventado. Gira los rodillos, combina símbolos y descubre premios sorprendentes. Colores, sonido y emoción en cada tirada… ¡la suerte podría cambiarte en un segundo! 🎰✨"
+        "desc": "Haz girar los carretes, alinea símbolos y... ¡dispara premios al instante! 🎰",
+        "long_desc": "Las tragaperras presentan carretes con símbolos. El jugador apuesta una cantidad y pulsa un botón para girar los carretes. Si los símbolos alineados forman una combinación ganadora según la tabla de pagos, se otorga un premio que puede multiplicar la apuesta."
     },
     {
         "name": "quiniela",
@@ -70,7 +76,8 @@ Inicio
         "card_layout": "col-12 col-xxl-3 col-lg-6",
         "singleplayer": true,
         "multiplayer": false,
-        "desc": "Quiniela Deportiva: el emocionante juego donde predices el resultado de los partidos. Selecciona tus equipos favoritos y sube la adrenalina mientras esperas el pitido final. Ideal para los aficionados al deporte que disfrutan de la estrategia y la anticipación. 💪⚽🏀"
+        "desc": "Predice los resultados, acumula puntos y celebra cada victoria. ⚽",
+        "long_desc": "En la Quiniela deportiva el jugador elige el resultado (victoria, empate o derrota) de varios partidos programados. Cada pronóstico acertado suma puntos y genera ganancias según las cuotas establecidas. Es una combinación de conocimiento deportivo y suerte."
     }
 ] %}
 
@@ -240,13 +247,16 @@ Inicio
 
     {% for juego in juegos %}
     <div class="{{ juego.card_layout }}">
-        <div class="card hover-card clickable h-100 animated-rotate" data-game="{{ juego.name }}">
+        <div class="card hover-card clickable h-100 animated-rotate" onclick="showGameModal('{{ juego.name }}', '{{ juego.title }}')">
             <img src="{{ url_for('static', filename='img/' + juego.name + '.jpeg') }}" alt="{{ juego.title }}" class="game-image">
             <div class="card-body text-center game-content">
                 <h3 class="card-title game-title">{{ juego.title }}</h3>
-                <p class="game-description">
+                <p class="game-description mb-1">
                     {{ juego.desc }}
                 </p>
+                <a class="small" onclick="showGameModal('{{ juego.name }}', '{{ juego.title }}')" href="javascript:void(0);">
+                    Ver más detalles
+                </a>
             </div>
         </div>
     </div>
@@ -410,55 +420,47 @@ Inicio
 
 {% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const gameModal = new bootstrap.Modal(document.getElementById('gameModal'));
-    const modalImage = document.getElementById('game-modal-image');
-    const modalIcon = document.getElementById('modalGameIcon');
-    const modalTitle = document.getElementById('modalGameTitle');
-    const modalBadges = document.getElementById('modalGameBadges');
-    const modalDescription = document.getElementById('modalGameDescription');
+const gameData = {
+    {% for juego in juegos %}
+    '{{ juego.name }}': {
+        'emoji': "{{ juego.emoji }}",
+        'singleplayer': {{ 'true' if juego.singleplayer else 'false' }},
+        'multiplayer': {{ 'true' if juego.multiplayer else 'false' }},
+        'description': '{{ juego.long_desc }}'
+    },
+    {% endfor %}
+};
 
-    const gameCards = document.querySelectorAll('.clickable, .clickable'); // corrige posibles typos
-    const gameData = {
-        {% for juego in juegos %}
-        '{{ juego.name }}': {
-            'emoji': "{{ juego.emoji }}",
-            'singleplayer': {{ 'true' if juego.singleplayer else 'false' }},
-            'multiplayer': {{ 'true' if juego.multiplayer else 'false' }},
-            'description': '{{ juego.desc }}'
-        },
-        {% endfor %}
-    };
+const gameModal = new bootstrap.Modal(document.getElementById('gameModal'));
+const modalImage = document.getElementById('game-modal-image');
+const modalIcon = document.getElementById('modalGameIcon');
+const modalTitle = document.getElementById('modalGameTitle');
+const modalBadges = document.getElementById('modalGameBadges');
+const modalDescription = document.getElementById('modalGameDescription');
 
-    gameCards.forEach(card => {
-        card.addEventListener('click', () => {
-            const gameName = card.getAttribute('data-game');
-            const title = card.querySelector('.game-title').textContent;
+function showGameModal(gameName, title) {
+    modalImage.style.backgroundImage = `url("/static/img/${gameName}.jpeg")`
+    modalIcon.textContent = gameData[gameName].emoji || '🎮';
+    modalTitle.textContent = title;
+    modalDescription.textContent = gameData[gameName].description || 'Descripción no disponible.';
 
-            modalImage.style.backgroundImage = `url("/static/img/${gameName}.jpeg")`
-            modalIcon.textContent = gameData[gameName].emoji || '🎮';
-            modalTitle.textContent = title;
-            modalDescription.textContent = gameData[gameName].description || 'Descripción no disponible.';
+    modalBadges.innerHTML = "";
+    if (gameData[gameName].singleplayer) {
+        modalBadges.insertAdjacentHTML('beforeend', `
+            <span class="badge text-bg-info">
+                <i class="fas fa-user me-1"></i>Un jugador
+            </span>
+        `);
+    }
+    if (gameData[gameName].multiplayer) {
+        modalBadges.insertAdjacentHTML('beforeend', `
+            <span class="badge text-bg-success">
+                <i class="fas fa-users me-1"></i>Multijugador
+            </span>
+        `);
+    }
 
-            modalBadges.innerHTML = "";
-            if (gameData[gameName].singleplayer) {
-                modalBadges.insertAdjacentHTML('beforeend', `
-                    <span class="badge text-bg-info">
-                        <i class="fas fa-user me-1"></i>Un jugador
-                    </span>
-                `);
-            }
-            if (gameData[gameName].multiplayer) {
-                modalBadges.insertAdjacentHTML('beforeend', `
-                    <span class="badge text-bg-success">
-                        <i class="fas fa-users me-1"></i>Multijugador
-                    </span>
-                `);
-            }
-
-            gameModal.show();
-        });
-    });
-});
+    gameModal.show();
+}
 </script>
 {% endblock %}
