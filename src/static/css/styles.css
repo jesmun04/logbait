@@ -681,6 +681,12 @@ a:hover .user-avatar {
 .text-cyan { color: var(--neon-cyan); }
 .text-pink { color: var(--neon-pink); }
 
+.text-gradient-matrix {
+  background: var(--gradient-matrix);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
   .hero-title {
