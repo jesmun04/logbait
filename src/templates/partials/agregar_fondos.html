@@ -1,16 +1,20 @@
-{% macro content() %}
+{% macro content(demo_ui=false) %}
 <div class="d-flex flex-column justify-content-between gap-4 h-100">
     <div>
         <div class="text-center mb-4">
             <div class="display-4 fw-bold mb-2 balance-positive">
-                ${{ "%.2f"|format(user.balance) }}
+                {% if demo_ui %}
+                    $34550.00
+                {% else %}
+                    ${{ "%.2f"|format(user.balance) }}
+                {% endif %}
             </div>
             <p class="mb-4">Saldo disponible</p>
         </div>
 
         <div class="mb-4">
-            <label for="cantidad_fondos" class="form-label">
-                <i class="fas fa-money-bill-wave me-2"></i>AGREGAR FONDOS VIRTUALES
+            <label for="cantidad_fondos" class="form-label fw-bold">
+                <i class="fas fa-money-bill-wave me-2"></i>Agregar fondos virtuales
             </label>
             <div class="input-group">
                 <span class="input-group-text">
@@ -18,34 +22,21 @@
                 </span>
                 <input type="number" class="form-control" id="cantidad_fondos" 
                         placeholder="Cantidad" min="1" step="1">
-                <button class="btn btn-success" onclick="agregarFondos()">
-                    <i class="fas fa-rocket me-2"></i>AGREGAR
+                <button class="btn btn-success" {% if not demo_ui %} onclick="agregarFondos()" {% endif %}>
+                    <i class="fas fa-rocket me-2"></i>Agregar
                 </button>
             </div>
         </div>
 
         <!-- Opciones Rápidas -->
         <div class="row g-2">
+            {% for cantidad in [100, 500, 1000, 5000] %}
             <div class="col-6">
-                <button class="btn btn-outline-primary w-100" onclick="agregarRapido(100)">
-                    +$100
+                <button class="btn btn-outline-primary w-100" {% if not demo_ui %} onclick="agregarRapido({{ cantidad }})" {% endif %}>
+                    +${{ cantidad }}
                 </button>
             </div>
-            <div class="col-6">
-                <button class="btn btn-outline-primary w-100" onclick="agregarRapido(500)">
-                    +$500
-                </button>
-            </div>
-            <div class="col-6">
-                <button class="btn btn-outline-primary w-100" onclick="agregarRapido(1000)">
-                    +$1,000
-                </button>
-            </div>
-            <div class="col-6">
-                <button class="btn btn-outline-primary w-100" onclick="agregarRapido(5000)">
-                    +$5,000
-                </button>
-            </div>
+            {% endfor %}
         </div>
 
         <div id="resultado_fondos" class="mt-3"></div>
@@ -56,7 +47,7 @@
         <div class="d-flex">
             <i class="fas fa-robot me-3 display-6"></i>
             <div>
-                <h6 class="alert-heading mb-2">SISTEMA EDUCATIVO</h6>
+                <h6 class="alert-heading mb-2 text-uppercase">Sistema educativo</h6>
                 <p class="mb-0 text-small">
                     Los fondos son virtuales y se utilizan exclusivamente 
                     para fines educativos. ¡Disfruta aprendiendo!

@@ -1,9 +1,47 @@
 {% set compact_view = compact_view or false %}
+{% set demo_ui = demo_ui or false %}
 
-{% if salas.items %}
+{% if demo_ui %}
+  {% set datos_salas = [
+    {
+      "id": 1,
+      "nombre": "Partida de Póker",
+      "estado": "esperando",
+      "juego": "Póker",
+      "jugadores_actuales": 3,
+      "capacidad": 4,
+      "apuesta_minima": 30,
+      "owner": { "username": "poker.maximus" }
+    },
+    {
+      "id": 2,
+      "nombre": "Blackjack Clásico",
+      "estado": "esperando",
+      "juego": "Blackjack",
+      "jugadores_actuales": 1,
+      "capacidad": 4,
+      "apuesta_minima": 20,
+      "owner": { "username": "sofiaa17" }
+    },
+    {
+      "id": 3,
+      "nombre": "Ruleta Europea",
+      "estado": "esperando",
+      "juego": "Ruleta",
+      "jugadores_actuales": 1,
+      "capacidad": 2,
+      "apuesta_minima": 10,
+      "owner": { "username": "its_steven" }
+    }
+  ] %}
+{% else %}
+  {% set datos_salas = salas.items %}
+{% endif %}
+
+{% if datos_salas %}
 <div class="row g-3">
-    {% for sala in salas.items %}
-     {% if sala.jugadores_actuales > 0 and sala.estado == 'esperando' %}
+    {% for sala in datos_salas %}
+    {% if sala.jugadores_actuales > 0 and sala.estado == 'esperando' %}
     <div class="col-12">
         <div class="card hover-card translucent-card">
             <div class="card-body">
@@ -26,7 +64,7 @@
                         </div>
                     </div>
                     <div>
-                        <a href="{{ url_for('salas_espera.sala', sala_id=sala.id) }}" 
+                        <a {% if not demo_ui %} href="{{ url_for('salas_espera.sala', sala_id=sala.id) }}" {% endif %} 
                             class="btn btn-primary">
                             <i class="fas fa-door-open me-2"></i>Unirse
                         </a>
@@ -40,7 +78,7 @@
 </div>
 
 <!-- Paginación Bootstrap -->
-{% if salas.pages > 1 %}
+{% if not demo_ui and salas.pages > 1 %}
 <nav aria-label="Paginación de salas" class="mt-3">
   <ul class="pagination justify-content-center mb-0">
 

@@ -1,6 +1,32 @@
-{% macro content_chat(chat_height) %}
+{% macro content_chat(chat_height, demo_ui=false) %}
 <div id="chat-messages" class="pt-2" style="--height: {{ chat_height }}">
     <!-- Mensajes del chat -->
+     {% if demo_ui %}
+        <div class="chat-entry" data-user-id="3">
+            <div class="chat-message user">
+                <strong>paulasr_06:</strong> A ver si llega más gente
+                <small class="text-muted">19:36:17</small>
+            </div>
+        </div>
+        <div class="chat-entry">
+            <div class="chat-message system">
+                <strong>Sistema:</strong> pepe_09 se unió a la sala
+                <small class="text-muted">19:36:30</small>
+            </div>
+        </div>
+        <div class="chat-entry" data-user-id="2">
+            <div class="chat-message user">
+                <strong>poker.maximus:</strong> ya somos bastantes, empezamos la partida?
+                <small class="text-muted">19:36:41</small>
+            </div>
+        </div>
+        <div class="chat-entry" data-user-id="2">
+            <div class="chat-message user">
+                <strong>paulasr_06:</strong> SIII
+                <small class="text-muted">19:36:45</small>
+            </div>
+        </div>
+     {% endif %}
 </div>
 <div class="input-group">
     <input type="text" id="chat-input" class="form-control" placeholder="Escribe un mensaje...">
@@ -459,7 +485,9 @@ function limpiarNotificaciones() {
     });
 }
 </script>
+{% endmacro %}
 
+{% macro styles() %}
 <style>
 #chat-messages {
     --height: 250px;

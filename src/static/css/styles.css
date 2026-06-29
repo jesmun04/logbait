@@ -616,6 +616,10 @@ html {
   cursor: pointer;
 }
 
+.user-select-none {
+  user-select: none;
+}
+
 .cyber-grid {
   background:
     linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px),

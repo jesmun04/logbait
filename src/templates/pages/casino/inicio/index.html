@@ -6,6 +6,11 @@
 Inicio
 {% endblock %}
 
+{% set demo_ui = true %}
+
+{% import "partials/agregar_fondos.html" as parcial_agregar_fondos without context %}
+{% import "partials/sala_contents.html" as parcial_sala_contents without context %}
+
 {% block base_content %}
 <!-- Sección de presentación -->
 <div class="mt-5 animated-translateY">
@@ -78,15 +83,72 @@ Inicio
 
 <div id="gamesSection" class="pt-4">
     {{ super() }}
-</div></div>
+</div>
 {% endblock %}
 
 {% block content %}
+<!-- Sección de multijugador -->
+<div class="row g-md-5 g-3 mb-5 justify-content-md-between justify-content-center align-items-center">
+    <div class="col-lg-6 col-md-7 col-12 text-md-start text-center order-md-2">
+        <h2 class="text-cyan">Juega con varias personas en tiempo real</h2>
+        <div class="hero-subtitle mt-4">
+            <p>
+                Con el modo multijugador incluido, puedes jugar a una misma partida
+                con tantas personas como quieras.
+            </p>
+            <p>
+                Únete a salas existentes o crea una propia, comunícate con otros
+                mediante el chat multijugador, y controla tus interacciones con el
+                bloqueo de mensajes.
+            </p>
+        </div>
+    </div>
+    <div class="col-xl-5 col-lg-6 col-md-5 col-11 pe-none user-select-none order-md-1">
+        <div class="position-relative">
+            <div class="fade-out-gradient" style="max-height: 26em; width: 80%;">
+                {% with compact_view = true %}
+                    {% include "partials/lista_salas.html" %}
+                {% endwith %}
+            </div>
+            <div class="position-absolute bottom-0 end-0" style="width: 80%;">
+                <div class="card" style="max-height: 22em;">
+                    <div class="card-body cyber-grid pt-0">
+                        {{ parcial_sala_contents.content_chat(30, demo_ui) }}
+                        {{ parcial_sala_contents.styles() }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sección de fondos virtuales -->
+<div class="row g-md-5 g-3 mb-5 justify-content-md-between justify-content-center align-items-center">
+    <div class="col-lg-6 col-md-7 col-12 text-md-start text-center">
+        <h2 class="text-cyan">Agrega fondos libremente</h2>
+        <div class="hero-subtitle mt-4">
+            <p>
+                LogBait es una plataforma de simulación de apuestas: el dinero
+                empleado en ella no es real y se puede conseguir sin complicaciones.
+            </p>
+            <p>
+                Obtén tantos fondos virtuales como quieras para experimentar la
+                mecánica de cada juego con total libertad.
+            </p>
+        </div>
+    </div>
+    <div class="col-xl-5 col-lg-6 col-md-5 col-11 pe-none user-select-none">
+        <div class="card card-body p-4 fade-out-gradient" style="max-height: 24em;">
+            {{ parcial_agregar_fondos.content(demo_ui) }}
+        </div>
+    </div>
+</div>
+
 <!-- Sección de juegos -->
 <div class="row g-4 mb-5 justify-content-center">
     <div class="col-12 text-center">
         <div class="animated-translateY">
-            <h1 class="text-cyan">Nuestros Juegos</h1>
+            <h1 class="text-cyan">Nuestros juegos</h1>
             <p class="hero-subtitle mt-4">
                 Explora todos los juegos que LogBait te ofrece.
             </p>
