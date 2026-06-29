@@ -15,6 +15,7 @@
   ;
 
   --gradient-cyber: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 50%, var(--neon-pink) 100%);
+  --gradient-blueish: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
   --gradient-matrix: linear-gradient(135deg, var(--matrix-green), var(--neon-cyan));
   --gradient-sunset: linear-gradient(135deg, var(--neon-orange) 0%, var(--neon-pink) 50%, var(--neon-cyan) 100%);
   --gradient-dark: linear-gradient(135deg, rgba(40, 40, 70, 0.8), rgba(25, 25, 50, 0.9));
@@ -667,7 +668,7 @@ html {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  background: var(--gradient-blueish);
   display: flex;
   align-items: center;
   justify-content: center;
