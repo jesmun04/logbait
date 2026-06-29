@@ -594,12 +594,12 @@ footer h5 {
 
 /* === OFFCAMVAS (BARRA LATERAL) === */
 .offcanvas {
-  --bs-offcanvas-box-shadow: 0 0 32px var(--sidebar-shadow-color);
   --bs-offcanvas-border-color: var(--sidebar-border-color);
 }
 
 .offcanvas.show, .offcanvas.showing {
   background: var(--gradient-dark-solid);
+  box-shadow: 0 0 32px var(--sidebar-shadow-color);
 }
 
 /* === SCROLLBAR === */
